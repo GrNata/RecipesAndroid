@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.data.model
+package com.grig.recipesandroid.data.model.dto
 
 import com.google.gson.annotations.SerializedName
 

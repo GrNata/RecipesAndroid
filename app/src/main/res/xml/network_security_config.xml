@@ -4,3 +4,17 @@
         <domain includeSubdomains="true">10.0.2.2</domain>
     </domain-config>
 </network-security-config>
+
+
+<!--В проде:
+	•	HTTPS
+	•	Реальный домен
+	•	usesCleartextTraffic="false"
+
+Но СЕЙЧАС — 100% оставляем.
+для эмулятора
++ в манифесте:
+<application
+        android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config"
+-->

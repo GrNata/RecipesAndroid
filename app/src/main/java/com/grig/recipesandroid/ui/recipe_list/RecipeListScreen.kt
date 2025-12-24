@@ -28,9 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import com.grig.recipesandroid.data.model.CategoryDto
-import com.grig.recipesandroid.data.model.IngredientWithAmountDto
-import com.grig.recipesandroid.data.model.RecipeDto
+import com.grig.recipesandroid.domain.model.Category
+import com.grig.recipesandroid.domain.model.Ingredient
+import com.grig.recipesandroid.domain.model.Recipe
+import com.grig.recipesandroid.domain.model.RecipeIngredient
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
@@ -62,9 +63,13 @@ fun RecipeListScreen(
                 .padding(8.dp)
         ) {
             items(recipes) { recipe ->
-                RecipeItem(recipe) {
-                    navController.navigate("recipe_detail/${recipe.id}")
+                Text("${recipe.name}")
+                Text("${recipe.description}")
+                Text("IMAGE - ${recipe.image}")
+                recipe.ingredients.forEach { ing ->
+                    Text("${ing.ingredient.name}: ${ing.amount} ${ing.unit}")
                 }
+                Text("STEPS: ${recipe.steps}")
             }
         }
     }
@@ -72,7 +77,7 @@ fun RecipeListScreen(
 
 @Composable
 fun RecipeItem(
-    recipe: RecipeDto,
+    recipe: Recipe,
     onClick: () -> Unit
 ) {
     Card(
@@ -112,14 +117,17 @@ fun RecipeItem(
 @Preview(showBackground = true)
 @Composable
 fun PreviewRecipeItem() {
-    val samleRecipe = RecipeDto(
+    val samleRecipe = Recipe(
         id = 1L,
         name = "Шоколадный торт",
         description = "вкусный дессерт для сладкоежек",
         image = "https://via.placeholder.com/150",
-        categories = listOf(CategoryDto(1, "Десерт", null)),
-        ingredients = listOf(IngredientWithAmountDto(1, "Шоколад", "200", "г")),
+        categories = listOf(Category(1, "Десерт", null)),
+        ingredients = listOf(RecipeIngredient(Ingredient(1L, "Шоколад"), "200", "г")),
         steps = listOf("Растопить шоколад", "Смешать с мукой", "Выпекать 30 минут")
+
+//        ingredients = listOf(RecipeIngredient(Ingredient(1L,"Шоколад"), "200", unit = "г"))),
+//        steps = listOf("Растопить шоколад", "Смешать с мукой", "Выпекать 30 минут")
     )
     RecipeItem(recipe = samleRecipe, onClick = {})
 }
@@ -137,22 +145,36 @@ class PreviewRecipesViewModel : RecipesViewModel(
 ) {
     override val recipes = MutableStateFlow(
         listOf(
-            RecipeDto(
+            Recipe(
                 id = 1,
                 name = "Шоколадный торт",
                 description = "Вкусный десерт для сладкоежек",
                 image = "https://via.placeholder.com/150",
-                categories = listOf(CategoryDto(1, "Десерт", null)),
-                ingredients = listOf(IngredientWithAmountDto(1, "Шоколад", "200", "г")),
+                categories = listOf(Category(1, "Десерт", null)),
+                ingredients = listOf(
+                    RecipeIngredient(
+                        ingredient = Ingredient(1L,"Шоколад"),
+                        "200",
+                        unit = "г"
+
+                    )
+                ),
                 steps = listOf("Растопить шоколад", "Смешать с мукой", "Выпекать 30 минут")
             ),
-            RecipeDto(
+            Recipe(
                 id = 2,
                 name = "Цезарь салат",
                 description = "Свежий салат с курицей",
                 image = "https://via.placeholder.com/150",
-                categories = listOf(CategoryDto(2, "Салат", null)),
-                ingredients = listOf(IngredientWithAmountDto(2, "Курица", "150", "г")),
+                categories = listOf(Category(2, "Салат", null)),
+                ingredients = listOf(
+                    RecipeIngredient(
+                        ingredient = Ingredient(2L,"Курица"),
+                        "150",
+                        unit = "г"
+
+                    )
+                ),
                 steps = listOf("Нарезать курицу", "Добавить соус", "Смешать")
             )
         )

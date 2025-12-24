@@ -4,7 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.grig.recipesandroid.data.repository.RecipeRepository
-import com.grig.recipesandroid.data.model.RecipeDto
+import com.grig.recipesandroid.data.model.dto.RecipeDto
+import com.grig.recipesandroid.domain.model.Recipe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,8 +16,8 @@ open class RecipesViewModel(
     private val repository: RecipeRepository?
 ) : ViewModel() {
 
-    private val _recipes = MutableStateFlow<List<RecipeDto>>(emptyList())
-    open val recipes: StateFlow<List<RecipeDto>> = _recipes
+    private val _recipes = MutableStateFlow<List<Recipe>>(emptyList())
+    open val recipes: StateFlow<List<Recipe>> = _recipes
 
     private val _loading = MutableStateFlow(false)
     open val loading: StateFlow<Boolean> = _loading
@@ -26,7 +27,7 @@ open class RecipesViewModel(
             _loading.value = true
             try {
                 // Временный вывод RAW JSON
-                val response = repository?.getRecipes() // PagedRecipesResponse
+                val response = repository?.getRecipes() // уже domain-модель
                 Log.d("RecipesViewModel", "RAW JSON: $response")
 
                 // А потом обычная загрузка через Retrofit

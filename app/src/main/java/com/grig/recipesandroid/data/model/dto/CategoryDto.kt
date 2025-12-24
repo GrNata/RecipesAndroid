@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.data.model
+package com.grig.recipesandroid.data.model.dto
 
 data class CategoryDto(
 //    val id: Long?,

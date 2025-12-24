@@ -1,6 +1,6 @@
 package com.grig.recipesandroid.data.api
 
-import com.grig.recipesandroid.data.model.RecipeDto
+import com.grig.recipesandroid.data.model.dto.RecipeDto
 import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
