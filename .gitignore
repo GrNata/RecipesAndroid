@@ -1,0 +1,82 @@
+# Gradle
+/.gradle/
+/build/
+/captures/
+.gradle
+
+# Android Studio (IntelliJ)
+.idea/
+*.iml
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/codeStyles/
+.idea/misc.xml
+.idea/deploymentTarget.xml
+
+# Локальные настройки
+local.properties
+
+# Внешние сборки
+.externalNativeBuild/
+.cxx/
+
+# Системные файлы
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Временные файлы
+*.log
+*.tmp
+*.bak
+
+# Зависимости (если не требуется хранить)
+node_modules/
+
+# Профилировщики и отчёты
+proguard/
+lint-results.html
+lint-results-*.xml
+
+# Тестовые данные
+/app/src/androidTest/
+/app/src/test/
+
+# Ключи и конфиденциальные данные
+*.keystore
+*.jks
+*.pem
+*.key
+secrets.properties
+config.json
+
+# macOS специфичные
+.AppleDouble
+.LSOverride
+
+# Windows специфичные
+$RECYCLE.
+
+#*.iml
+#.gradle
+#/local.properties
+#/.idea/caches
+#/.idea/libraries
+#/.idea/modules.xml
+#/.idea/workspace.xml
+#/.idea/navEditor.xml
+#/.idea/assetWizardSettings.xml
+#.DS_Store
+#/build
+#/captures
+#.externalNativeBuild
+#.cxx
+#local.properties
