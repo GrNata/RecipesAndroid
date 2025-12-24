@@ -35,7 +35,7 @@ import com.grig.recipesandroid.domain.model.RecipeIngredient
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
-fun RecipeListScreen(
+fun RecipeListScreenWithNav(
     viewModel: RecipesViewModel,
     navController: NavController
 ) {
@@ -46,8 +46,6 @@ fun RecipeListScreen(
         viewModel.loadRecipes()
     }
 
-    println("MY RECIPES: ${recipes}")
-
     if (loading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -56,20 +54,17 @@ fun RecipeListScreen(
             CircularProgressIndicator()
         }
     } else {
-        println("MY RECIPES: ${recipes.size} items")
+//        println("MY RECIPES: ${recipes.size} items")
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp)
         ) {
             items(recipes) { recipe ->
-                Text("${recipe.name}")
-                Text("${recipe.description}")
-                Text("IMAGE - ${recipe.image}")
-                recipe.ingredients.forEach { ing ->
-                    Text("${ing.ingredient.name}: ${ing.amount} ${ing.unit}")
-                }
-                Text("STEPS: ${recipe.steps}")
+                RecipeItem(
+                    recipe = recipe,
+                    onClick = { navController.navigate("recipe_detail/${recipe.id}") }
+                )
             }
         }
     }
@@ -87,28 +82,41 @@ fun RecipeItem(
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier.padding(8.dp)
         ) {
-            recipe.image?.let {
-                Image(
-                    painter = rememberAsyncImagePainter(it),
-                    contentDescription = recipe.name,
-                    modifier = Modifier.size(80.dp)
-                )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
-                Text(
-                    text = recipe.name,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                recipe.description?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodyMedium
+            Row {
+                recipe.image?.let {
+                    Image(
+                        painter = rememberAsyncImagePainter(it),
+                        contentDescription = recipe.name,
+                        modifier = Modifier.size(80.dp)
                     )
                 }
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(
+                        text = recipe.name,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    recipe.description?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.padding(4.dp))
+            Column {
+                recipe.ingredients.forEach { ing ->
+                    Text("${ing.ingredient.name}: ${ing.amount} ${ing.unit ?: ""}".trim())
+                }
+            }
+            Spacer(modifier = Modifier.padding(4.dp))
+            Text("STEPS:")
+            recipe.steps.forEach { step ->
+                Text("-$step")
             }
         }
     }
@@ -125,19 +133,16 @@ fun PreviewRecipeItem() {
         categories = listOf(Category(1, "Десерт", null)),
         ingredients = listOf(RecipeIngredient(Ingredient(1L, "Шоколад"), "200", "г")),
         steps = listOf("Растопить шоколад", "Смешать с мукой", "Выпекать 30 минут")
-
-//        ingredients = listOf(RecipeIngredient(Ingredient(1L,"Шоколад"), "200", unit = "г"))),
-//        steps = listOf("Растопить шоколад", "Смешать с мукой", "Выпекать 30 минут")
     )
     RecipeItem(recipe = samleRecipe, onClick = {})
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewRecipeListScreen() {
+fun PreviewRecipeListScreenWithNav() {
     val previewViewModel = PreviewRecipesViewModel()
     val navController = rememberNavController()
-    RecipeListScreen(viewModel = previewViewModel, navController = navController)
+    RecipeListScreenWithNav(viewModel = previewViewModel, navController = navController)
 }
 
 class PreviewRecipesViewModel : RecipesViewModel(

@@ -29,7 +29,7 @@ import androidx.compose.material3.Surface
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.grig.recipesandroid.ui.recipe_list.RecipeListScreen
+import com.grig.recipesandroid.ui.recipe_list.RecipeListScreenWithNav
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import com.grig.recipesandroid.ui.theme.RecipesAndroidTheme
 import retrofit2.Retrofit
@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "recipe_list") {
                         composable("recipe_list") {
-                            RecipeListScreen(viewModel = viewModel, navController = navController)
+                            RecipeListScreenWithNav(viewModel = viewModel, navController = navController)
                         }
 //                        // composable("recipe_detail/{id}") { ... } можно добавить экран деталей позже
                     }
