@@ -36,12 +36,16 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.max
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
 //отдельный RecipeDetailContent
@@ -88,12 +92,44 @@ fun RecipeDetailContent(
                     CircularProgressIndicator(Modifier.align(Alignment.Center))
                 }
 
-                error != null -> {
-                    Text(
-                        text = error,
-                        color = Color(0xFF9A3B3B),
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                error != null || recipe == null -> {
+//                     Empty / Error State
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(32.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        // Иконка / Emoji
+                        Text(
+                            text = "\uD83D\uDE1E",      // печальный смайл
+                            fontSize = 48.sp
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = error ?: "Рецепт не найден",
+                            color = Color(0xFF9A3B3B),
+                            style = MaterialTheme.typography.titleLarge,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "Пожалуйста, вернитесь назад или попробуйте другой рецепт",
+                            color = Color(0xFF7E889F),
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Кнопка «Назад»
+                        Button(onClick = onBack) {
+                            Text(text = "Назад")
+                        }
+                    }
                 }
 
                 recipe != null -> {
@@ -193,15 +229,6 @@ fun RecipeDetailContent(
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
                         }
-
-//                        items(recipe.steps.size) { index ->
-//                            Text(
-//                                text = "${index + 1}. ${recipe.steps[index]}",
-//                                color = Color(0xFF123C69),
-//                                style = MaterialTheme.typography.bodyMedium,
-//                                modifier = Modifier.padding(bottom = 4.dp)
-//                            )
-//                        }
 
                         items(recipe.steps.size) { index ->
                             AnimatedVisibility(

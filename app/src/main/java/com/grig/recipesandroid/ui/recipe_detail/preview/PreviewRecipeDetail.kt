@@ -53,3 +53,16 @@ fun PreviewRecipeDetailContent() {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewRecipeDetailContent_Empty() {
+    RecipesAndroidTheme {
+        RecipeDetailContent(
+            recipe = null,      // recipe == null
+            loading = false,
+            error = null,         // нет ошибки, но и рецепта нет
+            onBack = {}
+        )
+    }
+}
