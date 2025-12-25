@@ -14,7 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -45,7 +49,7 @@ fun RecipeListContent(
                 .fillMaxSize()
                 .background(Color(0xFFF7EDE9))
             ) {
-
+            // 1️⃣ Список рецептов
             items(count = recipes.itemCount) { index ->
                 val recipe = recipes[index]
                 recipe?.let {
@@ -54,37 +58,62 @@ fun RecipeListContent(
                     }
                 }
             }
-            // Loader снизу (append)
+            // Loader снизу (append) - при подгрузке следующей страницы
             when (recipes.loadState.append) {
                 is LoadState.Loading -> {
-                    item { CircularProgressIndicator() }
+                    item {
+                        CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                        )
+                    }
                 }
                 is LoadState.Error -> {
-                    item { Text("Ошибка загрузки") }
+                    item {
+                        Text(
+                            text = "Ошибка загрузки",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            textAlign = TextAlign.Center
+                            )
+                    }
                 }
                 else -> Unit
             }
-        }
+//        }
         // Empty State: список пуст
-        if (recipes.itemCount == 0 && recipes.loadState.refresh !is LoadState.Loading) {
-            Box(modifier = Modifier.fillMaxSize()) {
+        if (recipes.itemCount == 0 &&
+            recipes.loadState.refresh is LoadState.NotLoading
+            ) {
+            item {
                 Text(
-                    text = "Список рецептов пуст",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = Color(0xFFAC3B61)
+                    text = "Ничего не найдено",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                    textAlign = TextAlign.Center,
+                    color = Color.Gray
                 )
             }
         }
 
 //        Error State для refresh
         if (recipes.loadState.refresh is LoadState.Error) {
-            Box(modifier = Modifier.fillMaxSize()) {
+//            Box(modifier = Modifier.fillMaxSize()) {
+//            }
+            item {
                 Text(
                     text = "Ошибка загрузки данных",
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                    textAlign = TextAlign.Center,
                     color = Color(0xFFAC3B61)
                 )
             }
+        }
         }
     }
 

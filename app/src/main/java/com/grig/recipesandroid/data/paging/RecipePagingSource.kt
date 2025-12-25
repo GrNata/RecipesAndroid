@@ -6,6 +6,7 @@ import androidx.paging.PagingState
 import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.mapper.toDomain
 import com.grig.recipesandroid.domain.model.Recipe
+import kotlinx.coroutines.flow.StateFlow
 import java.lang.Exception
 
 class RecipePagingSource(

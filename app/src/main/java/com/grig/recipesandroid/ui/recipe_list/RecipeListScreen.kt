@@ -20,8 +20,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,12 +46,31 @@ fun RecipeListScreen(
     onRecipeClick: (Long) -> Unit
 ) {
     val recipes = viewModel.recipesPagingFlow.collectAsLazyPagingItems()
+    val query by viewModel.query.collectAsState()
 
-    RecipeListContent(
-        recipes = recipes,
-        onRecipeClick = { id -> onRecipeClick(id)
-        }
-    )
+    Column(modifier = Modifier.fillMaxSize()) {
+//        поиск / фильтрация
+        OutlinedTextField(
+            value = query,
+            onValueChange = { newText ->
+                viewModel.setQuery(newText)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            placeholder = {
+                Text("Поиск рецептов…")
+            },
+            singleLine = true
+        )
+
+        RecipeListContent(
+            recipes = recipes,
+            onRecipeClick = { id ->
+                onRecipeClick(id)
+            }
+        )
+    }
 }
 
 @Composable

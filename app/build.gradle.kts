@@ -61,6 +61,9 @@ dependencies {
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    //    Для фильтрации через StateFlow и debounce можно добавить (опционально)
+//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
     // Retrofit + Gson
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
@@ -79,6 +82,7 @@ dependencies {
 //    Paging
     implementation("androidx.paging:paging-runtime:3.2.0")                  // Paging для ViewModel
     implementation("androidx.paging:paging-compose:1.0.0-alpha18")          // Paging для Compose
+
 
 //    Pull-to-refresh (возможность обновлять список рецептов жестом вниз) - вариант с Material3 PullRefresh
 //    implementation("androidx.xr.compose.material3:material3:1.0.0-alpha13")
