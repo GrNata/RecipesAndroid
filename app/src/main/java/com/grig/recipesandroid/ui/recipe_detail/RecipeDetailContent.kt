@@ -33,11 +33,15 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.grig.recipesandroid.domain.model.Recipe
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.max
 import kotlinx.coroutines.delay
 
 //отдельный RecipeDetailContent
@@ -104,7 +108,6 @@ fun RecipeDetailContent(
                         }
                     }
 
-
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
@@ -122,20 +125,26 @@ fun RecipeDetailContent(
                         }
 
                         // --- СТРОКА: КАРТИНКА + ИНФО ---
+                        // --- ROW: картинка слева + категория и ингредиенты справа ---
                         item {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.Top
                             ) {
 
-                                // Картинка слева (если есть)
+                                // Картинка слева (сжимаемая)
                                 recipe.image?.let {
+                                    val scrollState = rememberLazyListState()
+                                    val imageHeight by animateDpAsState(
+                                        targetValue = max(120.dp, 220.dp - scrollState.firstVisibleItemScrollOffset.dp)
+                                    )
                                     AsyncImage(
                                         model = it,
                                         contentDescription = recipe.name,
                                         modifier = Modifier
                                             .width(120.dp)
-                                            .height(120.dp)
+//                                            .height(120.dp)
+                                            .height(imageHeight)
                                             .clip(RoundedCornerShape(12.dp))
                                     )
 
