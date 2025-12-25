@@ -1,20 +1,27 @@
 package com.grig.recipesandroid.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.mapper.toDomain
-import com.grig.recipesandroid.data.model.dto.RecipeDto
-import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
+import com.grig.recipesandroid.data.paging.RecipePagingSource
 import com.grig.recipesandroid.domain.model.Recipe
 
 class RecipeRepository(
     private val api: RecipeApi
 ) {
     // Получаем DTO из API
-    suspend fun getRecipes() : List<Recipe> {
-        val response = api.getRecipes()     // PagedRecipesResponse
-        return response.content.map { it.toDomain() }           // используем mapper
+//    suspend fun getRecipes() : List<Recipe> {
+//        val response = api.getRecipes()     // PagedRecipesResponse
+//        return response.content.map { it.toDomain() }           // используем mapper
+//    }
+    fun getRecipesPaper() : Pager<Int, Recipe> {
+        return Pager(
+            config = PagingConfig(pageSize = 10),
+            pagingSourceFactory = { RecipePagingSource(api) }
+        )
     }
-//    suspend fun getRecipes() : PagedRecipesResponse= api.getRecipes()
+
 
 
     suspend fun getRecipesById(id: Long) : Recipe {

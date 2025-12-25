@@ -73,4 +73,8 @@ dependencies {
 
     // Images
     implementation("io.coil-kt:coil-compose:2.7.0")
+
+//    Paging
+    implementation("androidx.paging:paging-runtime:3.2.0")                  // Paging для ViewModel
+    implementation("androidx.paging:paging-compose:1.0.0-alpha18")          // Paging для Compose
 }
