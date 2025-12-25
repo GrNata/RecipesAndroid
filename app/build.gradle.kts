@@ -85,4 +85,5 @@ dependencies {
 //    Pull-to-refresh (возможность обновлять список рецептов жестом вниз) - вариант с Google
 //    implementation("com.google.accompanist:accompanist-swiperefresh:0.31.1-alpha")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.36.0")
+
 }

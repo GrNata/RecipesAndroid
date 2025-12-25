@@ -115,116 +115,191 @@ fun RecipeListContent(
 }
 
 
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewRecipeListContent() {
+//    val previewRecipes = listOf(
+//        Recipe(
+//            id = 1,
+//            name = "Шоколадный торт",
+//            description = "Вкусный десерт",
+//            image = "https://via.placeholder.com/150",
+//            categories = listOf(Category(1, "Десерт", null)),
+//            ingredients = listOf(
+//                RecipeIngredient(
+//                    ingredient = Ingredient(1L, "Шоколад"),
+//                    amount = "200",
+//                    unit = "г"
+//                )
+//            ),
+//            steps = listOf("Растопить шоколад", "Выпекать 30 минут")
+//        ),
+//        Recipe(
+//            id = 2,
+//            name = "Цезарь",
+//            description = "Свежий салат",
+//            image = null,
+//            categories = listOf(Category(2, "Салат", null)),
+//            ingredients = listOf(
+//                RecipeIngredient(
+//                    ingredient = Ingredient(2L, "Курица"),
+//                    amount = "150",
+//                    unit = "г"
+//                )
+//            ),
+//            steps = listOf("Нарезать", "Смешать")
+//        ),
+//        Recipe(
+//            id = 3,
+//            name = "Цезарь-2",
+//            description = "Свежий салат",
+//            image = null,
+//            categories = listOf(Category(2, "Салат", null)),
+//            ingredients = listOf(
+//                RecipeIngredient(
+//                    ingredient = Ingredient(2L, "Курица"),
+//                    amount = "150",
+//                    unit = "г"
+//                )
+//            ),
+//            steps = listOf("Нарезать", "Смешать")
+//        ),
+//        Recipe(
+//            id = 4,
+//            name = "Цезарь-3",
+//            description = "Свежий салат",
+//            image = null,
+//            categories = listOf(Category(2, "Салат", null)),
+//            ingredients = listOf(
+//                RecipeIngredient(
+//                    ingredient = Ingredient(2L, "Курица"),
+//                    amount = "150",
+//                    unit = "г"
+//                )
+//            ),
+//            steps = listOf("Нарезать", "Смешать")
+//        ),
+//        Recipe(
+//            id = 5,
+//            name = "Цезарь-4",
+//            description = "Свежий салат",
+//            image = null,
+//            categories = listOf(Category(2, "Салат", null)),
+//            ingredients = listOf(
+//                RecipeIngredient(
+//                    ingredient = Ingredient(2L, "Курица"),
+//                    amount = "150",
+//                    unit = "г"
+//                )
+//            ),
+//            steps = listOf("Нарезать", "Смешать")
+//        ),
+//        Recipe(
+//            id = 6,
+//            name = "Цезарь-5",
+//            description = "Свежий салат",
+//            image = null,
+//            categories = listOf(Category(2, "Салат", null)),
+//            ingredients = listOf(
+//                RecipeIngredient(
+//                    ingredient = Ingredient(2L, "Курица"),
+//                    amount = "150",
+//                    unit = "г"
+//                )
+//            ),
+//            steps = listOf("Нарезать", "Смешать")
+//        ),
+//        Recipe(
+//            id = 7,
+//            name = "Цезарь-6",
+//            description = "Свежий салат",
+//            image = null,
+//            categories = listOf(Category(2, "Салат", null)),
+//            ingredients = listOf(
+//                RecipeIngredient(
+//                    ingredient = Ingredient(2L, "Курица"),
+//                    amount = "150",
+//                    unit = "г"
+//                )
+//            ),
+//            steps = listOf("Нарезать", "Смешать")
+//        )
+//    )
+//
+//    RecipeListContent(
+//        recipes = previewRecipes,
+//        onRecipeClick = {}
+//    )
+//}
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewRecipeListContent() {
-    val previewRecipes = listOf(
-        Recipe(
-            id = 1,
-            name = "Шоколадный торт",
-            description = "Вкусный десерт",
-            image = "https://via.placeholder.com/150",
-            categories = listOf(Category(1, "Десерт", null)),
-            ingredients = listOf(
-                RecipeIngredient(
-                    ingredient = Ingredient(1L, "Шоколад"),
-                    amount = "200",
-                    unit = "г"
-                )
-            ),
-            steps = listOf("Растопить шоколад", "Выпекать 30 минут")
-        ),
-        Recipe(
-            id = 2,
-            name = "Цезарь",
-            description = "Свежий салат",
-            image = null,
-            categories = listOf(Category(2, "Салат", null)),
-            ingredients = listOf(
-                RecipeIngredient(
-                    ingredient = Ingredient(2L, "Курица"),
-                    amount = "150",
-                    unit = "г"
-                )
-            ),
-            steps = listOf("Нарезать", "Смешать")
-        )
-    )
-
-    RecipeListContent(
-        recipes = previewRecipes,
-        onRecipeClick = {}
-    )
-}
-
-//Preview — С КАРТИНКОЙ
-@Preview(showBackground = true)
-@Composable
-fun PreviewRecipeItemWithImage() {
-    val recipe = Recipe(
-        id = 1L,
-        name = "Шоколадный торт",
-        description = "Нежный и очень вкусный десерт",
-        image = "https://via.placeholder.com/300",
-        categories = listOf(
-            Category(1, "Десерт", null)
-        ),
-        ingredients = listOf(
-            RecipeIngredient(
-                ingredient = Ingredient(1, "Шоколад"),
-                amount = "200",
-                unit = "г"
-            ),
-            RecipeIngredient(
-                ingredient = Ingredient(2, "Мука"),
-                amount = "150",
-                unit = "г"
-            )
-        ),
-        steps = listOf(
-            "Растопить шоколад",
-            "Смешать ингредиенты",
-            "Выпекать 30 минут"
-        )
-    )
-    RecipeItem(
-        recipe = recipe,
-        onClick = {}
-    )
-}
-
-//  Preview — БЕЗ КАРТИНКИ
-@Preview(showBackground = true)
-@Composable
-fun PreviewRecipeItemWithoutImage() {
-    val recipe = Recipe(
-        id = 2,
-        name = "Салат Цезарь",
-        description = "Классический салат",
-        image = null, // 👈 важно
-        categories = listOf(
-            Category(2, "Салат", null)
-        ),
-        ingredients = listOf(
-            RecipeIngredient(
-                ingredient = Ingredient(3, "Курица"),
-                amount = "150",
-                unit = "г"
-            ),
-            RecipeIngredient(
-                ingredient = Ingredient(4, "Салат"),
-                amount = "1",
-                unit = "шт"
-            )
-        ),
-        steps = listOf(
-            "Нарезать ингредиенты",
-            "Смешать с соусом"
-        )
-    )
-    RecipeItem(
-        recipe = recipe,
-        onClick = {}
-    )
-}
+////Preview — С КАРТИНКОЙ
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewRecipeItemWithImage() {
+//    val recipe = Recipe(
+//        id = 1L,
+//        name = "Шоколадный торт",
+//        description = "Нежный и очень вкусный десерт",
+//        image = "https://via.placeholder.com/300",
+//        categories = listOf(
+//            Category(1, "Десерт", null)
+//        ),
+//        ingredients = listOf(
+//            RecipeIngredient(
+//                ingredient = Ingredient(1, "Шоколад"),
+//                amount = "200",
+//                unit = "г"
+//            ),
+//            RecipeIngredient(
+//                ingredient = Ingredient(2, "Мука"),
+//                amount = "150",
+//                unit = "г"
+//            )
+//        ),
+//        steps = listOf(
+//            "Растопить шоколад",
+//            "Смешать ингредиенты",
+//            "Выпекать 30 минут"
+//        )
+//    )
+//    RecipeItem(
+//        recipe = recipe,
+//        onClick = {}
+//    )
+//}
+//
+////  Preview — БЕЗ КАРТИНКИ
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewRecipeItemWithoutImage() {
+//    val recipe = Recipe(
+//        id = 2,
+//        name = "Салат Цезарь",
+//        description = "Классический салат",
+//        image = null, // 👈 важно
+//        categories = listOf(
+//            Category(2, "Салат", null)
+//        ),
+//        ingredients = listOf(
+//            RecipeIngredient(
+//                ingredient = Ingredient(3, "Курица"),
+//                amount = "150",
+//                unit = "г"
+//            ),
+//            RecipeIngredient(
+//                ingredient = Ingredient(4, "Салат"),
+//                amount = "1",
+//                unit = "шт"
+//            )
+//        ),
+//        steps = listOf(
+//            "Нарезать ингредиенты",
+//            "Смешать с соусом"
+//        )
+//    )
+//    RecipeItem(
+//        recipe = recipe,
+//        onClick = {}
+//    )
+//}
