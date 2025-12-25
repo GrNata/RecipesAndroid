@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,17 +21,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberAsyncImagePainter
 import com.grig.recipesandroid.domain.model.Category
 import com.grig.recipesandroid.domain.model.Ingredient
 import com.grig.recipesandroid.domain.model.Recipe
 import com.grig.recipesandroid.domain.model.RecipeIngredient
-import com.grig.recipesandroid.ui.recipe_list.RecipeListContent
 
 //   разделяем UI и state - RecipeListContent
+// RecipeListScreen получает ViewModel и передаёт данные в RecipeListContent.
 @Composable
 fun RecipeListScreen(
     viewModel: RecipesViewModel,
@@ -46,57 +43,6 @@ fun RecipeListScreen(
             navController.navigate("recipe_detail/${id}")
         }
     )
-
-//    LazyColumn(
-//        modifier = Modifier.fillMaxSize()
-//    ) {
-//        items(
-//            recipes.itemCount
-//        ) { index ->
-//            val recipe = recipes[index]
-//            recipe?.let {
-//                RecipeItem(recipe = it) {
-//                    navController.navigate("recipe_detail/${it.id}")
-//                }
-//            }
-//        }
-//
-//        // loader снизу
-//        when (recipes.loadState.append) {
-//            is LoadState.Loading -> { item { CircularProgressIndicator() } }
-//            is LoadState.Error -> { item { Text("Ошибка загрузки") } }
-//            else -> Unit
-//        }
-//    }
-
-    //    val recipes by viewModel.recipes.collectAsState()
-//    val loading by viewModel.loading.collectAsState()
-//
-//    LaunchedEffect(Unit) {
-//        viewModel.loadRecipes()
-//    }
-//    if (loading) {
-//        Box(
-//            modifier = Modifier.fillMaxSize(),
-//            contentAlignment = androidx.compose.ui.Alignment.Center
-//        ) {
-//            CircularProgressIndicator()
-//        }
-//    } else {
-////        println("MY RECIPES: ${recipes.size} items")
-//        LazyColumn(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(8.dp)
-//        ) {
-//            items(recipes) { recipe ->
-//                RecipeItem(
-//                    recipe = recipe,
-//                    onClick = { navController.navigate("recipe_detail/${recipe.id}") }
-//                )
-//            }
-//        }
-//    }
 }
 
 @Composable
@@ -282,69 +228,3 @@ fun PreviewRecipeItemWithoutImage() {
         onClick = {}
     )
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewRecipeItem() {
-//    val samleRecipe = Recipe(
-//        id = 1L,
-//        name = "Шоколадный торт",
-//        description = "вкусный дессерт для сладкоежек",
-//        image = "https://via.placeholder.com/150",
-//        categories = listOf(Category(1, "Десерт", null)),
-//        ingredients = listOf(RecipeIngredient(Ingredient(1L, "Шоколад"), "200", "г")),
-//        steps = listOf("Растопить шоколад", "Смешать с мукой", "Выпекать 30 минут")
-//    )
-//    RecipeItem(recipe = samleRecipe, onClick = {})
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewRecipeListScreen() {
-//    val previewViewModel = PreviewRecipesViewModel()
-//    val navController = rememberNavController()
-//    RecipeListScreen(viewModel = previewViewModel, navController = navController)
-//}
-//
-//class PreviewRecipesViewModel : RecipesViewModel(
-//    repository = null // мы не будем использовать реальный API
-//) {
-//    val recipes = MutableStateFlow(
-//        listOf(
-//            Recipe(
-//                id = 1,
-//                name = "Шоколадный торт",
-//                description = "Вкусный десерт для сладкоежек",
-//                image = "https://via.placeholder.com/150",
-//                categories = listOf(Category(1, "Десерт", null)),
-//                ingredients = listOf(
-//                    RecipeIngredient(
-//                        ingredient = Ingredient(1L,"Шоколад"),
-//                        "200",
-//                        unit = "г"
-//
-//                    )
-//                ),
-//                steps = listOf("Растопить шоколад", "Смешать с мукой", "Выпекать 30 минут")
-//            ),
-//            Recipe(
-//                id = 2,
-//                name = "Цезарь салат",
-//                description = "Свежий салат с курицей",
-//                image = "https://via.placeholder.com/150",
-//                categories = listOf(Category(2, "Салат", null)),
-//                ingredients = listOf(
-//                    RecipeIngredient(
-//                        ingredient = Ingredient(2L,"Курица"),
-//                        "150",
-//                        unit = "г"
-//
-//                    )
-//                ),
-//                steps = listOf("Нарезать курицу", "Добавить соус", "Смешать")
-//            )
-//        )
-//    )
-//    override val loading = MutableStateFlow(false)
-//}

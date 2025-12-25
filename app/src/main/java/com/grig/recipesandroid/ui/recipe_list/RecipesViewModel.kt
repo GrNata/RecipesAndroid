@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+//  ViewModel отвечает за данные (Flow<PagingData>) и их загрузку из репозитория
 open class RecipesViewModel(
     private val repository: RecipeRepository
 ) : ViewModel() {
@@ -23,31 +24,4 @@ open class RecipesViewModel(
         repository.getRecipesPaper()
             .flow
             .cachedIn(viewModelScope)
-
-
-
-//    private val _recipes = MutableStateFlow<List<Recipe>>(emptyList())
-//    open val recipes: StateFlow<List<Recipe>> = _recipes
-//
-//    private val _loading = MutableStateFlow(false)
-//    open val loading: StateFlow<Boolean> = _loading
-//    fun loadRecipes() {
-//        viewModelScope.launch {
-//            _loading.value = true
-//            try {
-//                // Временный вывод RAW JSON
-//                val response = repository?.getRecipes() // уже domain-модель
-//                Log.d("RecipesViewModel", "RAW JSON: $response")
-//
-//                // А потом обычная загрузка через Retrofit
-//                _recipes.value = requireNotNull(response)
-//
-//            } catch (e: Exception) {
-//                Log.e("RecipesViewModel", "Error loading recipes", e)
-//                e.printStackTrace()
-//            } finally {
-//                _loading.value = false
-//            }
-//        }
-//    }
 }

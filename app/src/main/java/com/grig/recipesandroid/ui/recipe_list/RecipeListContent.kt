@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import com.grig.recipesandroid.domain.model.Recipe
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
@@ -12,6 +11,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 
 //   разделяем UI и state - RecipeListScreen
+//	RecipeListContent — чистый UI, ничего не знает про ViewModel или PagingSource
 
 @Composable
 fun RecipeListContent(
@@ -39,16 +39,4 @@ fun RecipeListContent(
             else -> Unit
         }
     }
-
-
-//    LazyColumn(
-//    modifier = Modifier.fillMaxSize()
-//    ) {
-//        items(recipes) { recipe ->
-//            RecipeItem(recipe = recipe) {
-//                onRecipeClick(recipe)
-//            }
-//        }
-//    }
-
 }
