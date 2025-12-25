@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -77,4 +79,10 @@ dependencies {
 //    Paging
     implementation("androidx.paging:paging-runtime:3.2.0")                  // Paging для ViewModel
     implementation("androidx.paging:paging-compose:1.0.0-alpha18")          // Paging для Compose
+
+//    Pull-to-refresh (возможность обновлять список рецептов жестом вниз) - вариант с Material3 PullRefresh
+//    implementation("androidx.xr.compose.material3:material3:1.0.0-alpha13")
+//    Pull-to-refresh (возможность обновлять список рецептов жестом вниз) - вариант с Google
+//    implementation("com.google.accompanist:accompanist-swiperefresh:0.31.1-alpha")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.36.0")
 }
