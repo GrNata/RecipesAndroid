@@ -1,34 +1,20 @@
 package com.grig.recipesandroid
 
-//import android.os.Bundle
-//import androidx.activity.ComponentActivity
-//import androidx.activity.compose.setContent
-//import androidx.activity.enableEdgeToEdge
-//import androidx.compose.foundation.layout.fillMaxSize
-//import androidx.compose.foundation.layout.padding
-//import androidx.compose.material3.MaterialTheme
-//import androidx.compose.material3.Scaffold
-//import androidx.compose.material3.Text
-//import androidx.compose.runtime.Composable
-//import androidx.compose.ui.Modifier
-//import androidx.compose.ui.tooling.preview.Preview
-//import androidx.navigation.NavHost
-//import androidx.navigation.compose.rememberNavController
-//import com.grig.recipesandroid.ui.recipe_list.RecipeListScreen
-//import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
-//import com.grig.recipesandroid.ui.theme.RecipesAndroidTheme
-//import retrofit2.Retrofit
-//import retrofit2.converter.gson.GsonConverterFactory
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailScreen
+import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModel
+import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModelFactory
 import com.grig.recipesandroid.ui.recipe_list.RecipeListScreen
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import com.grig.recipesandroid.ui.theme.RecipesAndroidTheme
@@ -60,9 +46,25 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "recipe_list") {
                         composable("recipe_list") {
-                            RecipeListScreen(viewModel = viewModel, navController = navController)
+                            RecipeListScreen(
+                                viewModel = viewModel,
+                                navController = navController,
+                                onRecipeClick = { recipeId -> navController.navigate("recipe_detail/$recipeId")}
+                                )
                         }
-//                        // composable("recipe_detail/{id}") { ... } можно добавить экран деталей позже
+                         composable(
+                             "recipe_detail/{recipeId}",
+                             arguments = listOf(navArgument("recipeId") { type = NavType.LongType })
+                             ) { backStackEntry ->
+                             val recipeId = backStackEntry.arguments?.getLong("recipeId") ?: 0L
+                             val viewModel: RecipeDetailViewModel = viewModel(
+                                 factory = RecipeDetailViewModelFactory(api)
+                             )
+                             RecipeDetailScreen(
+                                 recipeId = recipeId,
+                                 onBack = { navController.popBackStack() }
+                             )
+                         }
                     }
                 }
             }

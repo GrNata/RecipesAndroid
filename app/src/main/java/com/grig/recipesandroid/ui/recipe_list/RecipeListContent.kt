@@ -25,7 +25,8 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 @Composable
 fun RecipeListContent(
     recipes: LazyPagingItems<Recipe>,
-    onRecipeClick: (Recipe) -> Unit
+    onRecipeClick: (Long) -> Unit
+
 ) {
 //    логика отображения индикатора сверху
     val isRefreshing = recipes.loadState.refresh is LoadState.Loading
@@ -43,7 +44,7 @@ fun RecipeListContent(
                 val recipe = recipes[index]
                 recipe?.let {
                     RecipeItem(recipe = it) {
-                        onRecipeClick(it)
+                        onRecipeClick(it.id)
                     }
                 }
             }

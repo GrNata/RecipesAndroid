@@ -18,29 +18,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberAsyncImagePainter
-import com.grig.recipesandroid.domain.model.Category
-import com.grig.recipesandroid.domain.model.Ingredient
 import com.grig.recipesandroid.domain.model.Recipe
-import com.grig.recipesandroid.domain.model.RecipeIngredient
 
 //   разделяем UI и state - RecipeListContent
 // RecipeListScreen получает ViewModel и передаёт данные в RecipeListContent.
 @Composable
 fun RecipeListScreen(
     viewModel: RecipesViewModel,
-    navController: NavController
+    navController: NavController,
+    onRecipeClick: (Long) -> Unit
 ) {
     val recipes = viewModel.recipesPagingFlow.collectAsLazyPagingItems()
 
     RecipeListContent(
         recipes = recipes,
-        onRecipeClick = { id ->
-            navController.navigate("recipe_detail/${id}")
+//        onRecipeClick = { id ->
+//            navController.navigate("recipe_detail/${id}")
+        onRecipeClick = { id -> onRecipeClick(id)
         }
     )
 }
