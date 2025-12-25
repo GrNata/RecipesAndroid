@@ -1,13 +1,19 @@
 package com.grig.recipesandroid.ui.recipe_detail
 
+import android.R
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,7 +22,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
@@ -37,7 +46,12 @@ fun RecipeDetailScreen(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+//            .background(Color(0xFFEEE2DC))
+//            .background(Color(0xFFF6ECD7))
+//            .background(Color(0xFFF6E5D7))
+            .background(Color(0xFFEEE2DC))
     ) {
         when {
             loading -> {
@@ -46,7 +60,9 @@ fun RecipeDetailScreen(
             error != null -> {
                 Text(
                     text = error ?: "Ошибка",
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
+//                    color = Color(0xFFC40C4A)
+                    color = Color(0xFF9A3B3B)
                 )
             }
             recipe != null -> {
@@ -56,28 +72,74 @@ fun RecipeDetailScreen(
                         .padding(16.dp)
                 ) {
                     item {
-                        Text(requireNotNull(recipe).description ?: "", modifier = Modifier.padding(bottom = 8.dp))
-                        requireNotNull(recipe).image?.let { imageUrl ->
-                            AsyncImage(
-                                model = imageUrl,
-                                contentDescription = requireNotNull(recipe).name,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp)
-                                    .padding(bottom = 8.dp)
-                            )
+                        Text(
+                            requireNotNull(recipe).description ?: "",
+                                modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
+//                            color = Color(0xFF701332),
+                            color = Color(0xFF9A3B3B),
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Row(modifier = Modifier.padding(6.dp)) {
+
+                            requireNotNull(recipe).image?.let { imageUrl ->
+                                AsyncImage(
+                                    model = imageUrl,
+                                    contentDescription = requireNotNull(recipe).name,
+                                    modifier = Modifier
+//                                        .fillMaxWidth()
+                                        .height(180.dp)
+                                        .padding(bottom = 8.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                )
+                            }
+//                        Text(
+//                            text = requireNotNull(recipe).description ?: "",
+//                            modifier = Modifier.padding(bottom = 8.dp)
+//                        )
+                            Column() {
+                                Text(
+                                    text = "Категория: ${requireNotNull(recipe).categories.joinToString { it.name.lowercase() }}",
+//                            color = Color(0xFF8B8789),
+//                            color = Color(0xFFB29393),
+                                    color = Color(0xFF7E889F),
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.padding(start = 16.dp)
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "Ингредиенты:",
+                                    color = Color(0xFF656A77),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.padding(start = 16.dp)
+                                )
+                                requireNotNull(recipe).ingredients.forEach { ing ->
+                                    Text(
+                                        text = "- ${ing.ingredient.name.lowercase()}: ${ing.amount ?: ""} ${ing.unit}",
+                                        color = Color(0xFF656A77),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.padding(start = 16.dp)
+                                    )
+
+                                }
+                            }
+
                         }
-                        Text(requireNotNull(recipe).description ?: "", modifier = Modifier.padding(bottom = 8.dp))
-                        Text("Категория: ${requireNotNull(recipe).categories.joinToString { it.name }}")
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Ингредиенты:")
-                        requireNotNull(recipe).ingredients.forEach { ing ->
-                            Text("- ${ing.ingredient.name}: ${ing.amount ?: ""} ${ing.unit}")
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text("Шаги:")
+                        Text(
+                            text = "Шаги приготовления:",
+                            color = Color(0xFF123C69),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
                         requireNotNull(recipe).steps.forEach { step ->
-                            Text("- ${step}", modifier = Modifier.padding(bottom = 4.dp))
+                            Text(
+                                text = "- ${step}",
+                                modifier = Modifier.padding(bottom = 4.dp),
+                                color = Color(0xFF123C69),
+                                style = MaterialTheme.typography.bodyMedium
+                                )
                         }
                     }
                 }

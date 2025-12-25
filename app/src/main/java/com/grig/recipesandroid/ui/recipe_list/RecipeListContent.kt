@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.recipe_list
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.ui.graphics.Color
 
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -38,7 +40,11 @@ fun RecipeListContent(
         onRefresh = { recipes.refresh() }
     ) {
         // Основной список
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF7EDE9))
+            ) {
 
             items(count = recipes.itemCount) { index ->
                 val recipe = recipes[index]
@@ -64,7 +70,8 @@ fun RecipeListContent(
             Box(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = "Список рецептов пуст",
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color(0xFFAC3B61)
                 )
             }
         }
@@ -74,7 +81,8 @@ fun RecipeListContent(
             Box(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = "Ошибка загрузки данных",
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color(0xFFAC3B61)
                 )
             }
         }
