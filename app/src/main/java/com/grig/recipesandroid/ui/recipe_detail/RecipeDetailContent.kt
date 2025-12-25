@@ -29,11 +29,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.grig.recipesandroid.domain.model.Recipe
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import kotlinx.coroutines.delay
 
 //отдельный RecipeDetailContent
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,6 +93,18 @@ fun RecipeDetailContent(
                 }
 
                 recipe != null -> {
+//                    Анимация шагов
+                    val visibleStepsCount = remember { mutableStateOf(0) }
+
+                    LaunchedEffect(recipe.steps) {
+                        visibleStepsCount.value = 0
+                        recipe.steps.forEachIndexed { index, _ ->
+                            delay(250) // скорость появления
+                            visibleStepsCount.value = index + 1
+                        }
+                    }
+
+
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
@@ -168,13 +185,29 @@ fun RecipeDetailContent(
                             )
                         }
 
+//                        items(recipe.steps.size) { index ->
+//                            Text(
+//                                text = "${index + 1}. ${recipe.steps[index]}",
+//                                color = Color(0xFF123C69),
+//                                style = MaterialTheme.typography.bodyMedium,
+//                                modifier = Modifier.padding(bottom = 4.dp)
+//                            )
+//                        }
+
                         items(recipe.steps.size) { index ->
-                            Text(
-                                text = "${index + 1}. ${recipe.steps[index]}",
-                                color = Color(0xFF123C69),
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
+                            AnimatedVisibility(
+                                visible = index < visibleStepsCount.value,
+                                enter = fadeIn() + slideInVertically(
+                                    initialOffsetY = { it / 2 }
+                                )
+                            ) {
+                                Text(
+                                    text = "${index + 1}. ${recipe.steps[index]}",
+                                    color = Color(0xFF123C69),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                            }
                         }
                     }
                 }
