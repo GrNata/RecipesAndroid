@@ -14,7 +14,7 @@ private val previewRecipe = Recipe(
     id = 1,
     name = "Оливье",
     description = "Классический новогодний салат",
-    image = "https://img.freepik.com/premium-psd/traditional-russian-salad-olivier-transparent-background_1269588-9267.jpg?semt=ais_hybrid",
+    image = "https://example.com/olivier.jpg",
     categories = listOf(Category(1, "Салаты", null)),
     ingredients = listOf(
         RecipeIngredient(
@@ -23,15 +23,21 @@ private val previewRecipe = Recipe(
             unit = "шт"
         ),
         RecipeIngredient(
-            Ingredient(2, "Яйца"),
+            Ingredient(2, "Морковь"),
+            amount = "1",
+            unit = "шт"
+        ),
+        RecipeIngredient(
+            Ingredient(3, "Яйца"),
             amount = "3",
             unit = "шт"
         )
     ),
     steps = listOf(
-        "Отварить ингредиенты",
-        "Нарезать кубиками",
-        "Заправить майонезом"
+        "Отварить картофель, морковь и яйца до готовности",
+        "Нарезать овощи и яйца кубиками",
+        "Добавить мясо, огурцы и перемешать",
+        "Заправить майонезом и подать"
     )
 )
 
