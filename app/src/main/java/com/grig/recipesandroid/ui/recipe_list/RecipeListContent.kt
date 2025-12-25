@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.recipe_list
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import com.grig.recipesandroid.domain.model.Recipe
@@ -7,9 +8,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import androidx.compose.foundation.layout.BoxScope
 
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -33,6 +36,7 @@ fun RecipeListContent(
         state = swipeRefreshState,
         onRefresh = { recipes.refresh() }
     ) {
+        // Основной список
         LazyColumn(modifier = Modifier.fillMaxSize()) {
 
             items(count = recipes.itemCount) { index ->
@@ -43,7 +47,7 @@ fun RecipeListContent(
                     }
                 }
             }
-
+            // Loader снизу (append)
             when (recipes.loadState.append) {
                 is LoadState.Loading -> {
                     item { CircularProgressIndicator() }
@@ -52,6 +56,25 @@ fun RecipeListContent(
                     item { Text("Ошибка загрузки") }
                 }
                 else -> Unit
+            }
+        }
+        // Empty State: список пуст
+        if (recipes.itemCount == 0 && recipes.loadState.refresh !is LoadState.Loading) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Text(
+                    text = "Список рецептов пуст",
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
+
+//        Error State для refresh
+        if (recipes.loadState.refresh is LoadState.Error) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Text(
+                    text = "Ошибка загрузки данных",
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         }
     }

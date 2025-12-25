@@ -1,11 +1,16 @@
 package com.grig.recipesandroid.ui.recipe_list.preview
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.grig.recipesandroid.domain.model.Category
 import com.grig.recipesandroid.domain.model.Ingredient
 import com.grig.recipesandroid.domain.model.Recipe
@@ -139,4 +144,55 @@ fun PreviewRecipeItemWithoutImage() {
         recipe = recipe,
         onClick = {}
     )
+}
+
+// -----------------------------------------------------
+//  для пустого списка рецептов и ошибки згрузки данных
+// -----------------------------------------------------
+@Preview(showBackground = true)
+@Composable
+fun PreviewRecipeListEmptyState() {
+    RecipeListContentEmptyStatePreview(
+        recipes = emptyList(),
+        onRecipeClick = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewRecipeListErrorState() {
+    // Для Preview мы можем имитировать Error через пустой список + текст
+    Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = "Ошибка загрузки данных",
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+
+
+// Вспомогательный Composable
+@Composable
+fun RecipeListContentEmptyStatePreview(
+    recipes: List<Recipe>,
+    onRecipeClick: (Recipe) -> Unit
+) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(recipes) { recipe ->
+            RecipeItem(recipe = recipe) {
+                onRecipeClick(recipe)
+            }
+        }
+        if (recipes.isEmpty()) {
+            item {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Text(
+                        text = "Список рецептов пустой",
+                        modifier = Modifier.align(Alignment.Center).padding(top = 250.dp)
+                    )
+                }
+            }
+        }
+    }
+
 }
