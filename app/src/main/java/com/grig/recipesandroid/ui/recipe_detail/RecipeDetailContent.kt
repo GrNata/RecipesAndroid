@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.grig.recipesandroid.domain.model.Recipe
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
@@ -47,6 +48,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 
 //отдельный RecipeDetailContent
 @OptIn(ExperimentalMaterial3Api::class)
@@ -135,6 +143,8 @@ fun RecipeDetailContent(
                 recipe != null -> {
 //                    Анимация шагов
                     val visibleStepsCount = remember { mutableStateOf(0) }
+                    //    делаем Hero Image Animation через AnimatedVisibility
+                    val imageVisible = remember { mutableStateOf(false) }
 
                     LaunchedEffect(recipe.steps) {
                         visibleStepsCount.value = 0
@@ -142,6 +152,8 @@ fun RecipeDetailContent(
                             delay(250) // скорость появления
                             visibleStepsCount.value = index + 1
                         }
+                        delay(80)
+                        imageVisible.value = true
                     }
 
                     LazyColumn(
@@ -172,17 +184,23 @@ fun RecipeDetailContent(
                                 recipe.image?.let {
                                     val scrollState = rememberLazyListState()
                                     val imageHeight by animateDpAsState(
-                                        targetValue = max(120.dp, 220.dp - scrollState.firstVisibleItemScrollOffset.dp)
+                                        targetValue = max(8.dp, 200.dp - scrollState.firstVisibleItemScrollOffset.dp)
                                     )
-                                    AsyncImage(
-                                        model = it,
-                                        contentDescription = recipe.name,
-                                        modifier = Modifier
-                                            .width(120.dp)
-//                                            .height(120.dp)
-                                            .height(imageHeight)
-                                            .clip(RoundedCornerShape(12.dp))
-                                    )
+//                                    Fake shared image (scale animation)
+                                    AnimatedVisibility(
+                                        visible = imageVisible.value,
+                                        enter = fadeIn() + slideInVertically { it / 2 },
+                                        exit = fadeOut()
+                                    ) {
+                                        AsyncImage(
+                                            model = it,
+                                            contentDescription = recipe.name,
+                                            modifier = Modifier
+                                                .height(120.dp)
+                                                .clip(RoundedCornerShape(16.dp))
+                                        )
+
+                                    }
 
                                     Spacer(Modifier.width(12.dp))
                                 }
@@ -215,7 +233,7 @@ fun RecipeDetailContent(
                                         )
                                     }
                                 }
-                            }
+                            }   // Row
                         }
 
                         // --- ШАГИ ---

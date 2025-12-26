@@ -55,6 +55,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:1.7.4")
     debugImplementation("androidx.compose.ui:ui-tooling:1.7.4")
 
+
+
     // Lifecycle
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
@@ -89,5 +91,11 @@ dependencies {
 //    Pull-to-refresh (возможность обновлять список рецептов жестом вниз) - вариант с Google
 //    implementation("com.google.accompanist:accompanist-swiperefresh:0.31.1-alpha")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.36.0")
+
+////    Accompanist Navigation Animation, Accompanist Shared Element
+//    implementation("com.google.accompanist:accompanist-navigation-animation:0.36.0")
+//    implementation("com.google.accompanist:accompanist-navigation-material:0.36.0")
+////    implementation("com.google.accompanist:accompanist-shared-element:0.31.5-beta")
+//    implementation("com.google.accompanist:accompanist-shared-element:0.37.3")
 
 }
