@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.filter
 import com.grig.recipesandroid.data.repository.RecipeRepository
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.intellij.lang.annotations.Flow
 
 //  ViewModel отвечает за данные (Flow<PagingData>) и их загрузку из репозитория
 open class RecipesViewModel(
@@ -34,27 +36,37 @@ open class RecipesViewModel(
         _query.value = newQuery
     }
 
+//    // 1️⃣ Flow с debounce 300ms
+//    val recipesPagingFlow: Flow<PagingData<Recipe>> = _query
+//        .debounce(300)                      // ждем 300ms после последнего ввода
+//        .distinctUntilChanged()                         // пропускаем повторные значения
+//        .flatMapLatest { q ->
+//            repository.getRecipesPaper(query = q)       // repository возвращает Pager
+//                .flow
+//        }
+//        .cachedIn(viewModelScope)
+
 //🔹 Никаких launch, loadRecipes, StateFlow
 //🔹 Paging сам управляет загрузкой
-// Paging Flow
+// Flow с debounce и фильтрацией в PagingSource
     val recipesPagingFlow = _query
-    .debounce(300)          // чтобы не фильтровать на каждый символ
-    .distinctUntilChanged()
-    .flatMapLatest { query ->
-        repository.getRecipesPaper()
+    .debounce(300)          // чтобы не фильтровать на каждый символ - ждем 300ms после последнего ввода
+    .distinctUntilChanged()             // пропускаем повторные значения
+    .flatMapLatest { q ->
+        repository.getRecipesPaper(query = q)       // передаем query в Pager/PagingSource
             .flow
-            .map { pagingData ->
-                if (query.isBlank()) {
-                    pagingData
-                } else {
-                    pagingData.filter { recipe ->
-                        recipe.name.contains(query, ignoreCase = true)
-                    }
-                }
-//                pagingData.filter { it.name.contains(query, ignoreCase = true) }
+//            .map { pagingData ->
+//                if (query.isBlank()) {
+//                    pagingData
+//                } else {
+//                    pagingData.filter { recipe ->
+//                        recipe.name.contains(query, ignoreCase = true)
+//                    }
+//                }
+////                pagingData.filter { it.name.contains(query, ignoreCase = true) }
             }
             .cachedIn(viewModelScope)
-    }
+//    }
 
 //    val recipesPagingFlow =
 //        repository.getRecipesPaper()

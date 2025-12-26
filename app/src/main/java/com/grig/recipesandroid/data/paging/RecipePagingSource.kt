@@ -10,15 +10,20 @@ import kotlinx.coroutines.flow.StateFlow
 import java.lang.Exception
 
 class RecipePagingSource(
-    private val api: RecipeApi
+    private val api: RecipeApi,
+    private val query: String
 ) : PagingSource<Int, Recipe>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Recipe> {
         return try {
             val page = params.key ?: 0
-            Log.d("PAGING", "Loading page=$page size=${params.loadSize}")
+//            Log.d("PAGING", "Loading page=$page size=${params.loadSize}")
             val response = api.getRecipes(page = page, size = params.loadSize)
-            val recipes = response.content.map { it.toDomain() }
+
+//            Фильтруем по query прямо здесь
+            val recipes = response.content
+                .map { it.toDomain() }
+                .filter { it.name.contains(query, ignoreCase = true) }
             LoadResult.Page(
                 data = recipes,
                 prevKey = if (page == 0) null else page - 1,

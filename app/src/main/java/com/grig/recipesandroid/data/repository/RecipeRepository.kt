@@ -15,10 +15,10 @@ class RecipeRepository(
 //        val response = api.getRecipes()     // PagedRecipesResponse
 //        return response.content.map { it.toDomain() }           // используем mapper
 //    }
-    fun getRecipesPaper() : Pager<Int, Recipe> {
+    fun getRecipesPaper(query: String = "") : Pager<Int, Recipe> {
         return Pager(
             config = PagingConfig(pageSize = 10),
-            pagingSourceFactory = { RecipePagingSource(api) }
+            pagingSourceFactory = { RecipePagingSource(api, query) }
         )
 //        {
 //            RecipePagingSource(api)
