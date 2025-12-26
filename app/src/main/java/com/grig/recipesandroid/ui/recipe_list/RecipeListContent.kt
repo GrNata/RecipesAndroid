@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.recipe_list
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -25,12 +26,14 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Search
@@ -39,12 +42,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 
 
 //   разделяем UI и state - RecipeListScreen
 //	RecipeListContent — чистый UI, ничего не знает про ViewModel или PagingSource
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun RecipeListContent(
     recipes: LazyPagingItems<Recipe>,
@@ -67,12 +71,32 @@ fun RecipeListContent(
                 .fillMaxSize()
                 .background(Color(0xFFF7EDE9))
             ) {
-            // 1️⃣ Список рецептов
-            items(count = recipes.itemCount) { index ->
-                val recipe = recipes[index]
-                recipe?.let {
-                    RecipeItem(recipe = it) {
-                        onRecipeClick(it.id)
+
+//            Группируем рецепты по первой категории (можно доработать для нескольких)
+            val grouped = recipes.itemSnapshotList.items
+                .flatMap { it.categories.map { cat -> cat to it } }     // создаём пары category -> recipe
+                .groupBy({ it.first }, { it.second })   // Map<Category, List<Recipe>>
+
+            grouped.forEach { (category, recipesInCategory) ->
+// Sticky Header для категории - объединение рецептов по категориям
+                stickyHeader {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFEFEFEF))
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = category.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color(0xFF123C69)
+                        )
+                    }
+                }
+//                Рецепты в категории - стандартные карточки рецептов
+                items(recipesInCategory) { recipe ->
+                    RecipeItem(recipe = recipe) {
+                        onRecipeClick(recipe.id)
                     }
                 }
             }
@@ -81,10 +105,7 @@ fun RecipeListContent(
             //        Error State для refresh (анимированный)
             val isError = recipes.loadState.refresh is LoadState.Error
             if (isError) {
-//            if (recipes.loadState.refresh is LoadState.Error) {
                 item {
-//                    val isError = recipes.loadState.refresh is LoadState.Error
-
                     AnimatedVisibility(
                         visible = true,
                         enter = fadeIn() + scaleIn(),
