@@ -62,18 +62,19 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
 
     // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     //    Для фильтрации через StateFlow и debounce можно добавить (опционально)
 //    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
     // Retrofit + Gson
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+//    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // OkHttp
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.8.3")
@@ -91,6 +92,9 @@ dependencies {
 //    Pull-to-refresh (возможность обновлять список рецептов жестом вниз) - вариант с Google
 //    implementation("com.google.accompanist:accompanist-swiperefresh:0.31.1-alpha")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.36.0")
+
+//    DataStore
+    implementation("androidx.datastore:datastore-preferences:1.1.0")
 
 ////    Accompanist Navigation Animation, Accompanist Shared Element
 //    implementation("com.google.accompanist:accompanist-navigation-animation:0.36.0")
