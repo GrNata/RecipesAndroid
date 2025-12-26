@@ -210,6 +210,21 @@ fun RecipeListContent_Empty_Preview() {
 
     RecipeListContent(
         recipes = lazyPagingItems,
+        query = "",
+        onRecipeClick = {}
+    )
+}
+
+// В Preview (Search Empty)
+@Preview(showBackground = true)
+@Composable
+fun RecipeListContent_EmptySearch_Preview() {
+    val pagingData = PagingData.from<Recipe>(emptyList())
+    val lazyPagingItems = flowOf(pagingData).collectAsLazyPagingItems()
+
+    RecipeListContent(
+        recipes = lazyPagingItems,
+        query = "суп",
         onRecipeClick = {}
     )
 }

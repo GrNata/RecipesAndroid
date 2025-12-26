@@ -23,19 +23,22 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Search
-//import androidx.compose.material.icons.outlined.SearchOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.material.icons.filled.Warning
 
 
 //   разделяем UI и state - RecipeListScreen
@@ -45,6 +48,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 @Composable
 fun RecipeListContent(
     recipes: LazyPagingItems<Recipe>,
+    query: String,
     onRecipeClick: (Long) -> Unit
 
 ) {
@@ -73,34 +77,62 @@ fun RecipeListContent(
                 }
             }
 
-            //        Error State для refresh
-            if (recipes.loadState.refresh is LoadState.Error) {
+//            -------- ???????
+            //        Error State для refresh (анимированный)
+            val isError = recipes.loadState.refresh is LoadState.Error
+            if (isError) {
+//            if (recipes.loadState.refresh is LoadState.Error) {
                 item {
-                    Text(
-                        text = "Ошибка загрузки данных",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(32.dp),
-                        textAlign = TextAlign.Center,
-                        color = Color(0xFFAC3B61)
-                    )
+//                    val isError = recipes.loadState.refresh is LoadState.Error
+
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn() + scaleIn(),
+                        exit = fadeOut()
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = null,
+                                tint = Color(0xFFAC3B61),
+                                modifier = Modifier.size(64.dp)
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "Ошибка загрузки данных",
+                                color = Color(0xFFAC3B61)
+                            )
+
+                        }
+                    }
                 }
             }
 
-            // EMPTY STATE (анимированный) - : список пуст
-            if (recipes.itemCount == 0 &&
-                recipes.loadState.refresh is LoadState.NotLoading
-            ) {
-                item {
+//            Empty Search State с анимацией
+            item {
+                val  isEmptySearch =
+                            recipes.itemCount == 0 &&
+                            recipes.loadState.refresh is LoadState.NotLoading &&
+                            query.isNotBlank()
+                val isEmptyAll =
+                        recipes.itemCount == 0 &&
+                        recipes.loadState.refresh is LoadState.NotLoading &&
+                        query.isBlank()
+
+                if (isEmptySearch || isEmptyAll) {
                     AnimatedVisibility(
-                        visible = true,
-                        enter = fadeIn() + slideInVertically { it / 2 },
+                        visible = isEmptySearch,
+                        enter = fadeIn(),
                         exit = fadeOut()
                     ) {
                         EmptyState(
-                            icon = Icons.Outlined.Search,
-                            title = "Ничего не найдено",
-                            subtitle = "Попробуй изменить запрос или обновить список"
+                            icon = if (isEmptySearch) Icons.Outlined.Search else Icons.Default.Search,
+                            title = if (isEmptySearch) "Ничего не найдено \uD83D\uDD0D" else "Список пуст",
+                            subtitle = if (isEmptySearch) "Попробуй изменить запрос" else "Добавьте рецепты, чтобы начать"
                         )
                     }
                 }
@@ -130,50 +162,6 @@ fun RecipeListContent(
                 }
                 else -> Unit
             }
-//        }
-//        // Empty State: список пуст
-//            // EMPTY STATE (анимированный)
-//        if (recipes.itemCount == 0 &&
-//            recipes.loadState.refresh is LoadState.NotLoading
-//            ) {
-//            item {
-//                AnimatedVisibility(
-//                    visible = true,
-//                    enter = fadeIn() + slideInVertically { it / 2 },
-//                    exit = fadeOut()
-//                ) {
-//                    EmptyState(
-//                        icon = Icons.Outlined.Search,
-//                        title = "Ничего не найдено",
-//                        subtitle = "Попробуй изменить запрос или обновить список"
-//                    )
-//                }
-////                Text(
-////                    text = "Ничего не найдено",
-////                    modifier = Modifier
-////                        .fillMaxWidth()
-////                        .padding(32.dp),
-////                    textAlign = TextAlign.Center,
-////                    color = Color.Gray
-////                )
-//            }
-//        }
-
-////        Error State для refresh
-//        if (recipes.loadState.refresh is LoadState.Error) {
-////            Box(modifier = Modifier.fillMaxSize()) {
-////            }
-//            item {
-//                Text(
-//                    text = "Ошибка загрузки данных",
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(32.dp),
-//                    textAlign = TextAlign.Center,
-//                    color = Color(0xFFAC3B61)
-//                )
-//            }
-//        }
         }       // LazyColumn
     }
 }

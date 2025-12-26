@@ -66,6 +66,7 @@ fun RecipeListScreen(
 
         RecipeListContent(
             recipes = recipes,
+            query = query,
             onRecipeClick = { id ->
                 onRecipeClick(id)
             }
