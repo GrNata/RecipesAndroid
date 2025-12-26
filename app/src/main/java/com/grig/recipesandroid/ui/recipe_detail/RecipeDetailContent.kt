@@ -56,6 +56,10 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 //отдельный RecipeDetailContent
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,6 +70,18 @@ fun RecipeDetailContent(
     error: String?,
     onBack: () -> Unit
 ) {
+    val scrollState = rememberLazyListState()
+
+//    val maxHeight = 120.dp
+//    val minHeight = 20.dp
+//
+//    // Считаем текущую высоту картинки в зависимости от scroll
+////    with(density) даёт доступ к функции .toDp()
+//    val density = LocalDensity.current
+//    val imageHeight by derivedStateOf {
+//        val offsetDp = with(density) { scrollState.firstVisibleItemScrollOffset.toDp() }
+//        (120.dp - offsetDp).coerceAtLeast(20.dp) // minHeight = 50.dp
+//    }
 
     Scaffold(
         topBar = {
@@ -185,7 +201,7 @@ fun RecipeDetailContent(
                                 recipe.image?.let {
                                     val scrollState = rememberLazyListState()
                                     val imageHeight by animateDpAsState(
-                                        targetValue = max(8.dp, 200.dp - scrollState.firstVisibleItemScrollOffset.dp)
+                                        targetValue = max(8.dp, 120.dp - scrollState.firstVisibleItemScrollOffset.dp)
                                     )
 //                                    Fake shared image (scale animation)
                                     AnimatedVisibility(
@@ -198,7 +214,9 @@ fun RecipeDetailContent(
                                             model = it,
                                             contentDescription = recipe.name,
                                             modifier = Modifier
-                                                .height(120.dp)
+//                                                .height(120.dp)
+//                                                .fillMaxWidth()
+                                                .height(imageHeight)
                                                 .clip(RoundedCornerShape(20.dp))
                                         )
 
@@ -269,5 +287,12 @@ fun RecipeDetailContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun Int.toDpComposable() : Dp {
+    return with(LocalDensity.current) {
+        this@toDpComposable.toDp()
     }
 }

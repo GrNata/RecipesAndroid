@@ -97,7 +97,10 @@ fun RecipeListContent(
                     }
 //                Рецепты в категории - стандартные карточки рецептов
                     items(recipesInCategory) { recipe ->
-                        RecipeItem(recipe = recipe) {
+                        RecipeItem(
+                            recipe = recipe,
+                            query = query
+                            ) {
                             onRecipeClick(recipe.id)
                         }
                     }

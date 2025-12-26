@@ -71,7 +71,10 @@ fun RecipeListContentPreview(
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(recipes) { recipe ->
-            RecipeItem(recipe = recipe) {
+            RecipeItem(
+                recipe = recipe,
+                query = ""
+                ) {
                 onRecipeClick(recipe)
             }
         }
@@ -111,6 +114,7 @@ fun PreviewRecipeItemWithImage() {
     )
     RecipeItem(
         recipe = recipe,
+        query = "",
         onClick = {}
     )
 }
@@ -146,6 +150,7 @@ fun PreviewRecipeItemWithoutImage() {
     )
     RecipeItem(
         recipe = recipe,
+        query = "",
         onClick = {}
     )
 }
@@ -183,7 +188,10 @@ fun RecipeListContentEmptyStatePreview(
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(recipes) { recipe ->
-            RecipeItem(recipe = recipe) {
+            RecipeItem(
+                recipe = recipe,
+                query = ""
+            ) {
                 onRecipeClick(recipe)
             }
         }

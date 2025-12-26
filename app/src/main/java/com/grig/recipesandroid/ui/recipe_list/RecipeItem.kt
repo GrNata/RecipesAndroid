@@ -1,10 +1,5 @@
 package com.grig.recipesandroid.ui.recipe_list
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -26,13 +20,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import com.grig.recipesandroid.domain.model.Recipe
 
 //@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun RecipeItem(
     recipe: Recipe,
+    query: String,
     onClick: () -> Unit
 ) {
     Card(
@@ -62,8 +56,10 @@ fun RecipeItem(
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
-                    Text(
+//                    Text(
+                    HighlightedText(
                         text = recipe.name,
+                        query = query,
 //                        style = MaterialTheme.typography.titleMedium,
                         style = MaterialTheme.typography.titleLarge,
 //                        color = Color(0xFFAC3B61)
