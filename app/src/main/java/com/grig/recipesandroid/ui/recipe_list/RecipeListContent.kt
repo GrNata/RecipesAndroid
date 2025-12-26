@@ -70,117 +70,125 @@ fun RecipeListContent(
                 .background(Color(0xFFF7EDE9))
             ) {
 
+            if (recipes.loadState.refresh is LoadState.Loading) {
+                items(5) { ShimmerRecipeItem() }
+            } else {
+
 //            Группируем рецепты по первой категории (можно доработать для нескольких)
-            val grouped = recipes.itemSnapshotList.items
-                .flatMap { it.categories.map { cat -> cat to it } }     // создаём пары category -> recipe
-                .groupBy({ it.first }, { it.second })   // Map<Category, List<Recipe>>
+                val grouped = recipes.itemSnapshotList.items
+                    .flatMap { it.categories.map { cat -> cat to it } }     // создаём пары category -> recipe
+                    .groupBy({ it.first }, { it.second })   // Map<Category, List<Recipe>>
 
-            grouped.forEach { (category, recipesInCategory) ->
+                grouped.forEach { (category, recipesInCategory) ->
 // Sticky Header для категории - объединение рецептов по категориям
-                stickyHeader {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color(0xFFEFEFEF))
-                            .padding(8.dp)
-                    ) {
-                        Text(
-                            text = category.name,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color(0xFF123C69)
-                        )
-                    }
-                }
-//                Рецепты в категории - стандартные карточки рецептов
-                items(recipesInCategory) { recipe ->
-                    RecipeItem(recipe = recipe) {
-                        onRecipeClick(recipe.id)
-                    }
-                }
-            }
-
-//            -------- ???????
-            //        Error State для refresh (анимированный)
-            val isError = recipes.loadState.refresh is LoadState.Error
-            if (isError) {
-                item {
-                    AnimatedVisibility(
-                        visible = true,
-                        enter = fadeIn() + scaleIn(),
-                        exit = fadeOut()
-                    ) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                    stickyHeader {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color(0xFFEFEFEF))
+                                .padding(8.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Warning,
-                                contentDescription = null,
-                                tint = Color(0xFFAC3B61),
-                                modifier = Modifier.size(64.dp)
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "Ошибка загрузки данных",
-                                color = Color(0xFFAC3B61)
+                                text = category.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color(0xFF123C69)
                             )
-
+                        }
+                    }
+//                Рецепты в категории - стандартные карточки рецептов
+                    items(recipesInCategory) { recipe ->
+                        RecipeItem(recipe = recipe) {
+                            onRecipeClick(recipe.id)
                         }
                     }
                 }
-            }
+
+//            -------- ???????
+                //        Error State для refresh (анимированный)
+                val isError = recipes.loadState.refresh is LoadState.Error
+                if (isError) {
+                    item {
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = fadeIn() + scaleIn(),
+                            exit = fadeOut()
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Warning,
+                                    contentDescription = null,
+                                    tint = Color(0xFFAC3B61),
+                                    modifier = Modifier.size(64.dp)
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    text = "Ошибка загрузки данных",
+                                    color = Color(0xFFAC3B61)
+                                )
+
+                            }
+                        }
+                    }
+                }
 
 //            Empty Search State с анимацией
-            item {
-                val  isEmptySearch =
-                            recipes.itemCount == 0 &&
-                            recipes.loadState.refresh is LoadState.NotLoading &&
-                            query.isNotBlank()
-                val isEmptyAll =
+                item {
+                    val isEmptySearch =
                         recipes.itemCount == 0 &&
-                        recipes.loadState.refresh is LoadState.NotLoading &&
-                        query.isBlank()
+                                recipes.loadState.refresh is LoadState.NotLoading &&
+                                query.isNotBlank()
+                    val isEmptyAll =
+                        recipes.itemCount == 0 &&
+                                recipes.loadState.refresh is LoadState.NotLoading &&
+                                query.isBlank()
 
-                if (isEmptySearch || isEmptyAll) {
-                    AnimatedVisibility(
-                        visible = isEmptySearch,
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ) {
-                        EmptyState(
-                            icon = if (isEmptySearch) Icons.Outlined.Search else Icons.Default.Search,
-                            title = if (isEmptySearch) "Ничего не найдено \uD83D\uDD0D" else "Список пуст",
-                            subtitle = if (isEmptySearch) "Попробуй изменить запрос" else "Добавьте рецепты, чтобы начать"
-                        )
-                    }
-                }
-            }
-
-            // Loader снизу (append) - при подгрузке следующей страницы
-            when (recipes.loadState.append) {
-                is LoadState.Loading -> {
-                    item {
-                        CircularProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                        )
-                    }
-                }
-                is LoadState.Error -> {
-                    item {
-                        Text(
-                            text = "Ошибка загрузки",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            textAlign = TextAlign.Center
+                    if (isEmptySearch || isEmptyAll) {
+                        AnimatedVisibility(
+                            visible = isEmptySearch,
+                            enter = fadeIn(),
+                            exit = fadeOut()
+                        ) {
+                            EmptyState(
+                                icon = if (isEmptySearch) Icons.Outlined.Search else Icons.Default.Search,
+                                title = if (isEmptySearch) "Ничего не найдено \uD83D\uDD0D" else "Список пуст",
+                                subtitle = if (isEmptySearch) "Попробуй изменить запрос" else "Добавьте рецепты, чтобы начать"
                             )
+                        }
                     }
                 }
-                else -> Unit
-            }
+
+                // Loader снизу (append) - при подгрузке следующей страницы
+                when (recipes.loadState.append) {
+                    is LoadState.Loading -> {
+                        item {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            )
+                        }
+                    }
+
+                    is LoadState.Error -> {
+                        item {
+                            Text(
+                                text = "Ошибка загрузки",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    else -> Unit
+                }
+
+            }       //   else
         }       // LazyColumn
     }
 }
