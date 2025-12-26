@@ -20,6 +20,9 @@ import androidx.navigation.navArgument
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import com.grig.recipesandroid.ui.auth.LoginScreen
+import com.grig.recipesandroid.ui.auth.RegisterScreen
+
 //import androidx.navigation.compose.animation.AnimatedNavHost
 
 @Composable
@@ -100,6 +103,13 @@ fun AppNavGraph(navController: NavHostController) {
                 recipeId = recipeId,
                 onBack = { navController.popBackStack() }
             )
+        }
+
+        composable("login") {
+            LoginScreen(onLoginSuccess = { navController.navigate("recipe_list") }) }
+
+        composable("register") {
+            RegisterScreen(onRegisterSuccess = { navController.navigate("recipe_list") })
         }
     }
 }
