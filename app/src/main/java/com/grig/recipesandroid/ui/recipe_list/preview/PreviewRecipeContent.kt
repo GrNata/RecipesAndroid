@@ -11,11 +11,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
 import com.grig.recipesandroid.domain.model.Category
 import com.grig.recipesandroid.domain.model.Ingredient
 import com.grig.recipesandroid.domain.model.Recipe
 import com.grig.recipesandroid.domain.model.RecipeIngredient
 import com.grig.recipesandroid.ui.recipe_list.RecipeItem
+import com.grig.recipesandroid.ui.recipe_list.RecipeListContent
+import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.flowOf
 
 @Preview(showBackground = true)
 @Composable
@@ -194,5 +198,18 @@ fun RecipeListContentEmptyStatePreview(
             }
         }
     }
+}
 
+//  PREVIEW ДЛЯ EMPTY STATE
+@Preview(showBackground = true)
+@Composable
+fun RecipeListContent_Empty_Preview() {
+    val pagingData = PagingData.from<Recipe>(emptyList())
+
+    val lazyPagingItems = flowOf( pagingData).collectAsLazyPagingItems()
+
+    RecipeListContent(
+        recipes = lazyPagingItems,
+        onRecipeClick = {}
+    )
 }
