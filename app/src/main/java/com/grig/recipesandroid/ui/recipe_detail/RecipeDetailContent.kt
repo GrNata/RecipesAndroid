@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -189,7 +190,8 @@ fun RecipeDetailContent(
 //                                    Fake shared image (scale animation)
                                     AnimatedVisibility(
                                         visible = imageVisible.value,
-                                        enter = fadeIn() + slideInVertically { it / 2 },
+//                                        enter = fadeIn() + slideInVertically { it / 2 },
+                                        enter = fadeIn(animationSpec = tween(1000)) + scaleIn(initialScale = 0.85f, animationSpec = tween(1000)),
                                         exit = fadeOut()
                                     ) {
                                         AsyncImage(
@@ -197,7 +199,7 @@ fun RecipeDetailContent(
                                             contentDescription = recipe.name,
                                             modifier = Modifier
                                                 .height(120.dp)
-                                                .clip(RoundedCornerShape(16.dp))
+                                                .clip(RoundedCornerShape(20.dp))
                                         )
 
                                     }
