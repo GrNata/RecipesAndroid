@@ -75,7 +75,8 @@ fun AppNavGraph(
                 onRecipeClick = { recipeId ->
                     Log.e("ИЩУ:", "navigate to recipe_detail/$recipeId")
                     navController.navigate("recipe_detail/${recipeId}")
-                }
+                },
+                authViewModel = authViewModel
             )
         }
         composable(
@@ -121,6 +122,7 @@ fun AppNavGraph(
                 recipeId = recipeId,
                 viewModel = detailViewModel,
                 authViewModel = authViewModel,
+                navController = navController,
                 onBack = { navController.popBackStack() }
             )
         }

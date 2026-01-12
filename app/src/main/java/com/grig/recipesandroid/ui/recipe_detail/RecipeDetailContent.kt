@@ -59,6 +59,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
+import com.grig.recipesandroid.ui.auth.AuthViewModel
 
 //отдельный RecipeDetailContent
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,7 +71,9 @@ fun RecipeDetailContent(
     loading: Boolean,
     error: String?,
     isAuthenticated: Boolean,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    navController: NavController,
+    authViewModel: AuthViewModel
 ) {
 //    val scrollState = rememberLazyListState()
 
@@ -87,54 +92,87 @@ fun RecipeDetailContent(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-//            TopAppBar(
-                title = {
-                    Text(
-                        text = recipe?.name ?: "Рецепт",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF245C5C)
-                    )
+            AppTopBar(
+                title = recipe?.name ?: "Рецепт",
+                isAuthenticated = isAuthenticated,
+                onBack = onBack,
+                onLoginClick = { navController.navigate("login") },
+                onLogoutClick = {
+                    authViewModel.logout()
                 },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
-                    }
-                },
-                actions = {
-                    if (recipe != null && isAuthenticated) {
-                        IconButton(onClick = {
-                            // Share recipe через Intent
-                            val ingredientsText = recipe.ingredients.joinToString("\n") {ri ->
-                                "- ${ri.ingredient.name}: ${ri.amount ?: ""} ${ri.unit}"
-                            }
-
-                            val steps = recipe.steps.joinToString("\n") {step ->
-                                "- ${step}"
-                            }
-                            val shareText = """
-                                Рецепт: ${recipe.name}
-                                Ингрериенты:
-                                ${ingredientsText}
-                                Шаги приготовления:
-                                ${steps}
-                            """.trimIndent()
-
-                            val intent = Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, shareText)
-                            }
-                            context.startActivity(Intent.createChooser(intent, "Поделиться рецептом"))
-                        }) {
-                            Icon(Icons.Default.Share, contentDescription = "Поделиться рецептом")
+                onShareClick = if (recipe != null && isAuthenticated) {
+                    {
+                        val ingredientsText = recipe.ingredients.joinToString("\n") { ri ->
+                            "- ${ri.ingredient.name}: ${ri.amount ?: ""} ${ri.unit}"
                         }
+
+                        val stepsText = recipe.steps.joinToString("\n") { step -> "- $step" }
+
+                        val shareText = """
+                        Рецепт: ${recipe.name}
+                        Ингредиенты:
+                        $ingredientsText
+                        Шаги приготовления:
+                        $stepsText
+                    """.trimIndent()
+
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, shareText)
+                        }
+                        context.startActivity(Intent.createChooser(intent, "Поделиться рецептом"))
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFEEE2DC)
-                )
+                } else null
             )
-        }
+
+//            CenterAlignedTopAppBar(
+////            TopAppBar(
+//                title = {
+//                    Text(
+//                        text = recipe?.name ?: "Рецепт",
+//                        style = MaterialTheme.typography.titleLarge,
+//                        color = Color(0xFF245C5C)
+//                    )
+//                },
+//                navigationIcon = {
+//                    IconButton(onClick = onBack) {
+//                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+//                    }
+//                },
+//                actions = {
+//                    if (recipe != null && isAuthenticated) {
+//                        IconButton(onClick = {
+//                            // Share recipe через Intent
+//                            val ingredientsText = recipe.ingredients.joinToString("\n") {ri ->
+//                                "- ${ri.ingredient.name}: ${ri.amount ?: ""} ${ri.unit}"
+//                            }
+//
+//                            val steps = recipe.steps.joinToString("\n") {step ->
+//                                "- ${step}"
+//                            }
+//                            val shareText = """
+//                                Рецепт: ${recipe.name}
+//                                Ингрериенты:
+//                                ${ingredientsText}
+//                                Шаги приготовления:
+//                                ${steps}
+//                            """.trimIndent()
+//
+//                            val intent = Intent(Intent.ACTION_SEND).apply {
+//                                type = "text/plain"
+//                                putExtra(Intent.EXTRA_TEXT, shareText)
+//                            }
+//                            context.startActivity(Intent.createChooser(intent, "Поделиться рецептом"))
+//                        }) {
+//                            Icon(Icons.Default.Share, contentDescription = "Поделиться рецептом")
+//                        }
+//                    }
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = Color(0xFFEEE2DC)
+//                )
+//            )
+        }       //  topBar
     ) { paddingValues ->
 
         Box(

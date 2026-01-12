@@ -129,7 +129,8 @@ class MainActivity : ComponentActivity() {
                                 onRecipeClick = { recipeId ->
                                     Log.e("ИЩУ:", "навигация к детализации рецепта id = $recipeId")
                                     navController.navigate("recipe_detail/$recipeId")
-                                }
+                                },
+                                authViewModel = authViewModel
                             )
                         }
 
@@ -155,6 +156,7 @@ class MainActivity : ComponentActivity() {
                                 recipeId = recipeId,
                                 viewModel = detailViewModel,
                                 authViewModel = authViewModel,
+                                navController = navController,
                                 onBack = { navController.popBackStack() }
                             )
 

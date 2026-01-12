@@ -41,30 +41,31 @@ private val previewRecipe = Recipe(
     )
 )
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewRecipeDetailContent() {
-    RecipesAndroidTheme {
-        RecipeDetailContent(
-            recipe = previewRecipe,
-            loading = false,
-            error = null,
-            true,
-            onBack = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewRecipeDetailContent_Empty() {
-    RecipesAndroidTheme {
-        RecipeDetailContent(
-            recipe = null,      // recipe == null
-            loading = false,
-            error = null,         // нет ошибки, но и рецепта нет
-            isAuthenticated = true,
-            onBack = {}
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewRecipeDetailContent() {
+//    RecipesAndroidTheme {
+//        RecipeDetailContent(
+//            recipe = previewRecipe,
+//            loading = false,
+//            error = null,
+//            true,
+//            navController = ,
+//            onBack = {}
+//        )
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewRecipeDetailContent_Empty() {
+//    RecipesAndroidTheme {
+//        RecipeDetailContent(
+//            recipe = null,      // recipe == null
+//            loading = false,
+//            error = null,         // нет ошибки, но и рецепта нет
+//            isAuthenticated = true,
+//            onBack = {}
+//        )
+//    }
+//}

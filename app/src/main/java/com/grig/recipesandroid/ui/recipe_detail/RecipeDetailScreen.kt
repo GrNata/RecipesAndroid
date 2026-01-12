@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 
@@ -46,6 +47,7 @@ fun RecipeDetailScreen(
     recipeId: Long,
     viewModel: RecipeDetailViewModel,
     authViewModel: AuthViewModel,
+    navController: NavController,
     onBack : () -> Unit
 ) {
 
@@ -73,7 +75,9 @@ fun RecipeDetailScreen(
         loading = loading,
         error = error,
         isAuthenticated = isAuthenticated,
-        onBack = onBack
+        onBack = onBack,
+        navController = navController,
+        authViewModel = authViewModel
     )
 
 }

@@ -22,6 +22,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +38,7 @@ import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberAsyncImagePainter
 import com.grig.recipesandroid.domain.model.Recipe
+import com.grig.recipesandroid.ui.auth.AuthViewModel
 
 //   разделяем UI и state - RecipeListContent
 // RecipeListScreen получает ViewModel и передаёт данные в RecipeListContent.
@@ -44,39 +46,83 @@ import com.grig.recipesandroid.domain.model.Recipe
 fun RecipeListScreen(
     viewModel: RecipesViewModel,
     navController: NavController,
-    onRecipeClick: (Long) -> Unit
-
+    onRecipeClick: (Long) -> Unit,
+    authViewModel: AuthViewModel
 ) {
+    val isAuthenticated by authViewModel
+        .isAuthenticated
+        .collectAsState()
+
     val recipes = viewModel.recipesPagingFlow.collectAsLazyPagingItems()
     val query by viewModel.query.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        topBar = {
+            RecipeListTopBar(
+                title = "Рецепты",
+                isAuthenticated = isAuthenticated,
+                onLoginClick = { navController.navigate("login") },
+                onLogoutClick = { authViewModel.logout() }
+            )
+        }
+    ) {
+        paddingValues ->
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
 //        поиск / фильтрация
-        OutlinedTextField(
-            value = query,
-            onValueChange = { newText ->
-                viewModel.setQuery(newText)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            placeholder = {
-                Text("Поиск рецептов…")
-            },
-            singleLine = true
-        )
+            OutlinedTextField(
+                value = query,
+                onValueChange = { newText ->
+                    viewModel.setQuery(newText)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                placeholder = {
+                    Text("Поиск рецептов…")
+                },
+                singleLine = true
+            )
 
-        RecipeListContent(
-            recipes = recipes,
-            query = query,
+            RecipeListContent(
+                recipes = recipes,
+                query = query,
 //            onRecipeClick = { id ->
 //                onRecipeClick(id)
-            onRecipeClick = { id ->
-                Log.e("ИЩУ:", "RecipeListScreen: id = ${id} navigate to recipe_detail/$id")
-                navController.navigate("recipe_detail/$id")
-            }
-        )
+                onRecipeClick = { id ->
+                    Log.e("ИЩУ:", "RecipeListScreen: id = ${id} navigate to recipe_detail/$id")
+                    navController.navigate("recipe_detail/$id")
+                }
+            )
+        }
     }
+
+//    Column(modifier = Modifier.fillMaxSize()) {
+////        поиск / фильтрация
+//        OutlinedTextField(
+//            value = query,
+//            onValueChange = { newText ->
+//                viewModel.setQuery(newText)
+//            },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(8.dp),
+//            placeholder = {
+//                Text("Поиск рецептов…")
+//            },
+//            singleLine = true
+//        )
+//
+//        RecipeListContent(
+//            recipes = recipes,
+//            query = query,
+////            onRecipeClick = { id ->
+////                onRecipeClick(id)
+//            onRecipeClick = { id ->
+//                Log.e("ИЩУ:", "RecipeListScreen: id = ${id} navigate to recipe_detail/$id")
+//                navController.navigate("recipe_detail/$id")
+//            }
+//        )
+//    }
 }
 
 

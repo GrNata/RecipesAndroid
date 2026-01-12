@@ -71,8 +71,9 @@ class AuthViewModel(
 
     fun logout() {
         viewModelScope.launch {
-            authRepository.logout()
-            _tokens.value = null
+            tokenRepository.clearTokens()
+//            authRepository.logout()
+//            _tokens.value = null
         }
     }
 }
