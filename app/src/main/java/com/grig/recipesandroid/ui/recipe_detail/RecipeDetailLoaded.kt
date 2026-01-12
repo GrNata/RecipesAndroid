@@ -83,10 +83,10 @@ fun RecipeDetailLoaded(
                 recipe.image?.let {
                     val scrollState = rememberLazyListState()
                     val imageHeight by animateDpAsState(
-//                        targetValue = max(8.dp, 120.dp - scrollState.firstVisibleItemScrollOffset.dp)
-                        targetValue = (120.dp - scrollState.firstVisibleItemScrollOffset.dp)
-                            .coerceAtLeast(8.dp),
-                        animationSpec = tween(300)
+                        targetValue = max(8.dp, 120.dp - scrollState.firstVisibleItemScrollOffset.dp)
+//                        targetValue = (120.dp - scrollState.firstVisibleItemScrollOffset.dp)
+//                            .coerceAtLeast(8.dp),
+//                        animationSpec = tween(300)
                     )
 //                                    Fake shared image (scale animation)
                     AnimatedVisibility(
