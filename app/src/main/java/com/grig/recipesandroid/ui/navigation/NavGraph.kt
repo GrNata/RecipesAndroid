@@ -4,6 +4,7 @@ package com.grig.recipesandroid.ui.navigation
 //import androidx.compose.animation.fadeOut
 //import androidx.compose.animation.slideInVertically
 //import androidx.compose.animation.slideOutVertically
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -20,13 +21,21 @@ import androidx.navigation.navArgument
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import com.grig.recipesandroid.data.api.RecipeApi
+import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
+import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModel
+import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModelFactory
 
 //import androidx.navigation.compose.animation.AnimatedNavHost
 
 @Composable
-fun AppNavGraph(navController: NavHostController) {
+fun AppNavGraph(
+    navController: NavHostController,
+//    recipeRepository: RecipeRepository
+    api: RecipeApi
+    ) {
 
 //    AnimatedNavHost(
     NavHost(
@@ -61,9 +70,9 @@ fun AppNavGraph(navController: NavHostController) {
             RecipeListScreen(
                 viewModel = viewModel<RecipesViewModel>(), // здесь создаём ViewModel
                 navController = navController,
-                onRecipeClick = { recipeId ->
-                    navController.navigate("recipe_detail/${recipeId}")
-                }
+//                onRecipeClick = { recipeId ->
+//                    navController.navigate("recipe_detail/${recipeId}")
+//                }
             )
         }
         composable(
@@ -96,11 +105,18 @@ fun AppNavGraph(navController: NavHostController) {
 //                slideOutVertically { it } + fadeOut()
 //            }
         ) { backStackEntry ->
-
             val recipeId = backStackEntry.arguments?.getLong("recipeId") ?: 0L
+
+            Log.e("ИЩУ:", "recipeId не передан!")
+
+            val detailViewModel: RecipeDetailViewModel = viewModel(
+//                factory = RecipeDetailViewModelFactory(recipeRepository, recipeId)
+                factory = RecipeDetailViewModelFactory(api = api, recipeId = recipeId)
+            )
 
             RecipeDetailScreen(
                 recipeId = recipeId,
+                viewModel = detailViewModel,
                 onBack = { navController.popBackStack() }
             )
         }

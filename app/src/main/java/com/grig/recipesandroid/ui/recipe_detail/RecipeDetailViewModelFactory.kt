@@ -6,13 +6,14 @@ import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.repository.RecipeRepository
 
 class RecipeDetailViewModelFactory(
-    private val api: RecipeApi
+    private val api: RecipeApi,
+    private val recipeId: Long
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RecipeDetailViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return RecipeDetailViewModel(api) as T
+            return RecipeDetailViewModel(api, recipeId) as T
         }
         throw IllegalArgumentException("Unknow ViewModel class")
     }

@@ -117,7 +117,8 @@ fun RecipeDetailContent(
                     CircularProgressIndicator(Modifier.align(Alignment.Center))
                 }
 
-                error != null || recipe == null -> {
+//                error != null || recipe == null -> {
+                error != null -> {
 //                     Empty / Error State
                     Column(
                         modifier = Modifier
@@ -157,135 +158,155 @@ fun RecipeDetailContent(
                     }
                 }
 
-                recipe != null -> {
-//                    Анимация шагов
-                    val visibleStepsCount = remember { mutableStateOf(0) }
-                    //    делаем Hero Image Animation через AnimatedVisibility
-                    val imageVisible = remember { mutableStateOf(false) }
+//                error != null -> {
+//                    ErrorState(onBack, error)
+//                }
 
-                    LaunchedEffect(recipe.steps) {
-                        visibleStepsCount.value = 0
-                        recipe.steps.forEachIndexed { index, _ ->
-                            delay(250) // скорость появления
-                            visibleStepsCount.value = index + 1
-                        }
-                        delay(80)
-                        imageVisible.value = true
-                    }
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
+                recipe == null -> {
+                    // ❗ ОБЯЗАТЕЛЬНО
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-
-                        // --- ОПИСАНИЕ ---
-                        item {
-                            Text(
-                                text = recipe.description ?: "",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = Color(0xFF9A3B3B),
-                                modifier = Modifier.padding(bottom = 12.dp)
-                            )
-                        }
-
-                        // --- СТРОКА: КАРТИНКА + ИНФО ---
-                        // --- ROW: картинка слева + категория и ингредиенты справа ---
-                        item {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.Top
-                            ) {
-
-                                // Картинка слева (сжимаемая)
-                                recipe.image?.let {
-                                    val scrollState = rememberLazyListState()
-                                    val imageHeight by animateDpAsState(
-                                        targetValue = max(8.dp, 120.dp - scrollState.firstVisibleItemScrollOffset.dp)
-                                    )
-//                                    Fake shared image (scale animation)
-                                    AnimatedVisibility(
-                                        visible = imageVisible.value,
-//                                        enter = fadeIn() + slideInVertically { it / 2 },
-                                        enter = fadeIn(animationSpec = tween(1000)) + scaleIn(initialScale = 0.85f, animationSpec = tween(1000)),
-                                        exit = fadeOut()
-                                    ) {
-                                        AsyncImage(
-                                            model = it,
-                                            contentDescription = recipe.name,
-                                            modifier = Modifier
-//                                                .height(120.dp)
-//                                                .fillMaxWidth()
-                                                .height(imageHeight)
-                                                .clip(RoundedCornerShape(20.dp))
-                                        )
-
-                                    }
-
-                                    Spacer(Modifier.width(12.dp))
-                                }
-
-                                // Правая колонка — ВСЕГДА
-                                Column(
-                                    modifier = Modifier.weight(1f).padding(start = 16.dp)
-                                ) {
-                                    Text(
-                                        text = "Категория: ${
-                                            recipe.categories.joinToString { it.name.lowercase() }
-                                        }",
-                                        color = Color(0xFF7E889F),
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
-
-                                    Spacer(Modifier.height(8.dp))
-
-                                    Text(
-                                        text = "Ингредиенты:",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = Color(0xFF656A77)
-                                    )
-
-                                    recipe.ingredients.forEach {
-                                        Text(
-                                            text = "• ${it.ingredient.name}: ${it.amount ?: ""} ${it.unit}",
-                                            color = Color(0xFF656A77),
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                    }
-                                }
-                            }   // Row
-                        }
-
-                        // --- ШАГИ ---
-                        item {
-                            Spacer(Modifier.height(16.dp))
-
-                            Text(
-                                text = "Шаги приготовления:",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color(0xFF123C69),
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                        }
-
-                        items(recipe.steps.size) { index ->
-                            AnimatedVisibility(
-                                visible = index < visibleStepsCount.value,
-                                enter = fadeIn() + slideInVertically(
-                                    initialOffsetY = { it / 2 }
-                                )
-                            ) {
-                                Text(
-                                    text = "${index + 1}. ${recipe.steps[index]}",
-                                    color = Color(0xFF123C69),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.padding(bottom = 4.dp)
-                                )
-                            }
-                        }
+                        Text(
+                            text = "Рецепт загружается…",
+                            color = Color.Gray
+                        )
                     }
                 }
-            }
+
+//                recipe != null -> {
+////                    Анимация шагов
+//                    val visibleStepsCount = remember { mutableStateOf(0) }
+//                    //    делаем Hero Image Animation через AnimatedVisibility
+//                    val imageVisible = remember { mutableStateOf(false) }
+//
+//                    LaunchedEffect(recipe.steps) {
+//                        visibleStepsCount.value = 0
+//                        recipe.steps.forEachIndexed { index, _ ->
+//                            delay(250) // скорость появления
+//                            visibleStepsCount.value = index + 1
+//                        }
+//                        delay(80)
+//                        imageVisible.value = true
+//                    }
+//
+////                    LazyColumn(
+////                        modifier = Modifier
+////                            .fillMaxSize()
+////                            .padding(16.dp)
+////                    ) {
+////
+////                        // --- ОПИСАНИЕ ---
+////                        item {
+////                            Text(
+////                                text = recipe.description ?: "",
+////                                style = MaterialTheme.typography.titleLarge,
+////                                color = Color(0xFF9A3B3B),
+////                                modifier = Modifier.padding(bottom = 12.dp)
+////                            )
+////                        }
+////
+////                        // --- СТРОКА: КАРТИНКА + ИНФО ---
+////                        // --- ROW: картинка слева + категория и ингредиенты справа ---
+////                        item {
+////                            Row(
+////                                modifier = Modifier.fillMaxWidth(),
+////                                verticalAlignment = Alignment.Top
+////                            ) {
+////
+////                                // Картинка слева (сжимаемая)
+////                                recipe.image?.let {
+////                                    val scrollState = rememberLazyListState()
+////                                    val imageHeight by animateDpAsState(
+////                                        targetValue = max(8.dp, 120.dp - scrollState.firstVisibleItemScrollOffset.dp)
+////                                    )
+//////                                    Fake shared image (scale animation)
+////                                    AnimatedVisibility(
+////                                        visible = imageVisible.value,
+//////                                        enter = fadeIn() + slideInVertically { it / 2 },
+////                                        enter = fadeIn(animationSpec = tween(1000)) + scaleIn(initialScale = 0.85f, animationSpec = tween(1000)),
+////                                        exit = fadeOut()
+////                                    ) {
+////                                        AsyncImage(
+////                                            model = it,
+////                                            contentDescription = recipe.name,
+////                                            modifier = Modifier
+//////                                                .height(120.dp)
+//////                                                .fillMaxWidth()
+////                                                .height(imageHeight)
+////                                                .clip(RoundedCornerShape(20.dp))
+////                                        )
+////
+////                                    }
+////
+////                                    Spacer(Modifier.width(12.dp))
+////                                }
+////
+////                                // Правая колонка — ВСЕГДА
+////                                Column(
+////                                    modifier = Modifier.weight(1f).padding(start = 16.dp)
+////                                ) {
+////                                    Text(
+////                                        text = "Категория: ${
+////                                            recipe.categories.joinToString { it.name.lowercase() }
+////                                        }",
+////                                        color = Color(0xFF7E889F),
+////                                        style = MaterialTheme.typography.bodyLarge
+////                                    )
+////
+////                                    Spacer(Modifier.height(8.dp))
+////
+////                                    Text(
+////                                        text = "Ингредиенты:",
+////                                        style = MaterialTheme.typography.bodyLarge,
+////                                        color = Color(0xFF656A77)
+////                                    )
+////
+////                                    recipe.ingredients.forEach {
+////                                        Text(
+////                                            text = "• ${it.ingredient.name}: ${it.amount ?: ""} ${it.unit}",
+////                                            color = Color(0xFF656A77),
+////                                            style = MaterialTheme.typography.bodyMedium
+////                                        )
+////                                    }
+////                                }
+////                            }   // Row
+////                        }
+////
+////                        // --- ШАГИ ---
+////                        item {
+////                            Spacer(Modifier.height(16.dp))
+////
+////                            Text(
+////                                text = "Шаги приготовления:",
+////                                style = MaterialTheme.typography.bodyLarge,
+////                                color = Color(0xFF123C69),
+////                                modifier = Modifier.padding(bottom = 8.dp)
+////                            )
+////                        }
+////
+////                        items(recipe.steps.size) { index ->
+////                            AnimatedVisibility(
+////                                visible = index < visibleStepsCount.value,
+////                                enter = fadeIn() + slideInVertically(
+////                                    initialOffsetY = { it / 2 }
+////                                )
+////                            ) {
+////                                Text(
+////                                    text = "${index + 1}. ${recipe.steps[index]}",
+////                                    color = Color(0xFF123C69),
+////                                    style = MaterialTheme.typography.bodyMedium,
+////                                    modifier = Modifier.padding(bottom = 4.dp)
+////                                )
+////                            }
+////                        }
+////                    }     //  LazyColumn
+//                }
+                else -> {
+                    RecipeDetailLoaded(recipe, onBack)
+                }
+            }   // when
         }
     }
 }

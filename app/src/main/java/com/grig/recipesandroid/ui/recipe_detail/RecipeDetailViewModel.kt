@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.recipe_detail
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -11,7 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class RecipeDetailViewModel(
-    private val api: RecipeApi
+    private val api: RecipeApi,
+    private val recipeId: Long
 ) : ViewModel() {
 
     private val _recipe = MutableStateFlow<Recipe?>(null)
@@ -23,12 +25,19 @@ class RecipeDetailViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    fun loadRecipe(id: Long) {
+    init {
+        loadRecipe()
+    }
+
+    //    fun loadRecipe(id: Long) {
+    fun loadRecipe() {
         viewModelScope.launch {
             _loading.value = true
             _error.value = null
             try {
-                val response = api.getRecipeById(id)
+                Log.d("ИЩУ:", " recipeId = ${recipeId}")
+                val response = api.getRecipeById(recipeId)
+                Log.d("ИЩУ:", " recipeId = ${recipeId}, response${response}")
                 _recipe.value = response.toDomain()
             } catch (e: Exception) {
                 _error.value = e.message ?: "Ошибка загрузки рецепта"

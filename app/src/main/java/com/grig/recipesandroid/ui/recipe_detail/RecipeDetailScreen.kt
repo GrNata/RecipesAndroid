@@ -1,6 +1,7 @@
 package com.grig.recipesandroid.ui.recipe_detail
 
 import android.R
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,17 +43,24 @@ import coil.compose.AsyncImage
 @Composable
 fun RecipeDetailScreen(
     recipeId: Long,
-    viewModel: RecipeDetailViewModel = viewModel(),
+    viewModel: RecipeDetailViewModel,
     onBack : () -> Unit
 ) {
+
+//    val recipeId = backStackEntry.arguments?.getLong("recipeId") ?: 0L
+//    Log.d("DETAIL_SCREEN", "recipeId=$recipeId")
+
     val recipe by viewModel.recipe.collectAsState()
     val loading by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
 
-    // Загружаем рецепт при первом отображении
-    LaunchedEffect(recipeId) {
-        viewModel.loadRecipe(recipeId)
-    }
+//    // Загружаем рецепт при первом отображении
+//    LaunchedEffect(recipeId) {
+////        viewModel.loadRecipe(recipeId)
+//        viewModel.loadRecipe()
+//    }
+
+
 
     RecipeDetailContent(
         recipe = recipe,

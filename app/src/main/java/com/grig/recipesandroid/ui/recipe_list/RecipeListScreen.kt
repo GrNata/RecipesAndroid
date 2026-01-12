@@ -1,6 +1,7 @@
 package com.grig.recipesandroid.ui.recipe_list
 
 import android.R
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,7 +44,8 @@ import com.grig.recipesandroid.domain.model.Recipe
 fun RecipeListScreen(
     viewModel: RecipesViewModel,
     navController: NavController,
-    onRecipeClick: (Long) -> Unit
+//    onRecipeClick: (Long) -> Unit
+
 ) {
     val recipes = viewModel.recipesPagingFlow.collectAsLazyPagingItems()
     val query by viewModel.query.collectAsState()
@@ -67,8 +69,11 @@ fun RecipeListScreen(
         RecipeListContent(
             recipes = recipes,
             query = query,
+//            onRecipeClick = { id ->
+//                onRecipeClick(id)
             onRecipeClick = { id ->
-                onRecipeClick(id)
+                Log.e("ИЩУ:", "RecipeListScreen: id = ${id} navigate to recipe_detail/$id")
+                navController.navigate("recipe_detail/$id")
             }
         )
     }
