@@ -3,17 +3,30 @@ package com.grig.recipesandroid.ui.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.grig.recipesandroid.data.local.TokenRepository
 import com.grig.recipesandroid.data.model.AuthTokens
 import com.grig.recipesandroid.data.model.LoginRequest
 import com.grig.recipesandroid.data.model.RegisterRequest
 import com.grig.recipesandroid.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val tokenRepository: TokenRepository
 ) : ViewModel() {
+
+    val isAuthenticated: StateFlow<Boolean> = tokenRepository.accessToken
+        .map { it != null }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false
+        )
 
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading

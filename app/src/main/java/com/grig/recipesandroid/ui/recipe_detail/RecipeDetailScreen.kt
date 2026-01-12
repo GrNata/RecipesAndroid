@@ -38,14 +38,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.grig.recipesandroid.ui.auth.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeDetailScreen(
     recipeId: Long,
     viewModel: RecipeDetailViewModel,
+    authViewModel: AuthViewModel,
     onBack : () -> Unit
 ) {
+
+    val isAuthenticated by authViewModel
+        .isAuthenticated
+        .collectAsState()
 
 //    val recipeId = backStackEntry.arguments?.getLong("recipeId") ?: 0L
 //    Log.d("DETAIL_SCREEN", "recipeId=$recipeId")
@@ -66,6 +72,7 @@ fun RecipeDetailScreen(
         recipe = recipe,
         loading = loading,
         error = error,
+        isAuthenticated = isAuthenticated,
         onBack = onBack
     )
 

@@ -44,7 +44,7 @@ import com.grig.recipesandroid.domain.model.Recipe
 fun RecipeListScreen(
     viewModel: RecipesViewModel,
     navController: NavController,
-//    onRecipeClick: (Long) -> Unit
+    onRecipeClick: (Long) -> Unit
 
 ) {
     val recipes = viewModel.recipesPagingFlow.collectAsLazyPagingItems()

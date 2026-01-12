@@ -23,6 +23,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.repository.RecipeRepository
+import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModel
@@ -34,7 +35,8 @@ import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModelFactory
 fun AppNavGraph(
     navController: NavHostController,
 //    recipeRepository: RecipeRepository
-    api: RecipeApi
+    api: RecipeApi,
+    authViewModel: AuthViewModel
     ) {
 
 //    AnimatedNavHost(
@@ -70,9 +72,10 @@ fun AppNavGraph(
             RecipeListScreen(
                 viewModel = viewModel<RecipesViewModel>(), // здесь создаём ViewModel
                 navController = navController,
-//                onRecipeClick = { recipeId ->
-//                    navController.navigate("recipe_detail/${recipeId}")
-//                }
+                onRecipeClick = { recipeId ->
+                    Log.e("ИЩУ:", "navigate to recipe_detail/$recipeId")
+                    navController.navigate("recipe_detail/${recipeId}")
+                }
             )
         }
         composable(
@@ -117,6 +120,7 @@ fun AppNavGraph(
             RecipeDetailScreen(
                 recipeId = recipeId,
                 viewModel = detailViewModel,
+                authViewModel = authViewModel,
                 onBack = { navController.popBackStack() }
             )
         }

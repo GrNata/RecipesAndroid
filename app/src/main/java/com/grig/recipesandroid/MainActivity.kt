@@ -33,9 +33,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.OkHttpClient
 
 class MainActivity : ComponentActivity() {
+    private lateinit var recipeApi: RecipeApi
+    private lateinit var authApi: AuthApi
+    private lateinit var tokenRepository: TokenRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
 
         // DataStore для хранения токенов
         val tokenRepository = TokenRepository(applicationContext)
@@ -61,6 +65,8 @@ class MainActivity : ComponentActivity() {
 //        val api = retrofit.create(com.grig.recipesandroid.data.api.RecipeApi::class.java)
 //        val repository = com.grig.recipesandroid.data.repository.RecipeRepository(api)
 //        val viewModel = RecipesViewModel(repository)
+
+//        API
         val authApi = retrofit.create(AuthApi::class.java)
         val recipeApi = retrofit.create(RecipeApi::class.java)
 
@@ -68,31 +74,36 @@ class MainActivity : ComponentActivity() {
         val recipeRepository = RecipeRepository(recipeApi)
 
         setContent {
-            val navController = rememberNavController()
-
-            Log.e("ИЩУ:", "MainActivity: NavHost создаётся, startDestination=recipe_list")
-
-            // Создаём ViewModels
-            val authViewModel: AuthViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
-                override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-                    @Suppress("UNCHECKED_CAST")
-                    return AuthViewModel(authRepository) as T
-                }
-            })
-
-            val recipesViewModel: RecipesViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
-                override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-                    @Suppress("UNCHECKED_CAST")
-                    return RecipesViewModel(recipeRepository) as T
-                }
-            })
-
             RecipesAndroidTheme {
+                val navController = rememberNavController()
+
+                Log.e("ИЩУ:", "MainActivity: NavHost создаётся, startDestination=recipe_list")
+
+                // Создаём ViewModels
+                val authViewModel: AuthViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
+                    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                        @Suppress("UNCHECKED_CAST")
+                        return AuthViewModel(
+                            authRepository,
+                            tokenRepository
+                            ) as T
+                    }
+                })
+
+                val recipesViewModel: RecipesViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
+                    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                        @Suppress("UNCHECKED_CAST")
+                        return RecipesViewModel(recipeRepository) as T
+                    }
+                })
+
+//            RecipesAndroidTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
 
                     NavHost(
                         navController = navController,
-                        startDestination = "login"
+//                        startDestination = "login"
+                        startDestination = "recipe_list"
                     ) {
                         // Login screen
                         composable("login") {
@@ -115,9 +126,10 @@ class MainActivity : ComponentActivity() {
                             RecipeListScreen(
                                 viewModel = recipesViewModel,
                                 navController = navController,
-//                                onRecipeClick = { recipeId ->
-//                                    navController.navigate("recipe_detail/$recipeId")
-//                                }
+                                onRecipeClick = { recipeId ->
+                                    Log.e("ИЩУ:", "навигация к детализации рецепта id = $recipeId")
+                                    navController.navigate("recipe_detail/$recipeId")
+                                }
                             )
                         }
 
@@ -142,6 +154,7 @@ class MainActivity : ComponentActivity() {
                             RecipeDetailScreen(
                                 recipeId = recipeId,
                                 viewModel = detailViewModel,
+                                authViewModel = authViewModel,
                                 onBack = { navController.popBackStack() }
                             )
 

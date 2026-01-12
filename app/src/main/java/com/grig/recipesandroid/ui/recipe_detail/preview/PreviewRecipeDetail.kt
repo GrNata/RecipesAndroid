@@ -49,6 +49,7 @@ fun PreviewRecipeDetailContent() {
             recipe = previewRecipe,
             loading = false,
             error = null,
+            true,
             onBack = {}
         )
     }
@@ -62,6 +63,7 @@ fun PreviewRecipeDetailContent_Empty() {
             recipe = null,      // recipe == null
             loading = false,
             error = null,         // нет ошибки, но и рецепта нет
+            isAuthenticated = true,
             onBack = {}
         )
     }

@@ -33,7 +33,8 @@ class TokenRepository(
     suspend fun clearTokens() {
         context.dataStore.edit { prefs ->
             prefs.remove(TokenStorage.ACCESS_TOKEN_KEY)
-            prefs[TokenStorage.REFRESH_TOKEN_KEY]
+            prefs.remove(TokenStorage.REFRESH_TOKEN_KEY)
+//            prefs[TokenStorage.REFRESH_TOKEN_KEY]
         }
     }
 }

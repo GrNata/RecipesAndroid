@@ -14,10 +14,20 @@ class AuthInterceptor(
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val oroginalRequest = chain.request()
+        val originalRequest = chain.request()
+        val url = originalRequest.url.toString()
+//        val accessToken = runBlocking { tokenRepository.accessToken.first() }
+
+        // публичные эндпоинты
+        if (url.contains("/api/recipes")) {
+            return chain.proceed(originalRequest)
+        }
+
+        // Для защищённых эндпоинтов добавляем токен, если он есть
+
         val accessToken = runBlocking { tokenRepository.accessToken.first() }
 
-        val requestWithToken = oroginalRequest.newBuilder()
+        val requestWithToken = originalRequest.newBuilder()
             .addHeader("Authorization", "Bearer $accessToken")
             .build()
 

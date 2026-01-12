@@ -67,6 +67,7 @@ fun RecipeDetailContent(
     recipe: Recipe?,
     loading: Boolean,
     error: String?,
+    isAuthenticated: Boolean,
     onBack: () -> Unit
 ) {
 //    val scrollState = rememberLazyListState()
@@ -101,7 +102,7 @@ fun RecipeDetailContent(
                     }
                 },
                 actions = {
-                    if (recipe != null) {
+                    if (recipe != null && isAuthenticated) {
                         IconButton(onClick = {
                             // Share recipe через Intent
                             val ingredientsText = recipe.ingredients.joinToString("\n") {ri ->
