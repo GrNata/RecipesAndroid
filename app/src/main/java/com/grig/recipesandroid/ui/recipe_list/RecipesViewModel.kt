@@ -1,6 +1,7 @@
 package com.grig.recipesandroid.ui.recipe_list
 
 import android.util.Log
+import androidx.compose.runtime.saveable.Saver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -8,9 +9,11 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.filter
+import com.grig.recipesandroid.data.model.dto.Favorite
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.model.dto.RecipeDto
 import com.grig.recipesandroid.data.paging.RecipePagingSource
+import com.grig.recipesandroid.data.repository.FavoritesRepository
 import com.grig.recipesandroid.domain.model.Recipe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,9 +28,12 @@ import org.intellij.lang.annotations.Flow
 
 //  ViewModel отвечает за данные (Flow<PagingData>) и их загрузку из репозитория
 open class RecipesViewModel(
-    private val repository: RecipeRepository
+    private val repository: RecipeRepository,
+    private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
 
+    private val _favorites = MutableStateFlow<Set<Long>>(emptySet())
+    val favorites: StateFlow<Set<Long>> = _favorites
 
     private val _query = MutableStateFlow("")       // _query — хранит текущий текст поиска
     val query: StateFlow<String> = _query               // setQuery() — вызывается при вводе в текстовое поле
@@ -36,16 +42,7 @@ open class RecipesViewModel(
         _query.value = newQuery
     }
 
-//    // 1️⃣ Flow с debounce 300ms
-//    val recipesPagingFlow: Flow<PagingData<Recipe>> = _query
-//        .debounce(300)                      // ждем 300ms после последнего ввода
-//        .distinctUntilChanged()                         // пропускаем повторные значения
-//        .flatMapLatest { q ->
-//            repository.getRecipesPaper(query = q)       // repository возвращает Pager
-//                .flow
-//        }
-//        .cachedIn(viewModelScope)
-
+//    Поиск
 //🔹 Никаких launch, loadRecipes, StateFlow
 //🔹 Paging сам управляет загрузкой
 // Flow с debounce и фильтрацией в PagingSource
@@ -55,21 +52,67 @@ open class RecipesViewModel(
     .flatMapLatest { q ->
         repository.getRecipesPaper(query = q)       // передаем query в Pager/PagingSource
             .flow
-//            .map { pagingData ->
-//                if (query.isBlank()) {
-//                    pagingData
-//                } else {
-//                    pagingData.filter { recipe ->
-//                        recipe.name.contains(query, ignoreCase = true)
-//                    }
-//                }
-////                pagingData.filter { it.name.contains(query, ignoreCase = true) }
             }
             .cachedIn(viewModelScope)
-//    }
 
-//    val recipesPagingFlow =
-//        repository.getRecipesPaper()
-//            .flow
-//            .cachedIn(viewModelScope)
+//    Загрузка избранных при инициализации
+    init {
+    Log.d("СЕРДЦЕ - 7", "Загрузка избранных при инициализации")
+        viewModelScope.launch {
+            try {
+                val favs = favoritesRepository.getFavorites()
+//                val favsRecipeId = favs.map { it as Long}.toSet()
+                _favorites.value = favs
+//                _favorites.value = favsRecipeId
+                Log.d("СЕРДЦЕ - 6", "Favorite.Value = ${favs}")
+            } catch (e: Exception) {
+                // Игнорируем ошибки, например при неавторизованном пользователе
+                _favorites.value = emptySet()
+//                Log.d("СЕРДЦЕ - 8", "Error - Загрузка избранных при инициализации - emtySet()")
+                Log.d("СЕРДЦЕ - 8", "loadFavorites error", e)
+            }
+        }
+    }
+
+//    Переключение избранного
+    fun toggleFavorite(recipeId: Long) {
+        viewModelScope.launch {
+//            if (_favorites.value.contains(recipeId as Favorite)) {
+            if (_favorites.value.contains(recipeId)) {
+                Log.d("СЕРДЦЕ - 5", "Favorite.Value = ${_favorites.value}")
+                try {
+                    favoritesRepository.removeFromFavorites(recipeId)
+                    _favorites.value = _favorites.value - recipeId
+                } catch (e: Exception) {
+                    // обработка ошибок, например Toast
+                }
+            } else {
+                try {
+                    favoritesRepository.addToFavorites(recipeId)
+                    _favorites.value = _favorites.value + recipeId
+                } catch (e: Exception) {
+                    // обработка ошибок, например Toast
+                }
+            }
+        }
+    }
+
+//    для подгрузки favorite для вновь залогиненого
+    fun loadFavorites() {
+        viewModelScope.launch {
+            try {
+                val favs = favoritesRepository.getFavorites()
+                _favorites.value = favs
+                Log.d("СЕРДЦЕ - 67", "Favorite.Value = ${favs}")
+            } catch (e: Exception) {
+                _favorites.value = emptySet()
+//                Log.d("СЕРДЦЕ - 68", "Error - Загрузка избранных при инициализации - emtySet()")
+                Log.d("СЕРДЦЕ - 68", "loadFavorites error", e)
+            }
+        }
+    }
+
+    fun clearFavorites() {
+        _favorites.value = emptySet()
+    }
 }

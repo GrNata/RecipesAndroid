@@ -4,6 +4,7 @@ import com.grig.recipesandroid.data.api.AuthApi
 import com.grig.recipesandroid.data.local.TokenRepository
 import com.grig.recipesandroid.data.model.AuthTokens
 import com.grig.recipesandroid.data.model.LoginRequest
+import com.grig.recipesandroid.data.model.RefreshTokenRequest
 import com.grig.recipesandroid.data.model.RegisterRequest
 import kotlinx.coroutines.flow.first
 
@@ -26,7 +27,8 @@ class AuthRepository(
 
     suspend fun refreshToken(): String {
         val refresh = tokenRepository.refreshToken.first() ?: throw Exception("No refresh token")
-        val response = api.refreshToken(refresh)
+        val response = api.refreshToken(RefreshTokenRequest(refresh))
+//        val response = api.refreshToken(refresh)
         tokenRepository.saveTokens(response.accessToken, response.refreshToken)
         return response.accessToken
     }

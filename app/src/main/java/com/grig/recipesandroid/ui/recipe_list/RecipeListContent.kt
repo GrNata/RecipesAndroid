@@ -41,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material.icons.filled.Warning
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 //   разделяем UI и state - RecipeListScreen
@@ -49,8 +50,11 @@ import androidx.compose.material.icons.filled.Warning
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun RecipeListContent(
+    viewModel: RecipesViewModel,
     recipes: LazyPagingItems<Recipe>,
     query: String,
+    favorites: Set<Long>,
+    onFavoriteClick: (Long) -> Unit,
     onRecipeClick: (Long) -> Unit
 
 ) {
@@ -97,11 +101,23 @@ fun RecipeListContent(
                     }
 //                Рецепты в категории - стандартные карточки рецептов
                     items(recipesInCategory) { recipe ->
+                        val fav = favorites
                         RecipeItem(
+                            viewModel = viewModel,
                             recipe = recipe,
-                            query = query
-                            ) {
-                            onRecipeClick(recipe.id)
+                            query = query,
+                            isFavorite = favorites.contains(recipe.id),
+//                            onFavoriteClick = { onFavoriteClick(recipe.id) },
+                            onFavoriteClick = { viewModel.toggleFavorite(recipe.id) },
+                            onClick = { onRecipeClick(recipe.id) }
+                        )
+//                            ) {
+//                            onRecipeClick(recipe.id)
+//                        }
+
+                        Log.d("СЕРДЦЕ - 3", "Favorite = $favorites")
+                        for (l in favorites) {
+                            Log.d("СЕРДЦЕ - 2", "Favorite-ID = $l, recipeId = ${recipe.id}")
                         }
                     }
                 }

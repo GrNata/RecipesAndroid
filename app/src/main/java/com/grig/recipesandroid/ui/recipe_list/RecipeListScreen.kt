@@ -26,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -49,12 +50,31 @@ fun RecipeListScreen(
     onRecipeClick: (Long) -> Unit,
     authViewModel: AuthViewModel
 ) {
-    val isAuthenticated by authViewModel
-        .isAuthenticated
-        .collectAsState()
+    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
+    val accessToken by authViewModel.accessToken.collectAsState(initial = null)
+    Log.d("СЕРДЦЕ - TOKEN RecipeListScreen", "accessToken = ${accessToken?.take(10)}")
+
+    val favoritesSet by viewModel.favorites.collectAsState()
 
     val recipes = viewModel.recipesPagingFlow.collectAsLazyPagingItems()
     val query by viewModel.query.collectAsState()
+
+    LaunchedEffect(accessToken) {
+        if (!accessToken.isNullOrBlank()) {
+            viewModel.loadFavorites()
+        } else {
+            viewModel.clearFavorites()
+        }
+    }
+
+//    LaunchedEffect(isAuthenticated) {
+//        if (isAuthenticated) {
+//            viewModel.loadFavorites()
+//        } else {
+//            viewModel.clearFavorites()
+//        }
+//    }
+
 
     Scaffold(
         topBar = {
@@ -83,11 +103,14 @@ fun RecipeListScreen(
                 singleLine = true
             )
 
+            Log.d("СЕРДЦЕ - 4", "FavoriteSet = $favoritesSet")
+
             RecipeListContent(
+                viewModel = viewModel,
                 recipes = recipes,
                 query = query,
-//            onRecipeClick = { id ->
-//                onRecipeClick(id)
+                favorites = favoritesSet as Set<Long>,       //  StateFlow из RecipesViewModel
+                onFavoriteClick = { recipeId -> viewModel.toggleFavorite(recipeId) },
                 onRecipeClick = { id ->
                     Log.e("ИЩУ:", "RecipeListScreen: id = ${id} navigate to recipe_detail/$id")
                     navController.navigate("recipe_detail/$id")
@@ -96,33 +119,6 @@ fun RecipeListScreen(
         }
     }
 
-//    Column(modifier = Modifier.fillMaxSize()) {
-////        поиск / фильтрация
-//        OutlinedTextField(
-//            value = query,
-//            onValueChange = { newText ->
-//                viewModel.setQuery(newText)
-//            },
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(8.dp),
-//            placeholder = {
-//                Text("Поиск рецептов…")
-//            },
-//            singleLine = true
-//        )
-//
-//        RecipeListContent(
-//            recipes = recipes,
-//            query = query,
-////            onRecipeClick = { id ->
-////                onRecipeClick(id)
-//            onRecipeClick = { id ->
-//                Log.e("ИЩУ:", "RecipeListScreen: id = ${id} navigate to recipe_detail/$id")
-//                navController.navigate("recipe_detail/$id")
-//            }
-//        )
-//    }
 }
 
 

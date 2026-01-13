@@ -28,6 +28,8 @@ class AuthViewModel(
             initialValue = false
         )
 
+    val accessToken = tokenRepository.accessToken
+
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 

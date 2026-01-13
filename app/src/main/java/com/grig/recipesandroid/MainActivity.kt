@@ -18,6 +18,7 @@ import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.local.TokenRepository
 import com.grig.recipesandroid.data.network.AuthInterceptor
 import com.grig.recipesandroid.data.repository.AuthRepository
+import com.grig.recipesandroid.data.repository.FavoritesRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.auth.LoginScreen
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var recipeApi: RecipeApi
     private lateinit var authApi: AuthApi
     private lateinit var tokenRepository: TokenRepository
+    private lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,35 +46,58 @@ class MainActivity : ComponentActivity() {
         // DataStore для хранения токенов
         val tokenRepository = TokenRepository(applicationContext)
 
-        // OkHttpClient с interceptor для авторизации
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(tokenRepository))
-            .build()
+//        // OkHttpClient с interceptor для авторизации
+//        val okHttpClient = OkHttpClient.Builder()
+//            .addInterceptor(AuthInterceptor(tokenRepository, authRepository))
+//            .build()
+//
+//        // Настройка Retrofit - Retrofit для API
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("http://10.0.2.2:9090/") // для эмулятора Android - сервер RestApiRecipes
+//
+//            .client(okHttpClient)
+////            Реальное устройство Android:
+////	1.	Узнай IP компьютера в локальной сети, например 192.168.1.100.
+////	2.	В baseUrl напиши:
+////            .baseUrl("http://192.168.1.100:8080/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+////        API
+//        val authApi = retrofit.create(AuthApi::class.java)
 
-
-        // Настройка Retrofit - Retrofit для API
+        // 2. AuthApi и RecipeApi через Retrofit
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:9090/") // для эмулятора Android - сервер RestApiRecipes
-
-            .client(okHttpClient)
-//            Реальное устройство Android:
-//	1.	Узнай IP компьютера в локальной сети, например 192.168.1.100.
-//	2.	В baseUrl напиши:
-//            .baseUrl("http://192.168.1.100:8080/")
+            .baseUrl("http://10.0.2.2:9090/") // эмулятор Android
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-//        val api = retrofit.create(com.grig.recipesandroid.data.api.RecipeApi::class.java)
-//        val repository = com.grig.recipesandroid.data.repository.RecipeRepository(api)
-//        val viewModel = RecipesViewModel(repository)
+        authApi = retrofit.create(AuthApi::class.java)
+        val recipeApiTemp = retrofit.create(RecipeApi::class.java)
 
-//        API
-        val authApi = retrofit.create(AuthApi::class.java)
-        val recipeApi = retrofit.create(RecipeApi::class.java)
+        // 3. AuthRepository
+        authRepository = AuthRepository(authApi, tokenRepository)
 
-        val authRepository = AuthRepository(authApi, tokenRepository)
+        // 4. OkHttpClient с AuthInterceptor
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor(tokenRepository, authRepository))
+            .build()
+
+        // 5. RecipeApi с клиентом, который знает про токены
+//        val recipeApi = retrofit.create(RecipeApi::class.java)
+        recipeApi = Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:9090/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(RecipeApi::class.java)
+
+//        val authRepository = AuthRepository(authApi, tokenRepository)
+        // 6. Repositories
         val recipeRepository = RecipeRepository(recipeApi)
+        val favoritesRepository = FavoritesRepository(recipeApi, tokenRepository)
 
+        // 7. Compose и NavHost
         setContent {
             RecipesAndroidTheme {
                 val navController = rememberNavController()
@@ -93,7 +118,7 @@ class MainActivity : ComponentActivity() {
                 val recipesViewModel: RecipesViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
                     override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
                         @Suppress("UNCHECKED_CAST")
-                        return RecipesViewModel(recipeRepository) as T
+                        return RecipesViewModel(recipeRepository, favoritesRepository) as T
                     }
                 })
 

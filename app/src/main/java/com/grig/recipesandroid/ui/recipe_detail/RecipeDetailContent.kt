@@ -124,57 +124,8 @@ fun RecipeDetailContent(
                     }
                 } else null
             )
-
-//            CenterAlignedTopAppBar(
-////            TopAppBar(
-//                title = {
-//                    Text(
-//                        text = recipe?.name ?: "Рецепт",
-//                        style = MaterialTheme.typography.titleLarge,
-//                        color = Color(0xFF245C5C)
-//                    )
-//                },
-//                navigationIcon = {
-//                    IconButton(onClick = onBack) {
-//                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
-//                    }
-//                },
-//                actions = {
-//                    if (recipe != null && isAuthenticated) {
-//                        IconButton(onClick = {
-//                            // Share recipe через Intent
-//                            val ingredientsText = recipe.ingredients.joinToString("\n") {ri ->
-//                                "- ${ri.ingredient.name}: ${ri.amount ?: ""} ${ri.unit}"
-//                            }
-//
-//                            val steps = recipe.steps.joinToString("\n") {step ->
-//                                "- ${step}"
-//                            }
-//                            val shareText = """
-//                                Рецепт: ${recipe.name}
-//                                Ингрериенты:
-//                                ${ingredientsText}
-//                                Шаги приготовления:
-//                                ${steps}
-//                            """.trimIndent()
-//
-//                            val intent = Intent(Intent.ACTION_SEND).apply {
-//                                type = "text/plain"
-//                                putExtra(Intent.EXTRA_TEXT, shareText)
-//                            }
-//                            context.startActivity(Intent.createChooser(intent, "Поделиться рецептом"))
-//                        }) {
-//                            Icon(Icons.Default.Share, contentDescription = "Поделиться рецептом")
-//                        }
-//                    }
-//                },
-//                colors = TopAppBarDefaults.topAppBarColors(
-//                    containerColor = Color(0xFFEEE2DC)
-//                )
-//            )
         }       //  topBar
     ) { paddingValues ->
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -243,10 +194,3 @@ fun RecipeDetailContent(
         }
     }
 }
-
-//@Composable
-//fun Int.toDpComposable() : Dp {
-//    return with(LocalDensity.current) {
-//        this@toDpComposable.toDp()
-//    }
-//}

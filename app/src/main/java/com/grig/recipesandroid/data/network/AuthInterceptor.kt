@@ -1,6 +1,8 @@
 package com.grig.recipesandroid.data.network
 
+import android.util.Log
 import com.grig.recipesandroid.data.local.TokenRepository
+import com.grig.recipesandroid.data.repository.AuthRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -10,32 +12,73 @@ import okhttp3.Response
 //Этот Interceptor подключается при создании Retrofit:
 
 class AuthInterceptor(
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val authRepository: AuthRepository
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val url = originalRequest.url.toString()
-//        val accessToken = runBlocking { tokenRepository.accessToken.first() }
-
-        // публичные эндпоинты
-        if (url.contains("/api/recipes")) {
-            return chain.proceed(originalRequest)
-        }
 
         // Для защищённых эндпоинтов добавляем токен, если он есть
-
         val accessToken = runBlocking { tokenRepository.accessToken.first() }
 
+//        Публичные эндпоинты — без токена
+        val isPublicEndpoint =
+                    url.contains("/api/recipes") ||
+                    url.contains("/api/recipe/") ||
+                    url.contains("/api/auth/")
+
+        // 👉 если public — всегда без токена
+        if (isPublicEndpoint) {
+            Log.d("СЕРДЦЕ - 53", "PUBLIC $url")
+            return chain.proceed(originalRequest)
+        }
+        // 👉 если НЕ public, но токена нет — тоже без токена (сервер вернёт 401)
+        if (accessToken.isNullOrBlank()) {
+            Log.d("СЕРДЦЕ - 50", "NO TOKEN $url")
+            return chain.proceed(originalRequest)
+        }
+        // 👉 защищённый эндпоинт + токен  - Добавляем токен в заголовок
         val requestWithToken = originalRequest.newBuilder()
             .addHeader("Authorization", "Bearer $accessToken")
             .build()
+        Log.d("СЕРДЦЕ - HTTP AuthInterceptor", "URL=${requestWithToken.url} headers=${requestWithToken.headers}")
 
-        val response = chain.proceed(requestWithToken)
+        var response = chain.proceed(requestWithToken)
 
-        if (response.code == 401) {
+
+// Если accessToken невалидный / истёк
+//        if (response.code == 401 || response.code == 403) {
+        if (response.code == 401 && originalRequest.headers("X-Refresh") == null) {
             // TODO: здесь можно синхронно обновить accessToken через refreshToken и повторить запрос
+            // попробуем обновить токен через refreshToken
+            val newAccessToken = runBlocking {
+                try {
+                    authRepository.refreshToken()       // возвращает новый accessToken и сохраняет его
+                } catch (e: Exception) {
+                    Log.e("СЕРДЦЕ - токена", "ошибка обновления токена e: $e")
+                    null
+                }
+            }
+            Log.i("СЕРДЦЕ - обновление токена", "newAccessToken: $newAccessToken")
+
+            if (!newAccessToken.isNullOrBlank()) {
+                // повторяем запрос с новым токеном
+                val newRequest = originalRequest.newBuilder()
+                    .addHeader("Authorization", "Bearer $newAccessToken")
+                    .build()
+                Log.d("СЕРДЦЕ - HTTP NEW Token", "URL=${newRequest.url} headers=${newRequest.headers}")
+
+                response.close()  // закрываем старый response
+
+                response = chain.proceed(newRequest)
+            }
+            // если обновить не получилось — отдаем оригинальный ответ (401/403)
         }
+
+        Log.d("СЕРДЦЕ - 55", "URL=$url token=${accessToken?.take(10)}")
+
         return response
     }
 }

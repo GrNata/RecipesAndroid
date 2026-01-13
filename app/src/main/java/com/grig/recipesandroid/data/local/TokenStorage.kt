@@ -1,6 +1,7 @@
 package com.grig.recipesandroid.data.local
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -24,6 +25,7 @@ class TokenRepository(
         .map { it[TokenStorage.REFRESH_TOKEN_KEY] }
 
     suspend fun saveTokens(access: String, refresh: String) {
+        Log.d("СЕРДЦЕ - TOKEN", "SAVE access=${access.take(20)}")
         context.dataStore.edit { pefs ->
             pefs[TokenStorage.ACCESS_TOKEN_KEY] = access
             pefs[TokenStorage.REFRESH_TOKEN_KEY] = refresh
