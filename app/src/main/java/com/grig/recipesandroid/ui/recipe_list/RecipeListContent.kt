@@ -61,6 +61,8 @@ fun RecipeListContent(
     query: String,
     favorites: Set<Long>,
     onFavoriteClick: (Long) -> Unit,
+    showOnlyFavorites: Boolean,
+    onToggleFavoritesFilter: () -> Unit,
     onRecipeClick: (Long) -> Unit
 
 ) {
@@ -77,12 +79,20 @@ fun RecipeListContent(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
-//LazyColumn / SwipeRefresh тут
 
+//LazyColumn / SwipeRefresh тут
         SwipeRefresh(
             state = swipeRefreshState,
             onRefresh = { recipes.refresh() }
         ) {
+
+            val filteredRecipes =
+                if (showOnlyFavorites) {
+                recipes.itemSnapshotList.items.filter { favorites.contains(it.id) }
+                } else {
+                    recipes.itemSnapshotList.items
+                }
+
             // Основной список
             LazyColumn(
                 modifier = Modifier
@@ -95,9 +105,17 @@ fun RecipeListContent(
                 } else {
 
 //            Группируем рецепты по первой категории (можно доработать для нескольких)
-                    val grouped = recipes.itemSnapshotList.items
-                        .flatMap { it.categories.map { cat -> cat to it } }     // создаём пары category -> recipe
-                        .groupBy({ it.first }, { it.second })   // Map<Category, List<Recipe>>
+//                    val grouped = recipes.itemSnapshotList.items
+//                        .flatMap { it.categories.map { cat -> cat to it } }     // создаём пары category -> recipe
+//                        .groupBy({ it.first }, { it.second })   // Map<Category, List<Recipe>>
+                    val grouped = filteredRecipes
+                        .flatMap { recipe ->
+                            recipe.categories.map { category ->  category to recipe }       // создаём пары category -> recipe
+                        }
+                        .groupBy(
+                            keySelector = { it.first },
+                            valueTransform = { it.second }
+                        )
 
                     grouped.forEach { (category, recipesInCategory) ->
 // Sticky Header для категории - объединение рецептов по категориям

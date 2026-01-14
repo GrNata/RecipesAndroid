@@ -2,10 +2,15 @@ package com.grig.recipesandroid.ui.recipe_list
 
 
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -16,7 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -40,6 +48,9 @@ fun RecipeListScreen(
 
     val recipes = viewModel.recipesPagingFlow.collectAsLazyPagingItems()
     val query by viewModel.query.collectAsState()
+
+//    фильтрация избранных
+    var showOnlyFavorites by remember { mutableStateOf(false) }
 
     LaunchedEffect(accessToken) {
         if (!accessToken.isNullOrBlank()) {
@@ -78,37 +89,55 @@ fun RecipeListScreen(
                 onLogoutClick = { authViewModel.logout() }
             )
         }
-    ) {
-        paddingValues ->
+    ) { paddingValues ->
         Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-//        поиск / фильтрация
-            OutlinedTextField(
-                value = query,
-                onValueChange = { newText ->
-                    viewModel.setQuery(newText)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                placeholder = {
-                    Text("Поиск рецептов…")
-                },
-                singleLine = true
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                //        поиск / фильтрация
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = { newText ->
+                        viewModel.setQuery(newText)
+                    },
+                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(8.dp),
+                        .weight(1f),
+                    placeholder = {
+                        Text("Поиск рецептов…")
+                    },
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                //      кнопка фильтрации избранного
+                FilterChip(
+                    selected = showOnlyFavorites,
+                    onClick = { showOnlyFavorites = !showOnlyFavorites },
+                    label = { Text("Избранное") }
+                )
 
-//            Log.d("СЕРДЦЕ - 4", "FavoriteSet = $favoritesSet")
+                //            Log.d("СЕРДЦЕ - 4", "FavoriteSet = $favoritesSet")
+            }
 
-            RecipeListContent(
-                viewModel = viewModel,
-                recipes = recipes,
-                query = query,
-                favorites = favoritesSet,       //  StateFlow из RecipesViewModel
-                onFavoriteClick = { recipeId -> viewModel.toggleFavorite(recipeId) },
-                onRecipeClick = { id ->
-                    Log.e("ИЩУ:", "RecipeListScreen: id = ${id} navigate to recipe_detail/$id")
-                    navController.navigate("recipe_detail/$id")
-                }
-            )
+                RecipeListContent(
+                    viewModel = viewModel,
+                    recipes = recipes,
+                    query = query,
+                    favorites = favoritesSet,       //  StateFlow из RecipesViewModel
+                    onFavoriteClick = { recipeId -> viewModel.toggleFavorite(recipeId) },
+                    showOnlyFavorites = showOnlyFavorites,
+                    onToggleFavoritesFilter = {
+                        showOnlyFavorites = !showOnlyFavorites
+                    },
+                    onRecipeClick = { id ->
+                        Log.e("ИЩУ:", "RecipeListScreen: id = ${id} navigate to recipe_detail/$id")
+                        navController.navigate("recipe_detail/$id")
+                    }
+                )
+//            }
         }
     }
 
