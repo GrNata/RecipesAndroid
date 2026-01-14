@@ -4,15 +4,12 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.grig.recipesandroid.data.api.AuthApi
 import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.local.TokenRepository
@@ -41,16 +38,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
 
         // DataStore для хранения токенов
         val tokenRepository = TokenRepository(applicationContext)
 
-//        // OkHttpClient с interceptor для авторизации
-//        val okHttpClient = OkHttpClient.Builder()
-//            .addInterceptor(AuthInterceptor(tokenRepository, authRepository))
-//            .build()
-//
 //        // Настройка Retrofit - Retrofit для API
 //        val retrofit = Retrofit.Builder()
 //            .baseUrl("http://10.0.2.2:9090/") // для эмулятора Android - сервер RestApiRecipes
@@ -62,9 +53,6 @@ class MainActivity : ComponentActivity() {
 ////            .baseUrl("http://192.168.1.100:8080/")
 //            .addConverterFactory(GsonConverterFactory.create())
 //            .build()
-//
-////        API
-//        val authApi = retrofit.create(AuthApi::class.java)
 
         // 2. AuthApi и RecipeApi через Retrofit
         val retrofit = Retrofit.Builder()
@@ -84,7 +72,6 @@ class MainActivity : ComponentActivity() {
             .build()
 
         // 5. RecipeApi с клиентом, который знает про токены
-//        val recipeApi = retrofit.create(RecipeApi::class.java)
         recipeApi = Retrofit.Builder()
             .baseUrl("http://10.0.2.2:9090/")
             .client(okHttpClient)
@@ -92,7 +79,6 @@ class MainActivity : ComponentActivity() {
             .build()
             .create(RecipeApi::class.java)
 
-//        val authRepository = AuthRepository(authApi, tokenRepository)
         // 6. Repositories
         val recipeRepository = RecipeRepository(recipeApi)
         val favoritesRepository = FavoritesRepository(recipeApi, tokenRepository)
@@ -179,41 +165,17 @@ class MainActivity : ComponentActivity() {
 
                             RecipeDetailScreen(
                                 recipeId = recipeId,
-                                viewModel = detailViewModel,
+                                recipesViewModel,
+                                viewModelDetailRecipe = detailViewModel,
                                 authViewModel = authViewModel,
                                 navController = navController,
-                                onBack = { navController.popBackStack() }
+                                onBack = { navController.popBackStack() },
                             )
 
                         // Здесь вызываем RecipeDetailScreen
                             // RecipeDetailScreen(recipeId = recipeId, ...)
                         }
                     }
-
-
-//                    val navController = rememberNavController()
-//                    NavHost(navController = navController, startDestination = "recipe_list") {
-//                        composable("recipe_list") {
-//                            RecipeListScreen(
-//                                viewModel = viewModel,
-//                                navController = navController,
-//                                onRecipeClick = { recipeId -> navController.navigate("recipe_detail/$recipeId")}
-//                                )
-//                        }
-//                         composable(
-//                             "recipe_detail/{recipeId}",
-//                             arguments = listOf(navArgument("recipeId") { type = NavType.LongType })
-//                             ) { backStackEntry ->
-//                             val recipeId = backStackEntry.arguments?.getLong("recipeId") ?: 0L
-//                             val viewModel: RecipeDetailViewModel = viewModel(
-//                                 factory = RecipeDetailViewModelFactory(api)
-//                             )
-//                             RecipeDetailScreen(
-//                                 recipeId = recipeId,
-//                                 onBack = { navController.popBackStack() }
-//                             )
-//                         }
-//                    }
                 }
             }
         }

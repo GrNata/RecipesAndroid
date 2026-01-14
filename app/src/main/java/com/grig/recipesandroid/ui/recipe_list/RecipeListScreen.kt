@@ -67,15 +67,6 @@ fun RecipeListScreen(
         }
     }
 
-//    LaunchedEffect(isAuthenticated) {
-//        if (isAuthenticated) {
-//            viewModel.loadFavorites()
-//        } else {
-//            viewModel.clearFavorites()
-//        }
-//    }
-
-
     Scaffold(
         topBar = {
             RecipeListTopBar(
@@ -103,13 +94,13 @@ fun RecipeListScreen(
                 singleLine = true
             )
 
-            Log.d("СЕРДЦЕ - 4", "FavoriteSet = $favoritesSet")
+//            Log.d("СЕРДЦЕ - 4", "FavoriteSet = $favoritesSet")
 
             RecipeListContent(
                 viewModel = viewModel,
                 recipes = recipes,
                 query = query,
-                favorites = favoritesSet as Set<Long>,       //  StateFlow из RecipesViewModel
+                favorites = favoritesSet,       //  StateFlow из RecipesViewModel
                 onFavoriteClick = { recipeId -> viewModel.toggleFavorite(recipeId) },
                 onRecipeClick = { id ->
                     Log.e("ИЩУ:", "RecipeListScreen: id = ${id} navigate to recipe_detail/$id")

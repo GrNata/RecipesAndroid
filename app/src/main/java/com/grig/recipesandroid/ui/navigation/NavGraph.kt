@@ -15,14 +15,12 @@ import androidx.navigation.navArgument
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailScreen
 import com.grig.recipesandroid.ui.recipe_list.RecipeListScreen
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
-import androidx.navigation.compose.rememberNavController
 
-import androidx.navigation.navArgument
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.runtime.remember
 import com.grig.recipesandroid.data.api.RecipeApi
-import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
@@ -87,7 +85,7 @@ fun AppNavGraph(
             enterTransition = {
                 fadeOut(animationSpec = tween(1500))
                 slideInHorizontally(
-                    initialOffsetX = { it },
+//                    initialOffsetX = { it },
                     animationSpec = tween(
                         durationMillis = 500,
                         easing = FastOutSlowInEasing
@@ -111,8 +109,16 @@ fun AppNavGraph(
         ) { backStackEntry ->
             val recipeId = backStackEntry.arguments?.getLong("recipeId") ?: 0L
 
+            //  ОБЩИЙ RecipesViewModel (тот же, что в списке)
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry("recipe_list")
+            }
+
+            val recipeViewModel: RecipesViewModel = viewModel(parentEntry)
+
             Log.e("ИЩУ:", "recipeId не передан!")
 
+            //  Detail ViewModel (отдельный)
             val detailViewModel: RecipeDetailViewModel = viewModel(
 //                factory = RecipeDetailViewModelFactory(recipeRepository, recipeId)
                 factory = RecipeDetailViewModelFactory(api = api, recipeId = recipeId)
@@ -120,7 +126,8 @@ fun AppNavGraph(
 
             RecipeDetailScreen(
                 recipeId = recipeId,
-                viewModel = detailViewModel,
+                recipeViewModel = recipeViewModel,
+                viewModelDetailRecipe = detailViewModel,
                 authViewModel = authViewModel,
                 navController = navController,
                 onBack = { navController.popBackStack() }

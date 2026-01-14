@@ -22,11 +22,6 @@ class FavoritesRepository(
     suspend fun getFavorites(): Set<Long> {
         return api.getFavoritesAll().mapNotNull { it.id }.toSet()  // // получаем список id рецептов
     }
-//    suspend fun getFavorites(): List<Long> {
-//        return api.getFavoritesAll().map { it.recipeId }  // // получаем список id рецептов
-////        return api.getFavoritesAll().map { it.id as Long }  // // получаем список id рецептов
-//    }
-
 
     suspend fun getTempFavorites(): List<RecipeDto> {
         return api.getFavoritesAll()
