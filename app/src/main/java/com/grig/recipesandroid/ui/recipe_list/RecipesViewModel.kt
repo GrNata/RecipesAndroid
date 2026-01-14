@@ -19,10 +19,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.intellij.lang.annotations.Flow
@@ -49,6 +51,9 @@ open class RecipesViewModel(
     private val _messageFlow = MutableStateFlow<String>("")
     val messageFlow: SharedFlow<String> = _messageFlow
 
+//    Теперь добавим объект Pager с Retry. Paging уже умеет повторять загрузку через метод retry() у PagingData. Нам нужно просто сохранить Flow, чтобы в UI можно было вызвать повтор
+    lateinit var lastRecipesPagingFlow: PagingData<RecipeDto>
+
 //    Поиск
 //🔹 Никаких launch, loadRecipes, StateFlow
 //🔹 Paging сам управляет загрузкой
@@ -59,6 +64,10 @@ open class RecipesViewModel(
     .flatMapLatest { q ->
         repository.getRecipesPaper(query = q)       // передаем query в Pager/PagingSource
             .flow
+            .catch { e ->
+                // Отлавливаем ошибки Paging
+                _messageFlow.emit("Ошибка загрузки рецептов: ${e.localizedMessage}")
+                }
             }
             .cachedIn(viewModelScope)
 
@@ -127,5 +136,18 @@ open class RecipesViewModel(
 
     fun clearFavorites() {
         _favorites.value = emptySet()
+    }
+
+//Paging уже умеет повторять загрузку через метод retry() у PagingData
+    fun retryRecipes() {
+        // У PagingData есть extension функция retry()
+        viewModelScope.launch {
+            try {
+                // Пробуем перезапустить загрузку текущего Flow
+                recipesPagingFlow.retry()
+            } catch (e: Exception) {
+                _messageFlow.emit("Не удалось повторить загрузку: ${e.localizedMessage}")
+            }
+        }
     }
 }
