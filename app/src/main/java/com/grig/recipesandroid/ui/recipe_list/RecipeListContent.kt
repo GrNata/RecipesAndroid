@@ -47,6 +47,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 
 
@@ -118,18 +119,21 @@ fun RecipeListContent(
 //                Рецепты в категории - стандартные карточки рецептов
                         items(recipesInCategory) { recipe ->
                             val fav = favorites
+
+//                            // Локальная реактивная переменная isFavorite для этого конкретного RecipeItem
+//                            val isFavotite by remember {
+//                                derivedStateOf { favorites.contains(recipe.id) }
+//                            }
+
                             RecipeItem(
                                 viewModel = viewModel,
                                 recipe = recipe,
                                 query = query,
                                 isFavorite = favorites.contains(recipe.id),
-//                            onFavoriteClick = { onFavoriteClick(recipe.id) },
+//                                isFavorite = isFavotite,
                                 onFavoriteClick = { viewModel.toggleFavorite(recipe.id) },
                                 onClick = { onRecipeClick(recipe.id) }
                             )
-//                            ) {
-//                            onRecipeClick(recipe.id)
-//                        }
 
                             Log.d("СЕРДЦЕ - 3", "Favorite = $favorites")
                             for (l in favorites) {

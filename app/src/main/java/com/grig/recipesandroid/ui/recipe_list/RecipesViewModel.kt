@@ -17,6 +17,7 @@ import com.grig.recipesandroid.data.repository.FavoritesRepository
 import com.grig.recipesandroid.domain.model.Recipe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -45,6 +46,9 @@ open class RecipesViewModel(
         _query.value = newQuery
     }
 
+    private val _messageFlow = MutableStateFlow<String>("")
+    val messageFlow: SharedFlow<String> = _messageFlow
+
 //    Поиск
 //🔹 Никаких launch, loadRecipes, StateFlow
 //🔹 Paging сам управляет загрузкой
@@ -71,6 +75,7 @@ open class RecipesViewModel(
             } catch (e: Exception) {
                 // Игнорируем ошибки, например при неавторизованном пользователе
                 _favorites.value = emptySet()
+                _messageFlow.emit("Ошибка не удалось загрузить избранное")
 //                Log.d("СЕРДЦЕ - 8", "Error - Загрузка избранных при инициализации - emtySet()")
                 Log.d("СЕРДЦЕ - 8", "loadFavorites error", e)
             }
@@ -88,6 +93,7 @@ open class RecipesViewModel(
                     _favorites.value = _favorites.value - recipeId
                 } catch (e: Exception) {
                     // обработка ошибок, например Toast
+                    _messageFlow.emit("Ошибка при удалении в избранное")
                 }
             } else {
                 try {
@@ -95,6 +101,7 @@ open class RecipesViewModel(
                     _favorites.value = _favorites.value + recipeId
                 } catch (e: Exception) {
                     // обработка ошибок, например Toast
+                    _messageFlow.emit("Ошибка при добавлении в избранное")
                 }
             }
             // Обновляем последний изменённый рецепт
@@ -111,6 +118,7 @@ open class RecipesViewModel(
                 Log.d("СЕРДЦЕ - 67", "Favorite.Value = ${favs}")
             } catch (e: Exception) {
                 _favorites.value = emptySet()
+                _messageFlow.emit("Ошибка не удалось загрузить избранное")
 //                Log.d("СЕРДЦЕ - 68", "Error - Загрузка избранных при инициализации - emtySet()")
                 Log.d("СЕРДЦЕ - 68", "loadFavorites error", e)
             }
