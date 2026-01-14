@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.recipe_detail
 
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -7,6 +8,11 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -19,8 +25,8 @@ fun RecipeDetailScreen(
     onBack : () -> Unit
 ) {
 
-//    val favoritesSet by recipeViewModel.favorites.collectAsState()
-//    val isFavorite = recipeId in favoritesSet
+    // Создаём scaffoldState для SnackBar
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val isAuthenticated by authViewModel
         .isAuthenticated
@@ -39,17 +45,24 @@ fun RecipeDetailScreen(
 //        viewModel.loadRecipe()
 //    }
 
+    // Передаём в Scaffold
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) {
+        RecipeDetailContent(
+            recipe = recipe,
+            loading = loading,
+            error = error,
+            isAuthenticated = isAuthenticated,
+            onBack = onBack,
+            navController = navController,
+            authViewModel = authViewModel,
+            recipeViewModel = recipeViewModel,
+            recipeId = recipeId,
+            snackbarHostState = snackbarHostState
+        )
+    }
 
-    RecipeDetailContent(
-        recipe = recipe,
-        loading = loading,
-        error = error,
-        isAuthenticated = isAuthenticated,
-        onBack = onBack,
-        navController = navController,
-        authViewModel = authViewModel,
-        recipeViewModel = recipeViewModel,
-        recipeId = recipeId
-    )
+
 
 }

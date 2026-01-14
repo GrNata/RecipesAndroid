@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.grig.recipesandroid.domain.model.Recipe
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Button
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
@@ -41,7 +42,8 @@ fun RecipeDetailContent(
     navController: NavController,
     authViewModel: AuthViewModel,
     recipeViewModel: RecipesViewModel,
-    recipeId: Long
+    recipeId: Long,
+    snackbarHostState: SnackbarHostState
 ) {
 //    val scrollState = rememberLazyListState()
 
@@ -160,7 +162,8 @@ fun RecipeDetailContent(
                         recipeViewModel,
                         recipe,
                         onBack,
-                        recipeId
+                        recipeId,
+                        snackbarHostState
                     )
                 }
             }   // when

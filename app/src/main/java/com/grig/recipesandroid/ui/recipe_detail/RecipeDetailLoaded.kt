@@ -2,11 +2,13 @@ package com.grig.recipesandroid.ui.recipe_detail
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
@@ -43,6 +46,10 @@ import coil.compose.AsyncImage
 import com.grig.recipesandroid.domain.model.Recipe
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import kotlinx.coroutines.delay
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+
 
 @Composable
 //private fun RecipeDetailLoaded(
@@ -50,15 +57,18 @@ fun RecipeDetailLoaded(
     recipeViewModel: RecipesViewModel,
     recipe: Recipe,
     onBack: () -> Unit,
-    recipeId: Long
+    recipeId: Long,
+    snackbarHostState: SnackbarHostState
 ) {
     val favoritesSet by recipeViewModel.favorites.collectAsState()
     val isFavorite = recipeId in favoritesSet
 
+    val scope = rememberCoroutineScope()   //  <-- добавляем корутинный скоуп
+
     val visibleStepsCount = remember { mutableStateOf(0) }
     val imageVisible = remember { mutableStateOf(false) }
 
-    LaunchedEffect(recipe.id) {   // ❗ ключ СТАБИЛЬНЫЙ
+    LaunchedEffect(recipe.id) {   //  ключ СТАБИЛЬНЫЙ
         visibleStepsCount.value = 0
         recipe.steps.forEachIndexed { index, _  ->
             delay(250)
@@ -79,8 +89,18 @@ fun RecipeDetailLoaded(
                 modifier = Modifier.fillMaxWidth().height(20.dp),
                 horizontalArrangement = Arrangement.End
             ) {
+                val scale by animateFloatAsState(targetValue = if (isFavorite) 1.3f else 1f)
+
                 IconButton(
-                    onClick = { recipeViewModel.toggleFavorite(recipe.id) }
+                    onClick = {
+                        recipeViewModel.toggleFavorite(recipe.id)
+                        // показываем SnackBar
+                        val message = if (isFavorite) "Рецепт удален из избранного" else "Рецепт добавлен в избранное"
+                        scope.launch {
+                            snackbarHostState.showSnackbar(message)
+                        }
+                    },
+                    modifier = Modifier.scale(scale)
                 ) {
                     Icon(
                         imageVector = if (isFavorite) {

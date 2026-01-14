@@ -32,6 +32,9 @@ open class RecipesViewModel(
     private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
 
+    private val _lastToggledRecipeId = MutableStateFlow<Long?>(null)
+    val lastToggleRecipeId: StateFlow<Long?> = _lastToggledRecipeId
+
     private val _favorites = MutableStateFlow<Set<Long>>(emptySet())
     val favorites: StateFlow<Set<Long>> = _favorites
 
@@ -94,6 +97,8 @@ open class RecipesViewModel(
                     // обработка ошибок, например Toast
                 }
             }
+            // Обновляем последний изменённый рецепт
+            _lastToggledRecipeId.value = recipeId
         }
     }
 

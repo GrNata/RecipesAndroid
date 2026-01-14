@@ -41,7 +41,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material.icons.filled.Warning
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
 
 
 //   разделяем UI и state - RecipeListScreen
@@ -58,158 +64,181 @@ fun RecipeListContent(
     onRecipeClick: (Long) -> Unit
 
 ) {
-//    логика отображения индикатора сверху
+    //    логика отображения индикатора сверху
     val isRefreshing = recipes.loadState.refresh is LoadState.Loading
 //    Paging повторно подгружает данные
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
 
-    SwipeRefresh(
-        state = swipeRefreshState,
-        onRefresh = { recipes.refresh() }
-    ) {
-        // Основной список
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFF7EDE9))
+    val lastToggleRecipeId by viewModel.lastToggleRecipeId.collectAsState()
+
+    // создаём SnackbarHostState
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { paddingValues ->
+//LazyColumn / SwipeRefresh тут
+
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = { recipes.refresh() }
+        ) {
+            // Основной список
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFF7EDE9))
             ) {
 
-            if (recipes.loadState.refresh is LoadState.Loading) {
-                items(5) { ShimmerRecipeItem() }
-            } else {
+                if (recipes.loadState.refresh is LoadState.Loading) {
+                    items(5) { ShimmerRecipeItem() }
+                } else {
 
 //            Группируем рецепты по первой категории (можно доработать для нескольких)
-                val grouped = recipes.itemSnapshotList.items
-                    .flatMap { it.categories.map { cat -> cat to it } }     // создаём пары category -> recipe
-                    .groupBy({ it.first }, { it.second })   // Map<Category, List<Recipe>>
+                    val grouped = recipes.itemSnapshotList.items
+                        .flatMap { it.categories.map { cat -> cat to it } }     // создаём пары category -> recipe
+                        .groupBy({ it.first }, { it.second })   // Map<Category, List<Recipe>>
 
-                grouped.forEach { (category, recipesInCategory) ->
+                    grouped.forEach { (category, recipesInCategory) ->
 // Sticky Header для категории - объединение рецептов по категориям
-                    stickyHeader {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color(0xFFEFEFEF))
-                                .padding(8.dp)
-                        ) {
-                            Text(
-                                text = category.name,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = Color(0xFF123C69)
-                            )
+                        stickyHeader {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Color(0xFFEFEFEF))
+                                    .padding(8.dp)
+                            ) {
+                                Text(
+                                    text = category.name,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = Color(0xFF123C69)
+                                )
+                            }
                         }
-                    }
 //                Рецепты в категории - стандартные карточки рецептов
-                    items(recipesInCategory) { recipe ->
-                        val fav = favorites
-                        RecipeItem(
-                            viewModel = viewModel,
-                            recipe = recipe,
-                            query = query,
-                            isFavorite = favorites.contains(recipe.id),
+                        items(recipesInCategory) { recipe ->
+                            val fav = favorites
+                            RecipeItem(
+                                viewModel = viewModel,
+                                recipe = recipe,
+                                query = query,
+                                isFavorite = favorites.contains(recipe.id),
 //                            onFavoriteClick = { onFavoriteClick(recipe.id) },
-                            onFavoriteClick = { viewModel.toggleFavorite(recipe.id) },
-                            onClick = { onRecipeClick(recipe.id) }
-                        )
+                                onFavoriteClick = { viewModel.toggleFavorite(recipe.id) },
+                                onClick = { onRecipeClick(recipe.id) }
+                            )
 //                            ) {
 //                            onRecipeClick(recipe.id)
 //                        }
 
-                        Log.d("СЕРДЦЕ - 3", "Favorite = $favorites")
-                        for (l in favorites) {
-                            Log.d("СЕРДЦЕ - 2", "Favorite-ID = $l, recipeId = ${recipe.id}")
-                        }
-                    }
-                }
-
-//            -------- ???????
-                //        Error State для refresh (анимированный)
-                val isError = recipes.loadState.refresh is LoadState.Error
-                if (isError) {
-                    item {
-                        AnimatedVisibility(
-                            visible = true,
-                            enter = fadeIn() + scaleIn(),
-                            exit = fadeOut()
-                        ) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Warning,
-                                    contentDescription = null,
-                                    tint = Color(0xFFAC3B61),
-                                    modifier = Modifier.size(64.dp)
-                                )
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Text(
-                                    text = "Ошибка загрузки данных",
-                                    color = Color(0xFFAC3B61)
-                                )
-
+                            Log.d("СЕРДЦЕ - 3", "Favorite = $favorites")
+                            for (l in favorites) {
+                                Log.d("СЕРДЦЕ - 2", "Favorite-ID = $l, recipeId = ${recipe.id}")
                             }
                         }
                     }
-                }
+
+//            -------- ???????
+                    //        Error State для refresh (анимированный)
+                    val isError = recipes.loadState.refresh is LoadState.Error
+                    if (isError) {
+                        item {
+                            AnimatedVisibility(
+                                visible = true,
+                                enter = fadeIn() + scaleIn(),
+                                exit = fadeOut()
+                            ) {
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Warning,
+                                        contentDescription = null,
+                                        tint = Color(0xFFAC3B61),
+                                        modifier = Modifier.size(64.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Text(
+                                        text = "Ошибка загрузки данных",
+                                        color = Color(0xFFAC3B61)
+                                    )
+
+                                }
+                            }
+                        }
+                    }
 
 //            Empty Search State с анимацией
-                item {
-                    val isEmptySearch =
-                        recipes.itemCount == 0 &&
-                                recipes.loadState.refresh is LoadState.NotLoading &&
-                                query.isNotBlank()
-                    val isEmptyAll =
-                        recipes.itemCount == 0 &&
-                                recipes.loadState.refresh is LoadState.NotLoading &&
-                                query.isBlank()
+                    item {
+                        val isEmptySearch =
+                            recipes.itemCount == 0 &&
+                                    recipes.loadState.refresh is LoadState.NotLoading &&
+                                    query.isNotBlank()
+                        val isEmptyAll =
+                            recipes.itemCount == 0 &&
+                                    recipes.loadState.refresh is LoadState.NotLoading &&
+                                    query.isBlank()
 
-                    if (isEmptySearch || isEmptyAll) {
-                        AnimatedVisibility(
-                            visible = isEmptySearch,
-                            enter = fadeIn(),
-                            exit = fadeOut()
-                        ) {
-                            EmptyState(
-                                icon = if (isEmptySearch) Icons.Outlined.Search else Icons.Default.Search,
-                                title = if (isEmptySearch) "Ничего не найдено \uD83D\uDD0D" else "Список пуст",
-                                subtitle = if (isEmptySearch) "Попробуй изменить запрос" else "Добавьте рецепты, чтобы начать"
-                            )
-                        }
-                    }
-                }
-
-                // Loader снизу (append) - при подгрузке следующей страницы
-                when (recipes.loadState.append) {
-                    is LoadState.Loading -> {
-                        item {
-                            CircularProgressIndicator(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            )
+                        if (isEmptySearch || isEmptyAll) {
+                            AnimatedVisibility(
+                                visible = isEmptySearch,
+                                enter = fadeIn(),
+                                exit = fadeOut()
+                            ) {
+                                EmptyState(
+                                    icon = if (isEmptySearch) Icons.Outlined.Search else Icons.Default.Search,
+                                    title = if (isEmptySearch) "Ничего не найдено \uD83D\uDD0D" else "Список пуст",
+                                    subtitle = if (isEmptySearch) "Попробуй изменить запрос" else "Добавьте рецепты, чтобы начать"
+                                )
+                            }
                         }
                     }
 
-                    is LoadState.Error -> {
-                        item {
-                            Text(
-                                text = "Ошибка загрузки",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                textAlign = TextAlign.Center
-                            )
+                    // Loader снизу (append) - при подгрузке следующей страницы
+                    when (recipes.loadState.append) {
+                        is LoadState.Loading -> {
+                            item {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
+                                )
+                            }
                         }
+
+                        is LoadState.Error -> {
+                            item {
+                                Text(
+                                    text = "Ошибка загрузки",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+
+                        else -> Unit
                     }
 
-                    else -> Unit
-                }
-
-            }       //   else
-        }       // LazyColumn
+                }       //   else
+            }       // LazyColumn
+        }
     }
+
+//      Использовать SnackbarHost в Scaffold или простой Toast при клике на избранное.
+    LaunchedEffect(favorites) {
+        if (lastToggleRecipeId != null) {
+            val message = if (favorites.contains(lastToggleRecipeId))
+                                    "Рецепт добавлен в избранное"
+                                  else "Рецепт удален из избранного"
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
+
 }
 
 //Сделать Empty state:

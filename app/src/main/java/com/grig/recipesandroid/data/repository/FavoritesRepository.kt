@@ -23,7 +23,7 @@ class FavoritesRepository(
         return api.getFavoritesAll().mapNotNull { it.id }.toSet()  // // получаем список id рецептов
     }
 
-    suspend fun getTempFavorites(): List<RecipeDto> {
-        return api.getFavoritesAll()
-    }
+//    suspend fun getTempFavorites(): List<RecipeDto> {
+//        return api.getFavoritesAll()
+//    }
 }
