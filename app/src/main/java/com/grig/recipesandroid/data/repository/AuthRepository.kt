@@ -38,4 +38,5 @@ class AuthRepository(
         api.logout(refresh)
         tokenRepository.clearTokens()
     }
+
 }

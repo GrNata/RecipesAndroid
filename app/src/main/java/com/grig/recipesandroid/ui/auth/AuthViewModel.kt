@@ -11,6 +11,7 @@ import com.grig.recipesandroid.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -20,8 +21,16 @@ class AuthViewModel(
     private val tokenRepository: TokenRepository
 ) : ViewModel() {
 
-    val isAuthenticated: StateFlow<Boolean> = tokenRepository.accessToken
-        .map { it != null }
+//    val isAuthenticated: StateFlow<Boolean> = tokenRepository.accessToken
+//        .map { it != null }
+//        .stateIn(
+//            scope = viewModelScope,
+//            started = SharingStarted.WhileSubscribed(5_000),
+//            initialValue = false
+//        )
+
+    val isAuthenticated: StateFlow<Boolean> = tokenRepository.refreshToken
+        .map { !it.isNullOrBlank() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -39,12 +48,17 @@ class AuthViewModel(
     private val _tokens = MutableStateFlow<AuthTokens?>(null)
     val tokens: StateFlow<AuthTokens?> = _tokens
 
+    init {
+        restoreSession()
+    }
+
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _loading.value = true
             _error.value = null
             try {
                 val request = LoginRequest(email, password)
+//                authRepository.login(request)
                 val result = authRepository.login(request)
                 _tokens.value = result
             } catch (e: Exception) {
@@ -61,8 +75,9 @@ class AuthViewModel(
             _error.value = null
             try {
                 val request = RegisterRequest(email, password, name)
-                val result = authRepository.register(request)
-                _tokens.value = result
+                authRepository.register(request)
+//                val result = authRepository.register(request)
+//                _tokens.value = result
             } catch (e: Exception) {
                 _error.value = e.message
             } finally {
@@ -76,6 +91,26 @@ class AuthViewModel(
             tokenRepository.clearTokens()
 //            authRepository.logout()
 //            _tokens.value = null
+        }
+    }
+
+    private fun restoreSession() {
+        viewModelScope.launch {
+            val refreshToken = tokenRepository.refreshToken.first()
+
+            // нет refreshToken → пользователь НЕ залогинен
+            if (refreshToken.isNullOrBlank()) {
+                return@launch
+            }
+
+            try {
+                // тихо обновляем accessToken
+                authRepository.refreshToken()
+                // accessToken сохранён внутри TokenRepository
+            } catch (e: java.lang.Exception) {
+                //  refreshToken протух → вычищаем сессию
+                tokenRepository.clearTokens()
+            }
         }
     }
 }
