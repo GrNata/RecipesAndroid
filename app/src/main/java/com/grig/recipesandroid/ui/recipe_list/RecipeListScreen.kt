@@ -113,10 +113,11 @@ fun RecipeListScreen(
             LoginScreen(
 //                viewModel = authViewModel,
                 authViewModel = authViewModel,
-                onLoginSuccess = {
-                    // закрываем экран логина
-                    showLoginScreen = false
-                }
+                navController
+//                onLoginSuccess = {
+//                    // закрываем экран логина
+//                    showLoginScreen = false
+//                }
             )
         } else {
 

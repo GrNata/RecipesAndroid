@@ -8,11 +8,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel = viewModel(),
-    onLoginSuccess: () -> Unit
+//    onLoginSuccess: () -> Unit,
+    navController: NavController
 ) {
     val loading by authViewModel.loading.collectAsState()
     val error by authViewModel.error.collectAsState()
@@ -28,7 +30,19 @@ fun LoginScreen(
 //        if (tokens != null) onLoginSuccess()
         if (tokens != null && !loginConsumed) {
             loginConsumed = true
-            onLoginSuccess()
+//            onLoginSuccess()
+            //    для -  «возврата на экран с которого повторное логирование»
+                val route = authViewModel.consumePendingRoute()
+
+                if (route != null) {
+                    navController.navigate(route) {
+                        popUpTo("login") { inclusive = true  }
+                    }
+                } else {
+                    navController.navigate("recipe_list") {
+                        popUpTo("login") { inclusive = true  }
+                    }
+                }
         }
     }
 

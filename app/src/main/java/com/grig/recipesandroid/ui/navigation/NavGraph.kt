@@ -164,8 +164,11 @@ fun AppNavGraph(
                 composable("login") {
                     val isAuth by authViewModel.isAuthenticated.collectAsState()
                     LoginScreen(
-                        onLoginSuccess = { navController.popBackStack() }
+                        navController = navController
                     )
+//                    LoginScreen(
+//                        onLoginSuccess = { navController.popBackStack() }
+//                    )
                 }
 
                 composable("register") {

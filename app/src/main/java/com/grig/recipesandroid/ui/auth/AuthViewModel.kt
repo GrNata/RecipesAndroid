@@ -66,6 +66,10 @@ class AuthViewModel(
     private val _authStateRestored = MutableStateFlow(false)
     val authStateRestored: StateFlow<Boolean> = _authStateRestored
 
+//    для -  «возврата на экран с которого повторное логирование»
+    private val _pandingRoute = MutableStateFlow<String?>(null)
+    val pendingRoute: StateFlow<String?> = _pandingRoute
+
 
     init {
         restoreSession()
@@ -138,6 +142,18 @@ class AuthViewModel(
             // ✅ после попытки восстановления ставим флаг в true
             _authStateRestored.value = true
         }
+    }
+
+
+    //    для -  «возврата на экран с которого повторное логирование»
+    fun requireLogin(route: String) {
+        _pandingRoute.value = route
+    }
+
+    fun consumePendingRoute() : String? {
+        val route = _pandingRoute.value
+        _pandingRoute.value = null
+        return route
     }
 
 //    private fun restoreSession() {

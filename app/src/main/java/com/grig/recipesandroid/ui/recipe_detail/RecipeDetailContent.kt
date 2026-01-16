@@ -66,7 +66,12 @@ fun RecipeDetailContent(
                 title = recipe?.name ?: "Детали рецепта",
                 isAuthenticated = isAuthenticated,
                 onBack = onBack,
-                onLoginClick = { navController.navigate("login") },
+//                onLoginClick = { navController.navigate("login") },
+                onLoginClick = {
+                    //    для -  «возврата на экран с которого повторное логирование»
+                    authViewModel.requireLogin("recipe_detail/${recipeId}")
+                    navController.navigate("login")
+                               },
                 onLogoutClick = { authViewModel.logout() },
                 onShareClick = if (recipe != null && isAuthenticated) {
                     {

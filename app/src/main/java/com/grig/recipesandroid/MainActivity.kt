@@ -128,7 +128,8 @@ class MainActivity : ComponentActivity() {
                         composable("login") {
                             LoginScreen(
                                 authViewModel = authViewModel,
-                                onLoginSuccess = { navController.navigate("recipe_list") }
+                                navController = navController
+//                                onLoginSuccess = { navController.navigate("recipe_list") }
                             )
                         }
 
