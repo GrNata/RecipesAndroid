@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.grig.recipesandroid.data.api.AuthApi
 import com.grig.recipesandroid.data.api.RecipeApi
+import com.grig.recipesandroid.data.local.FavoritesDataStore
 import com.grig.recipesandroid.data.local.TokenRepository
 import com.grig.recipesandroid.data.network.AuthInterceptor
 import com.grig.recipesandroid.data.repository.AuthRepository
@@ -79,9 +80,11 @@ class MainActivity : ComponentActivity() {
             .build()
             .create(RecipeApi::class.java)
 
+        val favoritesLocalDataSource = FavoritesDataStore(applicationContext)
+
         // 6. Repositories
         val recipeRepository = RecipeRepository(recipeApi)
-        val favoritesRepository = FavoritesRepository(recipeApi, tokenRepository)
+        val favoritesRepository = FavoritesRepository(recipeApi, tokenRepository, local = favoritesLocalDataSource)
 
         // 7. Compose и NavHost
         setContent {
@@ -101,10 +104,15 @@ class MainActivity : ComponentActivity() {
                     }
                 })
 
-                val recipesViewModel: RecipesViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
-                    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-                        @Suppress("UNCHECKED_CAST")
-                        return RecipesViewModel(recipeRepository, favoritesRepository) as T
+                val recipesViewModel: RecipesViewModel = viewModel(
+                    factory = object : androidx.lifecycle.ViewModelProvider.Factory {
+                        override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                            @Suppress("UNCHECKED_CAST")
+                            return RecipesViewModel(
+                                recipeRepository,
+                                favoritesRepository,
+                                authViewModel.userId        // <-- здесь передаём userIdFlow
+                                ) as T
                     }
                 })
 
@@ -119,7 +127,7 @@ class MainActivity : ComponentActivity() {
                         // Login screen
                         composable("login") {
                             LoginScreen(
-                                viewModel = authViewModel,
+                                authViewModel = authViewModel,
                                 onLoginSuccess = { navController.navigate("recipe_list") }
                             )
                         }

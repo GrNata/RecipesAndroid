@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.auth
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.*
@@ -10,19 +11,25 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel = viewModel(),
+    authViewModel: AuthViewModel = viewModel(),
     onLoginSuccess: () -> Unit
 ) {
-    val loading by viewModel.loading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val tokens by viewModel.tokens.collectAsState()
+    val loading by authViewModel.loading.collectAsState()
+    val error by authViewModel.error.collectAsState()
+    val tokens by authViewModel.tokens.collectAsState()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var loginConsumed by remember { mutableStateOf(false) }
 
     // Если логин успешен
     LaunchedEffect(tokens) {
-        if (tokens != null) onLoginSuccess()
+        Log.d("LOGIN LoginScreen", "LoginScreen: $loginConsumed, token: $tokens")
+//        if (tokens != null) onLoginSuccess()
+        if (tokens != null && !loginConsumed) {
+            loginConsumed = true
+            onLoginSuccess()
+        }
     }
 
     Column(
@@ -48,7 +55,7 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { viewModel.login(email, password) },
+            onClick = { authViewModel.login(email, password) },
             enabled = !loading,
             modifier = Modifier.fillMaxWidth()
         ) {

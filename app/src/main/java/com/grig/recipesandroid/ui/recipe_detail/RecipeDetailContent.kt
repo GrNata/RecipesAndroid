@@ -63,13 +63,11 @@ fun RecipeDetailContent(
     Scaffold(
         topBar = {
             AppTopBar(
-                title = recipe?.name ?: "Рецепт",
+                title = recipe?.name ?: "Детали рецепта",
                 isAuthenticated = isAuthenticated,
                 onBack = onBack,
                 onLoginClick = { navController.navigate("login") },
-                onLogoutClick = {
-                    authViewModel.logout()
-                },
+                onLogoutClick = { authViewModel.logout() },
                 onShareClick = if (recipe != null && isAuthenticated) {
                     {
                         val ingredientsText = recipe.ingredients.joinToString("\n") { ri ->

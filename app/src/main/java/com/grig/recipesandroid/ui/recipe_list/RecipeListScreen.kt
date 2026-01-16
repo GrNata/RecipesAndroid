@@ -2,7 +2,6 @@ package com.grig.recipesandroid.ui.recipe_list
 
 
 import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,7 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
+import com.grig.recipesandroid.ui.auth.LoginScreen
 
 //   разделяем UI и state - RecipeListContent
 // RecipeListScreen получает ViewModel и передаёт данные в RecipeListContent.
@@ -40,6 +41,9 @@ fun RecipeListScreen(
     onRecipeClick: (Long) -> Unit,
     authViewModel: AuthViewModel
 ) {
+    // 🔹 флаг для отображения LoginScreen
+    var showLoginScreen by remember { mutableStateOf(false) }
+
     val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
     val accessToken by authViewModel.accessToken.collectAsState(initial = null)
     Log.d("СЕРДЦЕ - TOKEN RecipeListScreen", "accessToken = ${accessToken?.take(10)}")
@@ -52,11 +56,20 @@ fun RecipeListScreen(
 //    фильтрация избранных
     var showOnlyFavorites by remember { mutableStateOf(false) }
 
-    LaunchedEffect(accessToken) {
-        if (!accessToken.isNullOrBlank()) {
-            viewModel.loadFavorites()
-        } else {
-            viewModel.clearFavorites()
+//    LaunchedEffect(accessToken) {
+//        if (!accessToken.isNullOrBlank()) {
+//            viewModel.loadFavorites()
+//        } else {
+//            viewModel.clearFavorites()
+//        }
+//    }
+    val userId by authViewModel.userId.collectAsState()
+
+//     синхронизация избранного local + remote
+    LaunchedEffect(isAuthenticated) {
+        if (isAuthenticated) {
+//            viewModel.syncFavoritesIfLoggerdIn(true)
+            viewModel.syncFavoritesIfLoggedIn(userId)
         }
     }
 
@@ -82,45 +95,62 @@ fun RecipeListScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            RecipeListTopBar(
+            Log.d("LOGIN Log", "RecipeListScreen isAuthenticated = $isAuthenticated")
+            AppTopBar(
                 title = "Рецепты",
                 isAuthenticated = isAuthenticated,
-                onLoginClick = { navController.navigate("login") },
-                onLogoutClick = { authViewModel.logout() }
+                onLoginClick = { showLoginScreen = true },
+//                onLoginClick = { navController.navigate("login") },
+                onLogoutClick = {
+                    authViewModel.logout()
+                }
             )
         }
     ) { paddingValues ->
-        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+
+        // 🔹 показываем LoginScreen если нужно
+        if (showLoginScreen) {
+            LoginScreen(
+//                viewModel = authViewModel,
+                authViewModel = authViewModel,
+                onLoginSuccess = {
+                    // закрываем экран логина
+                    showLoginScreen = false
+                }
+            )
+        } else {
+
+            Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
 //                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                //        поиск / фильтрация
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { newText ->
-                        viewModel.setQuery(newText)
-                    },
-                    modifier = Modifier
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    //        поиск / фильтрация
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { newText ->
+                            viewModel.setQuery(newText)
+                        },
+                        modifier = Modifier
 //                        .fillMaxWidth()
 //                        .padding(8.dp),
-                        .weight(1f),
-                    placeholder = {
-                        Text("Поиск рецептов…")
-                    },
-                    singleLine = true
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                //      кнопка фильтрации избранного
-                FilterChip(
-                    selected = showOnlyFavorites,
-                    onClick = { showOnlyFavorites = !showOnlyFavorites },
-                    label = { Text("Избранное") }
-                )
+                            .weight(1f),
+                        placeholder = {
+                            Text("Поиск рецептов…")
+                        },
+                        singleLine = true
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    //      кнопка фильтрации избранного
+                    FilterChip(
+                        selected = showOnlyFavorites,
+                        onClick = { showOnlyFavorites = !showOnlyFavorites },
+                        label = { Text("Избранное") }
+                    )
 
-                //            Log.d("СЕРДЦЕ - 4", "FavoriteSet = $favoritesSet")
-            }
+                    //            Log.d("СЕРДЦЕ - 4", "FavoriteSet = $favoritesSet")
+                }
 
                 RecipeListContent(
                     viewModel = viewModel,
@@ -137,8 +167,9 @@ fun RecipeListScreen(
                         navController.navigate("recipe_detail/$id")
                     }
                 )
-//            }
-        }
+
+            }
+        }           // else
     }
 
 }

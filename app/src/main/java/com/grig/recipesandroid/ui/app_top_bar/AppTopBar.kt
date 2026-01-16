@@ -1,6 +1,7 @@
 package com.grig.recipesandroid.ui.app_top_bar
 
 import android.graphics.drawable.Icon
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.ArrowBack
@@ -24,6 +25,7 @@ fun AppTopBar(
     onLogoutClick: () -> Unit,
     onShareClick: (() -> Unit)? = null      //  nullable — показываем только для залогиненных
 ) {
+
     TopAppBar(
         title = { Text(title) },
         navigationIcon = {
