@@ -1,11 +1,8 @@
 package com.grig.recipesandroid.ui.navigation
 
-//import androidx.compose.animation.fadeIn
-//import androidx.compose.animation.fadeOut
-//import androidx.compose.animation.slideInVertically
-//import androidx.compose.animation.slideOutVertically
+import android.app.Application
+import android.content.Context
 import android.util.Log
-import android.widget.Button
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -20,12 +17,9 @@ import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -33,36 +27,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.grig.recipesandroid.data.api.RecipeApi
+import com.grig.recipesandroid.data.local.FavoritesDataStore
+import com.grig.recipesandroid.data.local.TokenRepository
+import com.grig.recipesandroid.data.repository.FavoritesRepository
+import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
+import com.grig.recipesandroid.ui.my_recipes.MyRecipesScreen
+import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModelFactory
+import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModul
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModel
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModelFactory
+import com.grig.recipesandroid.ui.recipe_list.RecipesViewModelFactory
 
-//import androidx.navigation.compose.animation.AnimatedNavHost
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
-//    recipeRepository: RecipeRepository
     api: RecipeApi,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    recipeRepository: RecipeRepository,
+    tokenRepository: TokenRepository,
+    applicationContext: Context,
+    recipeViewModel: RecipesViewModel
     ) {
 
-    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
-
-    val authRestored by authViewModel.authStateRestored.collectAsState()
-
-//    val startDestination = if (isAuthenticated) "recipe_list" else "login"
-
-    if (!authRestored) {
-        // Пока состояние авторизации не восстановлено, показываем Loader или пустой экран
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-    } else {
-        // Только когда authStateRestored = true, строим NavHost
-        key(isAuthenticated) {
             NavHost(
                 navController = navController,
                 startDestination = "recipe_list"
@@ -90,15 +80,21 @@ fun AppNavGraph(
                             )
                         )
                     }
-//            Animated NavHost
-//            enterTransition = { fadeIn() },
-//            exitTransition = { fadeOut() }
                 ) {
                     val isAuth by authViewModel.isAuthenticated.collectAsState()
                     Log.d("LOGIN Log", "NavGraph (recipe_list) isAuthenticated = $isAuth")
 
                     RecipeListScreen(
-                        viewModel = viewModel<RecipesViewModel>(), // здесь создаём ViewModel
+//                        viewModel = viewModel<RecipesViewModel>(), // здесь создаём ViewModel
+                        viewModel = viewModel(factory = RecipesViewModelFactory(
+                            repository = recipeRepository,
+                            favoritesRepository = FavoritesRepository(
+                                api = api,
+                                tokenRepository = tokenRepository,
+                                local = FavoritesDataStore(applicationContext as Application)
+                            ),
+                            userIdFlow = authViewModel.userId
+                        )),
                         navController = navController,
                         onRecipeClick = { recipeId ->
                             navController.navigate("recipe_detail/${recipeId}")
@@ -175,7 +171,18 @@ fun AppNavGraph(
                     RegisterScreen(onRegisterSuccess = { navController.navigate("recipe_list") })
                 }
 
+                composable("my_recipes") {
+                    Log.d("NAV MyRecipe", "Entered MyRecipesScreen composable")
+                    val myRecipesViewModel: MyRecipesViewModul = viewModel(
+                        factory = MyRecipesViewModelFactory(recipeRepository)
+                    )
+                    MyRecipesScreen(
+                        myViewModul = myRecipesViewModel,
+                        recipeViewModel = recipeViewModel,
+                        navController = navController,
+                        authViewModel = authViewModel
+                    )
+                }
+
             }       //  NavHost
-        }       //      key
-    }       //  else
 }

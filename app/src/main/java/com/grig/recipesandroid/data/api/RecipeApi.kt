@@ -17,8 +17,14 @@ interface RecipeApi {
         @Query("size") size: Int
     ): PagedRecipesResponse
 
-//    @GET("api/recipes")
-//    suspend fun getRecipes(): PagedRecipesResponse
+    @GET("api/recipes/my/recipes")
+    suspend fun getMyRecipes(
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 10,
+        @Query("sortBy") sortBy: String = "id",
+        @Query("direction") direction: String = "DESC"
+//    ) : PageRecponse<RecipeDto>
+    ) : PagedRecipesResponse
 
     @GET("api/recipes/{id}")
     suspend fun getRecipeById(@Path("id") id: Long) : RecipeDto

@@ -103,7 +103,14 @@ fun RecipeListScreen(
 //                onLoginClick = { navController.navigate("login") },
                 onLogoutClick = {
                     authViewModel.logout()
-                }
+                },
+                onMyRecipesClick = {
+                    Log.d("NAV MyRecipe", "Navigating to MyRecipesScreen")
+                    navController.navigate("my_recipes") {
+                        launchSingleTop = true
+                    }
+                },
+                authViewModel = authViewModel
             )
         }
     ) { paddingValues ->

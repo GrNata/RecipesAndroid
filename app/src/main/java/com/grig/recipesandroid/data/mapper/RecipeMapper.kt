@@ -25,3 +25,4 @@ fun RecipeDto.toDomain() : Recipe =
         ingredients = ingredients?.map { it.toDomain() } ?: emptyList(),
         steps = steps ?: emptyList()
     )
+

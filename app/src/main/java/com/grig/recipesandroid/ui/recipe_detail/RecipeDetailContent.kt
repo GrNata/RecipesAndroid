@@ -95,7 +95,11 @@ fun RecipeDetailContent(
                         }
                         context.startActivity(Intent.createChooser(intent, "Поделиться рецептом"))
                     }
-                } else null
+                } else null,
+                onMyRecipesClick = {
+                    navController.navigate("my_recipes")
+                },
+                authViewModel = authViewModel
             )
         }       //  topBar
     ) { paddingValues ->
