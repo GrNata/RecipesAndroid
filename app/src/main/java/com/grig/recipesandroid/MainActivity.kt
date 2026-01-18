@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,7 +23,7 @@ import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesScreen
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModelFactory
-import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModul
+import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModel
 import com.grig.recipesandroid.ui.navigation.AppNavGraph
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailScreen
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModel
@@ -35,7 +34,6 @@ import com.grig.recipesandroid.ui.theme.RecipesAndroidTheme
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.OkHttpClient
-import androidx.lifecycle.ViewModelProvider
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModelFactory
 
 class MainActivity : ComponentActivity() {
@@ -62,34 +60,68 @@ class MainActivity : ComponentActivity() {
 //            .addConverterFactory(GsonConverterFactory.create())
 //            .build()
 
-        // 2. AuthApi и RecipeApi через Retrofit
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:9090/") // эмулятор Android
+//        // 2. AuthApi и RecipeApi через Retrofit
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("http://10.0.2.2:9090/") // эмулятор Android
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+
+//        authApi = retrofit.create(AuthApi::class.java)
+//        val recipeApiTemp = retrofit.create(RecipeApi::class.java)
+
+        // 3. AuthRepository
+//        authRepository = AuthRepository(authApi, tokenRepository)
+
+        val authRetrofit = Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:9090/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        authApi = retrofit.create(AuthApi::class.java)
-        val recipeApiTemp = retrofit.create(RecipeApi::class.java)
+        authApi = authRetrofit.create(AuthApi::class.java)
 
-        // 3. AuthRepository
         authRepository = AuthRepository(authApi, tokenRepository)
 
         // 4. OkHttpClient с AuthInterceptor
+//        val okHttpClient = OkHttpClient.Builder()
+//            .addInterceptor(AuthInterceptor(tokenRepository, authRepository))
+//            .build() // 2️⃣ OkHttpClient с AuthInterceptor
         val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(tokenRepository, authRepository))
+            .addInterceptor(
+                AuthInterceptor(
+                    tokenRepository = tokenRepository,
+                    authRepository = authRepository
+                )
+            )
             .build()
 
-        // 5. RecipeApi с клиентом, который знает про токены
-        recipeApi = Retrofit.Builder()
+
+//        // 5. RecipeApi с клиентом, который знает про токены
+//        recipeApi = Retrofit.Builder()
+//            .baseUrl("http://10.0.2.2:9090/")
+//            .client(okHttpClient)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//            .create(RecipeApi::class.java)
+//
+        val favoritesLocalDataSource = FavoritesDataStore(applicationContext)
+//
+//        // 6. Repositories
+//        val recipeRepository = RecipeRepository(recipeApi)
+//        val favoritesRepository = FavoritesRepository(recipeApi, tokenRepository, local = favoritesLocalDataSource)
+
+        // 3️⃣ ЕДИНСТВЕННЫЙ Retrofit
+        val retrofit = Retrofit.Builder()
             .baseUrl("http://10.0.2.2:9090/")
-            .client(okHttpClient)
+            .client(okHttpClient)                     // 🔥 ВАЖНО
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(RecipeApi::class.java)
 
-        val favoritesLocalDataSource = FavoritesDataStore(applicationContext)
+        // 4️⃣ API из одного Retrofit
+        authApi = retrofit.create(AuthApi::class.java)
+        recipeApi = retrofit.create(RecipeApi::class.java)
 
-        // 6. Repositories
+        // 5️⃣ Репозитории
+        authRepository = AuthRepository(authApi, tokenRepository)
         val recipeRepository = RecipeRepository(recipeApi)
         val favoritesRepository = FavoritesRepository(recipeApi, tokenRepository, local = favoritesLocalDataSource)
 
@@ -216,13 +248,12 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable("my_recipes") {
-                                val myRecipesViewModul: MyRecipesViewModul = viewModel(
-                                    factory = MyRecipesViewModelFactory(recipeRepository)
+                                val myRecipesViewModel: MyRecipesViewModel = viewModel(
+                                    factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
                                 )
-//                                val recipesViewModul: RecipesViewModel = viewModel()
 
                                 MyRecipesScreen(
-                                    myViewModul = myRecipesViewModul,
+                                    myViewModul = myRecipesViewModel,
                                     recipeViewModel = recipesViewModel,
                                     navController = navController,
                                     authViewModel = authViewModel

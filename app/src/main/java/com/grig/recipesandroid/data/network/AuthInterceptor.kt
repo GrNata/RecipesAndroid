@@ -24,26 +24,32 @@ class AuthInterceptor(
         val accessToken = runBlocking { tokenRepository.accessToken.first() }
 
 //        Публичные эндпоинты — без токена
+//        val isPublicEndpoint =
+//                    url.contains("/api/recipes") ||
+//                    url.contains("/api/recipe/") ||
+//                    url.contains("/api/auth/")
         val isPublicEndpoint =
-                    url.contains("/api/recipes") ||
-                    url.contains("/api/recipe/") ||
-                    url.contains("/api/auth/")
+                    url.endsWith("/api/recipes") ||          // список рецептов
+                    url.endsWith("/api/recipes/search") ||
+                    (url.contains("/api/recipes/") && !url.contains("/my/")) ||
+                    url.startsWith("http://10.0.2.2:9090/api/auth/")
 
         // 👉 если public — всегда без токена
         if (isPublicEndpoint) {
-            Log.d("СЕРДЦЕ - 53", "PUBLIC $url")
+            Log.d("MY Recipes token", "PUBLIC $url")
             return chain.proceed(originalRequest)
         }
         // 👉 если НЕ public, но токена нет — тоже без токена (сервер вернёт 401)
         if (accessToken.isNullOrBlank()) {
-            Log.d("СЕРДЦЕ - 50", "NO TOKEN $url")
+            Log.d("MY Recipes token", "NO TOKEN $url")
             return chain.proceed(originalRequest)
         }
+        Log.d("MY Recipes token", "accessToken: $accessToken")
         // 👉 защищённый эндпоинт + токен  - Добавляем токен в заголовок
         val requestWithToken = originalRequest.newBuilder()
             .addHeader("Authorization", "Bearer $accessToken")
             .build()
-        Log.d("СЕРДЦЕ - HTTP AuthInterceptor", "URL=${requestWithToken.url} headers=${requestWithToken.headers}")
+        Log.d("MY Recipes token - HTTP AuthInterceptor", "URL=${requestWithToken.url} headers=${requestWithToken.headers}")
 
         var response = chain.proceed(requestWithToken)
 
@@ -57,18 +63,18 @@ class AuthInterceptor(
                 try {
                     authRepository.refreshToken()       // возвращает новый accessToken и сохраняет его
                 } catch (e: Exception) {
-                    Log.e("СЕРДЦЕ - токена", "ошибка обновления токена e: $e")
+                    Log.e("MY Recipes token", "ошибка обновления токена e: $e")
                     null
                 }
             }
-            Log.i("СЕРДЦЕ - обновление токена", "newAccessToken: $newAccessToken")
+            Log.i("MY Recipes token", "newAccessToken: $newAccessToken")
 
             if (!newAccessToken.isNullOrBlank()) {
                 // повторяем запрос с новым токеном
                 val newRequest = originalRequest.newBuilder()
                     .addHeader("Authorization", "Bearer $newAccessToken")
                     .build()
-                Log.d("СЕРДЦЕ - HTTP NEW Token", "URL=${newRequest.url} headers=${newRequest.headers}")
+                Log.d("MY Recipes token", "URL=${newRequest.url} headers=${newRequest.headers}")
 
                 response.close()  // закрываем старый response
 
@@ -77,7 +83,7 @@ class AuthInterceptor(
             // если обновить не получилось — отдаем оригинальный ответ (401/403)
         }
 
-        Log.d("СЕРДЦЕ - 55", "URL=$url token=${accessToken?.take(10)}")
+        Log.d("MY Recipes token", "URL=$url token=${accessToken?.take(10)}")
 
         return response
     }

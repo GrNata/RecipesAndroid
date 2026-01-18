@@ -3,6 +3,7 @@ package com.grig.recipesandroid.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.grig.recipesandroid.data.api.RecipeApi
+import com.grig.recipesandroid.data.local.TokenRepository
 import com.grig.recipesandroid.data.mapper.toDomain
 import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
 import com.grig.recipesandroid.data.paging.RecipePagingSource
@@ -24,8 +25,12 @@ class RecipeRepository(
         size: Int = 10,
         sortBy: String = "id",
         direction: String = "DESC"
+//        ,
+//        token: String
     ) : PagedRecipesResponse {
+//        val token = tokenRepository.accessToken.first() ?: throw Exception("No access token"
         return api.getMyRecipes(page, size, sortBy, direction)
+//        return api.getMyRecipes(page, size)
     }
 
     suspend fun getRecipesById(id: Long) : Recipe {

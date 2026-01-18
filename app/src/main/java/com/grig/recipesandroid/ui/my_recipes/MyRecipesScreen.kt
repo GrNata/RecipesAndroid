@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -35,7 +35,7 @@ import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MyRecipesScreen(
-    myViewModul: MyRecipesViewModul,
+    myViewModul: MyRecipesViewModel,
     recipeViewModel: RecipesViewModel,
     navController: NavController,
     authViewModel: AuthViewModel
@@ -49,20 +49,36 @@ fun MyRecipesScreen(
     val favorites by recipeViewModel.favorites.collectAsState()
 
 
+//    Для проверки
+    LaunchedEffect(myRecipes.loadState) {
+        Log.d(
+            "MY_RECIPES_LOAD_STATE",
+            """
+        refresh = ${myRecipes.loadState.refresh}
+        append  = ${myRecipes.loadState.append}
+        prepend = ${myRecipes.loadState.prepend}
+        """
+                .trimIndent()
+        )
+    }
+
     // Optional: фильтр по избранным
     var showOnlyFavorites by remember { mutableStateOf(false) }
-//
+
 //    val filteredRecipes =
 //        if (showOnlyFavorites) {
 //            myRecipes.filter { favorites.contains(it.id) }
 //        } else {
 //            myRecipes
 //        }
-//    val filteredRecipes = myRecipes.itemSnapshotList.items ?: emptyList()
-    val filteredRecipes = myRecipes.itemSnapshotList.items.filterNotNull().let { list ->
-        if (showOnlyFavorites) list.filter { favorites.contains(it.id) }
-        else list
-    }
+    val filteredRecipes = myRecipes.itemSnapshotList.items ?: emptyList()
+//    val filteredRecipes = myRecipes.itemSnapshotList.items.filterNotNull().let { list ->
+//        if (showOnlyFavorites) list.filter { favorites.contains(it.id) }
+//        else list
+//    }
+
+    Log.d("MY Recipes SIZE", "filteredRecipes size: ${filteredRecipes.size}")
+    Log.d("MY Recipes SIZE", "myRecipes size: ${myRecipes.itemSnapshotList.size}")
 
 //    группировка по категориям
     val grouped = filteredRecipes

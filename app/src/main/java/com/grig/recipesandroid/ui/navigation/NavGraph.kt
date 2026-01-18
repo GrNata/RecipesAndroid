@@ -17,15 +17,9 @@ import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.local.FavoritesDataStore
 import com.grig.recipesandroid.data.local.TokenRepository
@@ -36,7 +30,7 @@ import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesScreen
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModelFactory
-import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModul
+import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModel
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModel
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModelFactory
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModelFactory
@@ -173,8 +167,8 @@ fun AppNavGraph(
 
                 composable("my_recipes") {
                     Log.d("NAV MyRecipe", "Entered MyRecipesScreen composable")
-                    val myRecipesViewModel: MyRecipesViewModul = viewModel(
-                        factory = MyRecipesViewModelFactory(recipeRepository)
+                    val myRecipesViewModel: MyRecipesViewModel = viewModel(
+                        factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
                     )
                     MyRecipesScreen(
                         myViewModul = myRecipesViewModel,
