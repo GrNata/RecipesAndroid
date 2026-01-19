@@ -43,6 +43,8 @@ fun MyRecipesScreen(
 
     Log.d("VM_CHECK", "recipeViewModel: $recipeViewModel")  // ← проверьте, что не null
 
+    // 🔹 флаг для отображения LoginScreen
+    var showLoginScreen by remember { mutableStateOf(false) }
 
 //    val myRecipes by myViewModul.myRecipes.collectAsState(initial = emptyList())
     val myRecipes = myViewModul.myRecipesPagingFlow.collectAsLazyPagingItems()
@@ -62,23 +64,23 @@ fun MyRecipesScreen(
         )
     }
 
-    // Optional: фильтр по избранным
-    var showOnlyFavorites by remember { mutableStateOf(false) }
+//    // Optional: фильтр по избранным
+//    var showOnlyFavorites by remember { mutableStateOf(false) }
 
-//    val filteredRecipes =
-//        if (showOnlyFavorites) {
-//            myRecipes.filter { favorites.contains(it.id) }
-//        } else {
-//            myRecipes
-//        }
     val filteredRecipes = myRecipes.itemSnapshotList.items ?: emptyList()
-//    val filteredRecipes = myRecipes.itemSnapshotList.items.filterNotNull().let { list ->
-//        if (showOnlyFavorites) list.filter { favorites.contains(it.id) }
-//        else list
-//    }
 
     Log.d("MY Recipes SIZE", "filteredRecipes size: ${filteredRecipes.size}")
     Log.d("MY Recipes SIZE", "myRecipes size: ${myRecipes.itemSnapshotList.size}")
+
+//    ОБЯЗАТЕЛЬНО добавить защиту в MyRecipesScreen
+    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
+    LaunchedEffect(isAuthenticated) {
+        if (!isAuthenticated) {
+            navController.navigate("recipe_list") {
+                popUpTo("my_recipes") { inclusive = true }
+            }
+        }
+    }
 
 //    группировка по категориям
     val grouped = filteredRecipes
@@ -90,8 +92,6 @@ fun MyRecipesScreen(
             valueTransform = { it.second }
         )
 
-//    val loading by myViewModul.loading.collectAsState()
-
     Scaffold(
         topBar = {
             AppTopBar(
@@ -99,8 +99,17 @@ fun MyRecipesScreen(
                 isAuthenticated = true,
                 onBack = { navController.popBackStack() },
                 onLoginClick = {},
-                onLogoutClick = {},
-                onShareClick = {},
+                onLogoutClick = {
+                    authViewModel.logout()
+                    navController.navigate("recipe_list") {
+                        popUpTo("my_recipes") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+//                onShareClick = {
+//                    // поделиться только в RecipeItem
+//                    Log.d("MY_RECIPES", "Share clicked for my recipes")
+//                },
                 authViewModel = authViewModel
             )
         }
