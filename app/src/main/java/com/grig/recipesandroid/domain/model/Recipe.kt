@@ -8,4 +8,5 @@ data class Recipe(
     val categories: List<Category>,
     val ingredients: List<RecipeIngredient>,
     val steps: List<String>
+//    val steps: MutableList<String>
 )

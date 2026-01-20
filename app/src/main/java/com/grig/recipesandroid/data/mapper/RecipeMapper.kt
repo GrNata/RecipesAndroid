@@ -24,6 +24,6 @@ fun RecipeDto.toDomain() : Recipe =
         image = image,
         categories = categories?.map { Category(it.id ?: 0L, it.name, it.image) } ?: emptyList(),
         ingredients = ingredients?.map { it.toDomain() } ?: emptyList(),
-        steps = steps ?: emptyList()
+        steps = (steps ?: emptyList())
     )
 

@@ -1,39 +1,23 @@
 package com.grig.recipesandroid
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.grig.recipesandroid.data.api.AuthApi
 import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.local.FavoritesDataStore
 import com.grig.recipesandroid.data.local.TokenRepository
 import com.grig.recipesandroid.data.network.AuthInterceptor
 import com.grig.recipesandroid.data.repository.AuthRepository
+import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.FavoritesRepository
+import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
+import com.grig.recipesandroid.data.repository.UnitRepository
 import com.grig.recipesandroid.ui.auth.AuthViewModel
-import com.grig.recipesandroid.ui.auth.LoginScreen
-import com.grig.recipesandroid.ui.auth.RegisterScreen
-import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModel
-import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModelFactory
-import com.grig.recipesandroid.ui.my_recipes.AddrecipeEditRecipeScreen
-import com.grig.recipesandroid.ui.my_recipes.MyRecipesScreen
-import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModelFactory
-import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModel
 import com.grig.recipesandroid.ui.navigation.AppNavGraph
-import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailScreen
-import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModel
-import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModelFactory
-import com.grig.recipesandroid.ui.recipe_list.RecipeListScreen
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import com.grig.recipesandroid.ui.theme.RecipesAndroidTheme
 import retrofit2.Retrofit
@@ -46,6 +30,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var authApi: AuthApi
     private lateinit var tokenRepository: TokenRepository
     private lateinit var authRepository: AuthRepository
+
+    private lateinit var ingredientRepository: IngredientRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,6 +115,9 @@ class MainActivity : ComponentActivity() {
         authRepository = AuthRepository(authApi, tokenRepository)
         val recipeRepository = RecipeRepository(recipeApi)
         val favoritesRepository = FavoritesRepository(recipeApi, tokenRepository, local = favoritesLocalDataSource)
+        val categoryRepository = CategoryRepository(recipeApi)
+        val ingredientRepository = IngredientRepository(recipeApi)
+        val unitRepository = UnitRepository(recipeApi)
 
         // 7. Compose и NavHost
         setContent {
@@ -159,7 +148,10 @@ class MainActivity : ComponentActivity() {
                     api = recipeApi,
                     authViewModel = authViewModel,
                     recipeRepository = recipeRepository,
+                    categoryRepository = categoryRepository,
                     tokenRepository = tokenRepository,
+                    ingredientRepository = ingredientRepository,
+                    unitRepository = unitRepository,
                     applicationContext = applicationContext,
                     recipeViewModel = recipesViewModel
                 )

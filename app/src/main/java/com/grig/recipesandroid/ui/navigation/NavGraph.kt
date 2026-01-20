@@ -1,6 +1,5 @@
 package com.grig.recipesandroid.ui.navigation
 
-import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Composable
@@ -17,27 +16,26 @@ import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import com.grig.recipesandroid.data.api.RecipeApi
-import com.grig.recipesandroid.data.local.FavoritesDataStore
 import com.grig.recipesandroid.data.local.TokenRepository
-import com.grig.recipesandroid.data.repository.FavoritesRepository
+import com.grig.recipesandroid.data.repository.CategoryRepository
+import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
+import com.grig.recipesandroid.data.repository.UnitRepository
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModel
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModelFactory
-import com.grig.recipesandroid.ui.my_recipes.AddrecipeEditRecipeScreen
+import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeScreen
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesScreen
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModelFactory
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModel
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModel
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModelFactory
-import com.grig.recipesandroid.ui.recipe_list.RecipesViewModelFactory
 
 
 @Composable
@@ -46,7 +44,10 @@ fun AppNavGraph(
     api: RecipeApi,
     authViewModel: AuthViewModel,
     recipeRepository: RecipeRepository,
+    categoryRepository: CategoryRepository,
     tokenRepository: TokenRepository,
+    ingredientRepository: IngredientRepository,
+    unitRepository: UnitRepository,
     applicationContext: Context,
     recipeViewModel: RecipesViewModel
     ) {
@@ -183,9 +184,9 @@ fun AppNavGraph(
 
                     val viewModel: AddEditRecipeViewModel = viewModel(
                         parentEntry,
-                        factory = AddEditRecipeViewModelFactory(recipeRepository, authViewModel)
+                        factory = AddEditRecipeViewModelFactory(recipeRepository, categoryRepository, ingredientRepository, unitRepository, authViewModel)
                     )
-                    AddrecipeEditRecipeScreen(
+                    AddEditRecipeScreen(
                        recipeId = null,
                         viewModel = viewModel,
                        navController = navController
@@ -202,9 +203,9 @@ fun AppNavGraph(
 
                     val viewModel: AddEditRecipeViewModel = viewModel(
                         parentEntry,
-                        factory = AddEditRecipeViewModelFactory(recipeRepository, authViewModel)
+                        factory = AddEditRecipeViewModelFactory(recipeRepository, categoryRepository, ingredientRepository, unitRepository, authViewModel)
                     )
-                    AddrecipeEditRecipeScreen(
+                    AddEditRecipeScreen(
                         recipeId = recipeId,
                         viewModel = viewModel,
                         navController = navController

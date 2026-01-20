@@ -1,9 +1,13 @@
 package com.grig.recipesandroid.data.api
 
+import com.grig.recipesandroid.data.model.dto_request.CategoryDto
+import com.grig.recipesandroid.data.model.dto_request.IngredientDto
 import com.grig.recipesandroid.data.model.dto_request.RecipeCreateRequest
 import com.grig.recipesandroid.data.model.dto_request.RecipeDto
 import com.grig.recipesandroid.data.model.dto_request.RecipeUpdateRequest
+import com.grig.recipesandroid.data.model.dto_request.UnitDto
 import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
+import com.grig.recipesandroid.domain.model.Category
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -60,6 +64,26 @@ interface RecipeApi {
 
     @DELETE("api/favorites/{recipeId}")
     suspend fun removeFavorite(@Path("recipeId") recipeId: Long): Unit
+
+//    ++++++++++++++++++++
+//    Category
+
+    @GET("api/categories/all")
+    suspend fun getCategories(): List<CategoryDto>
+
+//    ++++++++++++++++
+//    INGREDIENT
+
+    @GET("api/ingredients/all")
+    suspend fun getIngredients(): List<IngredientDto>
+
+    @GET("api/ingredients/{ingredientId}")
+    suspend fun getingredientById(@Path("ingredientId") ingredientId: Long): IngredientDto
+
+//    ++++++++++++++++
+//    UNIT
+    @GET("api/units")
+    suspend fun getUnits(): List<UnitDto>
 
 
 }

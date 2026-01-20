@@ -1,24 +1,37 @@
 package com.grig.recipesandroid.ui.my_recipes
 
 import android.util.Log
-import android.widget.Button
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.ExposedDropdownMenuDefaults.TrailingIcon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
-import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddrecipeEditRecipeScreen(
+fun AddEditRecipeScreen(
     recipeId: Long?,
     viewModel: AddEditRecipeViewModel = viewModel(),
     navController: NavController
@@ -26,10 +39,21 @@ fun AddrecipeEditRecipeScreen(
 
     val isEdit = recipeId != null
 
-    LaunchedEffect(recipeId) {
-        if (isEdit) {
-            viewModel.loadRecipe(requireNotNull(recipeId))
+//    LaunchedEffect(recipeId) {
+//        if (isEdit) {
+//            viewModel.loadRecipe(requireNotNull(recipeId))
+//        }
+//    }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadCategories()  // сначала загружаем все категории
+        if (isEdit && recipeId != null) {
+            viewModel.loadRecipe(recipeId)  // потом загружаем рецепт
         }
+        if (recipeId == null) {
+            viewModel.resetForm()
+        }
+        viewModel.loadIngredientAndUnitDictionaries()
     }
 
     Scaffold(
@@ -57,7 +81,22 @@ fun AddrecipeEditRecipeScreen(
                 label = { Text("Название")}
             )
 
-            Log.e("CICLE NAV_TRACE", "AddEditRecipeScreen navigate to login from RecipeDetailScreen")
+            TextField(
+                value = viewModel.description,
+                onValueChange = viewModel::onNameChange,
+                label = { Text("Описание")}
+            )
+
+            CategoriesWIthDropDownMenu(viewModel)
+
+            // --- динамический список ингредиентов ---
+            IngredientsWithDinamicList(viewModel)
+
+            // --- динамический список шагов приготовления ---
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+
+            StepsWithDinamicList(viewModel)
+
             Button(
                 onClick = {
                     if (isEdit) viewModel.updateRecipe()
