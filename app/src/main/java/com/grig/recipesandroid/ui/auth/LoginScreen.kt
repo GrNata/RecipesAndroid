@@ -13,9 +13,10 @@ import androidx.navigation.NavController
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel = viewModel(),
-//    onLoginSuccess: () -> Unit,
     navController: NavController
 ) {
+    Log.d("CICLE NAV_TRACE", "LoginScreen НАЧАЛО")
+
     val loading by authViewModel.loading.collectAsState()
     val error by authViewModel.error.collectAsState()
     val tokens by authViewModel.tokens.collectAsState()
@@ -26,7 +27,7 @@ fun LoginScreen(
 
     // Если логин успешен
     LaunchedEffect(tokens) {
-        Log.d("LOGIN LoginScreen", "LoginScreen: $loginConsumed, token: $tokens")
+        Log.d("CICLE NAV_TRACE", "LoginScreen LaunchedEffect(tokens): $loginConsumed, token: $tokens")
 //        if (tokens != null) onLoginSuccess()
         if (tokens != null && !loginConsumed) {
             loginConsumed = true
@@ -38,7 +39,16 @@ fun LoginScreen(
                     navController.navigate(route) {
                         popUpTo("login") { inclusive = true  }
                     }
-                } else {
+                }
+//        if (tokens != null) {
+//            val redirect = authViewModel.loginRedirectRoute
+//            if (redirect != null) {
+//                navController.navigate(redirect) {
+//                    popUpTo("login") { inclusive = true }
+//                }
+//                authViewModel.clearRedirect()
+//            }
+                else {
                     navController.navigate("recipe_list") {
                         popUpTo("login") { inclusive = true  }
                     }
@@ -52,6 +62,7 @@ fun LoginScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
+        Log.d("CICLE NAV_TRACE", "LoginScreen Column")
         TextField(
             value = email,
             onValueChange = { email = it },

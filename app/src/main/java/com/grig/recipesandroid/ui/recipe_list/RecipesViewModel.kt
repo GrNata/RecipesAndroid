@@ -1,13 +1,13 @@
 package com.grig.recipesandroid.ui.recipe_list
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.grig.recipesandroid.data.repository.RecipeRepository
-import com.grig.recipesandroid.data.model.dto.RecipeDto
+import com.grig.recipesandroid.data.model.dto_request.RecipeDto
 import com.grig.recipesandroid.data.repository.FavoritesRepository
-import com.grig.recipesandroid.ui.auth.AuthViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
@@ -26,10 +25,7 @@ open class RecipesViewModel(
     private val repository: RecipeRepository,
     private val favoritesRepository: FavoritesRepository,
     private val userIdFlow: StateFlow<String?>      // сюда передаем текущий userId / email
-//    private val authViewModel: AuthViewModel
 ) : ViewModel() {
-
-//    val userIdFlow = authViewModel.userId
 
 //    теперь избранное — offline-first,
     val favorites: StateFlow<Set<Long>> =
@@ -37,20 +33,14 @@ open class RecipesViewModel(
             .flatMapLatest { userId ->
                 favoritesRepository.localFavoritesFlow(userId)
             }
-//        favoritesRepository.localFavoritesFlow(userIdFlow)
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5_000),
                 emptySet()
             )
 
-
-
     private val _lastToggledRecipeId = MutableStateFlow<Long?>(null)
     val lastToggleRecipeId: StateFlow<Long?> = _lastToggledRecipeId
-
-//    private val _favorites = MutableStateFlow<Set<Long>>(emptySet())
-//    val favorites: StateFlow<Set<Long>> = _favorites
 
     private val _query = MutableStateFlow("")       // _query — хранит текущий текст поиска
     val query: StateFlow<String> = _query               // setQuery() — вызывается при вводе в текстовое поле
@@ -82,7 +72,32 @@ open class RecipesViewModel(
                 }
                 .cachedIn(viewModelScope)
 
+
+    private var favoritesSyncedForUser: String? = null
+
+    init {
+        Log.d("CICLE RecipeViewModel", "RecipeViewModel - init")
+        viewModelScope.launch {
+            userIdFlow
+                .collect { userId ->
+                    when {
+                        userId == null -> {
+                            favoritesSyncedForUser = null
+                            clearFavorites()
+                        }
+
+                        favoritesSyncedForUser != userId -> {
+                            favoritesSyncedForUser = userId
+                            syncFavoritesIfLoggedIn(userId)
+                        }
+                    }
+                }
+        }
+    }
+
+
     fun syncFavoritesIfLoggedIn(userId: String?) {
+        Log.d("CICLE RecipeViewModel", "RecipeViewModel - syncFavoritesIfLoggedIn")
         viewModelScope.launch {
             if (userId == null) return@launch
 
@@ -95,6 +110,7 @@ open class RecipesViewModel(
     }
 
     fun clearFavorites() {
+        Log.d("CICLE RecipeViewModel", "RecipeViewModel - clearFavorites")
         viewModelScope.launch {
             val currentUserId = userIdFlow.value
             favoritesRepository.clearLocal(currentUserId)
@@ -102,6 +118,7 @@ open class RecipesViewModel(
     }
 
     fun toggleFavorite(recipeId: Long) {
+        Log.d("CICLE RecipeViewModel", "RecipeViewModel - toggleFavorite")
         viewModelScope.launch {
             val currentUserId = userIdFlow.value
             if (favorites.value.contains(recipeId)) {
@@ -115,6 +132,7 @@ open class RecipesViewModel(
 
 //Paging уже умеет повторять загрузку через метод retry() у PagingData
     fun retryRecipes() {
+    Log.d("CICLE RecipeViewModel", "RecipeViewModel - retryRecipes")
         // У PagingData есть extension функция retry()
         viewModelScope.launch {
             try {

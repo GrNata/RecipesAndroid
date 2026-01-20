@@ -17,6 +17,7 @@ import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -28,6 +29,9 @@ import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
+import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModel
+import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModelFactory
+import com.grig.recipesandroid.ui.my_recipes.AddrecipeEditRecipeScreen
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesScreen
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModelFactory
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModel
@@ -50,7 +54,6 @@ fun AppNavGraph(
             NavHost(
                 navController = navController,
                 startDestination = "recipe_list"
-//            startDestination = startDestination
             ) {
                 composable(
                     route = "recipe_list",
@@ -76,22 +79,17 @@ fun AppNavGraph(
                     }
                 ) {
                     val isAuth by authViewModel.isAuthenticated.collectAsState()
-                    Log.d("LOGIN Log", "NavGraph (recipe_list) isAuthenticated = $isAuth")
+                    Log.d("СЕРДЦЕ NavGraph", "NavGraph (recipe_list) isAuthenticated = $isAuth")
 
                     RecipeListScreen(
-//                        viewModel = viewModel<RecipesViewModel>(), // здесь создаём ViewModel
-                        viewModel = viewModel(factory = RecipesViewModelFactory(
-                            repository = recipeRepository,
-                            favoritesRepository = FavoritesRepository(
-                                api = api,
-                                tokenRepository = tokenRepository,
-                                local = FavoritesDataStore(applicationContext as Application)
-                            ),
-                            userIdFlow = authViewModel.userId
-                        )),
+                        viewModel = recipeViewModel,
                         navController = navController,
                         onRecipeClick = { recipeId ->
                             navController.navigate("recipe_detail/${recipeId}")
+                            Log.e(
+                                "CICLE NAV_TRACE",
+                                "NavGraph навигация к детализации рецепта id = $recipeId"
+                            )
                         },
                         authViewModel = authViewModel
                     )
@@ -122,25 +120,15 @@ fun AppNavGraph(
                             )
                         )
                     }
-//            exitTransition = {
-//                slideOutVertically { it } + fadeOut()
-//            }
                 ) { backStackEntry ->
                     val recipeId = backStackEntry.arguments?.getLong("recipeId") ?: 0L
 
-                    //  ОБЩИЙ RecipesViewModel (тот же, что в списке)
-                    val parentEntry = remember(backStackEntry) {
-                        navController.getBackStackEntry("recipe_list")
-                    }
-
-                    val recipeViewModel: RecipesViewModel = viewModel(parentEntry)
-
                     //  Detail ViewModel (отдельный)
                     val detailViewModel: RecipeDetailViewModel = viewModel(
-//                factory = RecipeDetailViewModelFactory(recipeRepository, recipeId)
                         factory = RecipeDetailViewModelFactory(api = api, recipeId = recipeId)
                     )
 
+                    Log.e("CICLE NAV_TRACE", "NavGraph (recipe_detail) navigate to login from RecipeDetailScreen")
                     RecipeDetailScreen(
                         recipeId = recipeId,
                         recipeViewModel = recipeViewModel,
@@ -152,8 +140,10 @@ fun AppNavGraph(
                 }
 
                 composable("login") {
-                    val isAuth by authViewModel.isAuthenticated.collectAsState()
+                    Log.e("CICLE NAV_TRACE", "NavGraph navigate to login ")
+//                    val isAuth by authViewModel.isAuthenticated.collectAsState()
                     LoginScreen(
+                        authViewModel = authViewModel,
                         navController = navController
                     )
 //                    LoginScreen(
@@ -165,16 +155,59 @@ fun AppNavGraph(
                     RegisterScreen(onRegisterSuccess = { navController.navigate("recipe_list") })
                 }
 
-                composable("my_recipes") {
-                    Log.d("NAV MyRecipe", "Entered MyRecipesScreen composable")
-                    val myRecipesViewModel: MyRecipesViewModel = viewModel(
-                        factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
+//                if (isAuthenticated) {
+                    composable("my_recipes") { backStackEntry ->
+                        Log.d("NAV MyRecipe", "Entered MyRecipesScreen composable")
+
+                        val parentEntry = remember(backStackEntry) {
+                            navController.getBackStackEntry("recipe_list")
+                        }
+
+                        val myRecipesViewModel: MyRecipesViewModel = viewModel(
+                            parentEntry,
+                            factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
+                        )
+
+                        MyRecipesScreen(
+                            myViewModul = myRecipesViewModel,
+                            recipeViewModel = recipeViewModel,
+                            navController = navController,
+                            authViewModel = authViewModel
+                        )
+                }
+
+                composable("recipe_add") { backEntry ->
+                    val parentEntry = remember(backEntry) {
+                        navController.getBackStackEntry("my_recipes")
+                    }
+
+                    val viewModel: AddEditRecipeViewModel = viewModel(
+                        parentEntry,
+                        factory = AddEditRecipeViewModelFactory(recipeRepository, authViewModel)
                     )
-                    MyRecipesScreen(
-                        myViewModul = myRecipesViewModel,
-                        recipeViewModel = recipeViewModel,
-                        navController = navController,
-                        authViewModel = authViewModel
+                    AddrecipeEditRecipeScreen(
+                       recipeId = null,
+                        viewModel = viewModel,
+                       navController = navController
+                   )
+
+                }
+
+                composable("recipe_edit/{recipeId}") { backStackEntry ->
+                    val recipeId = backStackEntry.arguments?.getString("recipeId")?.let { it.toLongOrNull() }
+
+                    val parentEntry = remember(backStackEntry) {
+                        navController.getBackStackEntry("my_recipes")
+                    }
+
+                    val viewModel: AddEditRecipeViewModel = viewModel(
+                        parentEntry,
+                        factory = AddEditRecipeViewModelFactory(recipeRepository, authViewModel)
+                    )
+                    AddrecipeEditRecipeScreen(
+                        recipeId = recipeId,
+                        viewModel = viewModel,
+                        navController = navController
                     )
                 }
 

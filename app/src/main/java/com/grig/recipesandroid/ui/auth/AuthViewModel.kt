@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.auth
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,6 +25,7 @@ class AuthViewModel(
     private val authRepository: AuthRepository,
     private val tokenRepository: TokenRepository
 ) : ViewModel() {
+
 
     val isAuthenticated: StateFlow<Boolean> = tokenRepository.refreshToken
         .map { !it.isNullOrBlank() }
@@ -73,9 +75,11 @@ class AuthViewModel(
 
     init {
         restoreSession()
+        Log.d("CICLE AuthViewModel", "AuthViewModel - init")
     }
 
     fun login(email: String, password: String) {
+        Log.d("CICLE AuthViewModel", "AuthViewModel - login")
         viewModelScope.launch {
             _loading.value = true
             _error.value = null
@@ -93,6 +97,7 @@ class AuthViewModel(
     }
 
     fun register(email: String, password: String, name: String? = null) {
+        Log.d("CICLE AuthViewModel", "AuthViewModel - register")
         viewModelScope.launch {
             _loading.value = true
             _error.value = null
@@ -110,6 +115,7 @@ class AuthViewModel(
     }
 
     fun logout() {
+        Log.d("CICLE AuthViewModel", "AuthViewModel - logout")
         viewModelScope.launch {
             tokenRepository.clearTokens()
 
@@ -119,6 +125,7 @@ class AuthViewModel(
             _error.value = null
 //            authRepository.logout()
 //            _tokens.value = null
+
         }
     }
 

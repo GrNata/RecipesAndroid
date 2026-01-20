@@ -1,6 +1,6 @@
 package com.grig.recipesandroid.data.model.response
 
-import com.grig.recipesandroid.data.model.dto.RecipeDto
+import com.grig.recipesandroid.data.model.dto_request.RecipeDto
 
 data class PagedRecipesResponse(
     val content: List<RecipeDto>,

@@ -1,6 +1,7 @@
 package com.grig.recipesandroid.ui.recipe_detail
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,8 @@ import com.grig.recipesandroid.domain.model.Recipe
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Button
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
@@ -62,9 +65,14 @@ fun RecipeDetailContent(
 
     Scaffold(
         topBar = {
+            val authRestored by authViewModel.authStateRestored.collectAsState()
+
+            Log.d("CICLE NAV_TRACE", "RecipeDetailContent before AppTopBar")
+
             AppTopBar(
                 title = recipe?.name ?: "Детали рецепта",
                 isAuthenticated = isAuthenticated,
+                showMyRecipes = authRestored && isAuthenticated,
                 onBack = onBack,
 //                onLoginClick = { navController.navigate("login") },
                 onLoginClick = {
@@ -99,7 +107,7 @@ fun RecipeDetailContent(
                 onMyRecipesClick = {
                     navController.navigate("my_recipes")
                 },
-                authViewModel = authViewModel
+//                authViewModel = authViewModel
             )
         }       //  topBar
     ) { paddingValues ->
@@ -165,6 +173,7 @@ fun RecipeDetailContent(
                     }
                 }
                 else -> {
+                    Log.d("CICLE NAV_TRACE", "RecipeDetailContent before RecipeDetailLoaded")
                     RecipeDetailLoaded(
                         recipeViewModel,
                         recipe,

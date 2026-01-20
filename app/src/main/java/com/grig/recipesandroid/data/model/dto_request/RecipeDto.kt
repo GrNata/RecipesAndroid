@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.data.model.dto
+package com.grig.recipesandroid.data.model.dto_request
 
 import com.google.gson.annotations.SerializedName
 
@@ -12,3 +12,4 @@ data class RecipeDto(
     @SerializedName("steps") val steps: List<String>?,
 //    var isFavorite: Boolean = false
 )
+

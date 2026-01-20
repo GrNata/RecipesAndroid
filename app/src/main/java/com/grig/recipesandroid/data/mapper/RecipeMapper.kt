@@ -1,7 +1,7 @@
 package com.grig.recipesandroid.data.mapper
 
-import com.grig.recipesandroid.data.model.dto.IngredientWithAmountDto
-import com.grig.recipesandroid.data.model.dto.RecipeDto
+import com.grig.recipesandroid.data.model.dto_request.IngredientWithAmountDto
+import com.grig.recipesandroid.data.model.dto_request.RecipeDto
 import com.grig.recipesandroid.domain.model.Category
 import com.grig.recipesandroid.domain.model.Ingredient
 import com.grig.recipesandroid.domain.model.Recipe
@@ -11,7 +11,8 @@ fun IngredientWithAmountDto.toDomain() : RecipeIngredient =
     RecipeIngredient(
         ingredient = Ingredient(id = id, name = name),
         amount = amount,
-        unit = unit?.label ?: ""
+//        unit = unit?.label ?: ""
+        unit = unit
     )
 
 

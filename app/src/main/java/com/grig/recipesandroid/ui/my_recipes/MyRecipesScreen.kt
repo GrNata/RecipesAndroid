@@ -9,7 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,7 +46,7 @@ fun MyRecipesScreen(
     authViewModel: AuthViewModel
 ) {
 
-    Log.d("VM_CHECK", "recipeViewModel: $recipeViewModel")  // ← проверьте, что не null
+    Log.d("СЕРДЦЕ MyRecipesScreen VM_CHECK", " начало MyRecipesScreen, recipeViewModel: $recipeViewModel")  // ← проверьте, что не null
 
     // 🔹 флаг для отображения LoginScreen
     var showLoginScreen by remember { mutableStateOf(false) }
@@ -72,15 +77,15 @@ fun MyRecipesScreen(
     Log.d("MY Recipes SIZE", "filteredRecipes size: ${filteredRecipes.size}")
     Log.d("MY Recipes SIZE", "myRecipes size: ${myRecipes.itemSnapshotList.size}")
 
-//    ОБЯЗАТЕЛЬНО добавить защиту в MyRecipesScreen
-    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
-    LaunchedEffect(isAuthenticated) {
-        if (!isAuthenticated) {
-            navController.navigate("recipe_list") {
-                popUpTo("my_recipes") { inclusive = true }
-            }
-        }
-    }
+////    ОБЯЗАТЕЛЬНО добавить защиту в MyRecipesScreen
+//    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
+//    LaunchedEffect(isAuthenticated) {
+//        if (!isAuthenticated) {
+//            navController.navigate("recipe_list") {
+//                popUpTo("my_recipes") { inclusive = true }
+//            }
+//        }
+//    }
 
 //    группировка по категориям
     val grouped = filteredRecipes
@@ -92,12 +97,33 @@ fun MyRecipesScreen(
             valueTransform = { it.second }
         )
 
+    var isMyRecipes = true
+
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
+
+//        Кнопка добавить рецепт
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate("recipe_add")
+                },
+                containerColor = Color.Red
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Добавить рецепт")
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End, // не обязательно, но правильно
+
         topBar = {
             AppTopBar(
                 title = "Мои рецепты",
                 isAuthenticated = true,
-                onBack = { navController.popBackStack() },
+                showMyRecipes = false,
+                onBack = {
+                    isMyRecipes = false
+                    navController.popBackStack()
+                         },
                 onLoginClick = {},
                 onLogoutClick = {
                     authViewModel.logout()
@@ -110,7 +136,7 @@ fun MyRecipesScreen(
 //                    // поделиться только в RecipeItem
 //                    Log.d("MY_RECIPES", "Share clicked for my recipes")
 //                },
-                authViewModel = authViewModel
+//                authViewModel = authViewModel
             )
         }
     ) { paddingValues ->
@@ -137,17 +163,27 @@ fun MyRecipesScreen(
                             }
                         }
 //                            }
+                        Log.d("СЕРДЦЕ MyRecipeScreen", "recipesInCategory size ${recipesInCategory.size}")
 
                         items(recipesInCategory) { recipe ->
+//                            Log.d("MyRecipeItem", "MyRecipe recipe: ${recipe.ingredients.forEach {
+//                                (it.unit?.label) ?: ""
+//                            }}")
+
                             RecipeItem(
                                 viewModel = recipeViewModel,
                                 recipe = recipe,
                                 query = "",
                                 isFavorite = favorites.contains(recipe.id),         //  по желанию
+                                isOwner = true,
                                 onFavoriteClick = { recipeViewModel.toggleFavorite(recipe.id) },
-                                onClick = { navController.navigate("recipe_detail/${recipe.id}") }
-//                                    onEditClick = { /* открыть экран редактирования */  },
-//                                    onDeleteClick = {  /* вызвать репозиторий delete */ }
+                                onClick = { navController.navigate("recipe_detail/${recipe.id}") },
+                                onEditClick = {
+                                    navController.navigate("recipe_edit/${recipe.id}")
+                                },
+                                onDeleteClick = {
+//                                    myViewModul.deleteRecipe(recipe.id)
+                                }
                             )
                         }
                     }

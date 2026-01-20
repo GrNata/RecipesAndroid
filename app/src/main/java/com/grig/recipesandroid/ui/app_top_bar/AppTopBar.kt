@@ -4,6 +4,7 @@ import android.graphics.drawable.Icon
 import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Share
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.input.KeyboardType.Companion.Text
+import com.grig.recipesandroid.domain.model.Recipe
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,12 +26,13 @@ import com.grig.recipesandroid.ui.auth.AuthViewModel
 fun AppTopBar(
     title: String,
     isAuthenticated: Boolean,
+    showMyRecipes: Boolean,
     onBack: (() -> Unit)? = null,
     onLoginClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onShareClick: (() -> Unit)? = null,      //  nullable — показываем только для залогиненных
     onMyRecipesClick: (() -> Unit)? = null,      //  nullable — показываем только для залогиненных
-    authViewModel: AuthViewModel
+//    authViewModel: AuthViewModel
 ) {
 
     TopAppBar(
@@ -49,14 +52,33 @@ fun AppTopBar(
                 }
             }
 
-            // 2 Кнопка "Мои рецепты" (только для залогиненных и если передан обработчик)
-            val authRestored by authViewModel.authStateRestored.collectAsState()
-            Log.d("NAV MyRecipe", "authRestored: $authRestored")
-            if (authRestored && isAuthenticated && onMyRecipesClick != null) {
+//            // 2 Кнопка "Мои рецепты" (только для залогиненных и если передан обработчик)
+            if (showMyRecipes && onMyRecipesClick != null) {
                 IconButton(onClick = onMyRecipesClick) {
                     Icon(Icons.Default.List, contentDescription = "Мои рецепты")
                 }
             }
+//            val authRestored by authViewModel.authStateRestored.collectAsState()
+//            Log.d("NAV MyRecipe", "authRestored: $authRestored")
+//            if (authRestored && isAuthenticated && onMyRecipesClick != null) {
+//                IconButton(onClick = onMyRecipesClick) {
+//                    Icon(Icons.Default.List, contentDescription = "Мои рецепты")
+//                }
+//            }
+
+////            Кнопка добавить
+//            Log.d("Add Recipe", "ADD isMyRecipe = $isMyRecipe")
+//            if (isMyRecipe) {
+//                    IconButton(
+//                        onClick = {
+////                            navController.navigate("recipe_add")
+//                        }
+//                    ) {
+//                        Icon(Icons.Default.Add, contentDescription = "Добавить рецепт")
+//                    }
+//                }
+
+
 
             // 3 Кнопка Войти / Выйти
             if (isAuthenticated) {

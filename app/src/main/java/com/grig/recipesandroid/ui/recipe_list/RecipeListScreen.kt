@@ -46,6 +46,7 @@ fun RecipeListScreen(
 
     val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
     val accessToken by authViewModel.accessToken.collectAsState(initial = null)
+
     Log.d("СЕРДЦЕ - TOKEN RecipeListScreen", "accessToken = ${accessToken?.take(10)}")
 
     val favoritesSet by viewModel.favorites.collectAsState()
@@ -65,13 +66,13 @@ fun RecipeListScreen(
 //    }
     val userId by authViewModel.userId.collectAsState()
 
-//     синхронизация избранного local + remote
-    LaunchedEffect(isAuthenticated) {
-        if (isAuthenticated) {
-//            viewModel.syncFavoritesIfLoggerdIn(true)
-            viewModel.syncFavoritesIfLoggedIn(userId)
-        }
-    }
+////     синхронизация избранного local + remote
+//    LaunchedEffect(isAuthenticated) {
+//        if (isAuthenticated) {
+////            viewModel.syncFavoritesIfLoggerdIn(true)
+//            viewModel.syncFavoritesIfLoggedIn(userId)
+//        }
+//    }
 
 //  В Scaffold передаём snackbarHost = { SnackbarHost(hostState = snackbarHostState) }.
 //	•	LaunchedEffect(message) слушает messageFlow из ViewModel и показывает Snackbar.
@@ -95,12 +96,14 @@ fun RecipeListScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            Log.d("LOGIN Log", "RecipeListScreen isAuthenticated = $isAuthenticated")
+            Log.d("СЕРДЦЕ RecipeListScreen", "RecipeListScreen isAuthenticated = $isAuthenticated")
+            Log.d("CICLE RecipeListScreen", "RecipeListScreen isAuthenticated = $isAuthenticated")
             AppTopBar(
                 title = "Рецепты",
                 isAuthenticated = isAuthenticated,
-                onLoginClick = { showLoginScreen = true },
-//                onLoginClick = { navController.navigate("login") },
+                showMyRecipes = false,
+//                onLoginClick = { showLoginScreen = true },
+                onLoginClick = { navController.navigate("login") },
                 onLogoutClick = {
                     authViewModel.logout()
                 },
@@ -110,23 +113,23 @@ fun RecipeListScreen(
                         launchSingleTop = true
                     }
                 },
-                authViewModel = authViewModel
+//                authViewModel = authViewModel
             )
         }
     ) { paddingValues ->
 
         // 🔹 показываем LoginScreen если нужно
-        if (showLoginScreen) {
-            LoginScreen(
-//                viewModel = authViewModel,
-                authViewModel = authViewModel,
-                navController
-//                onLoginSuccess = {
-//                    // закрываем экран логина
-//                    showLoginScreen = false
-//                }
-            )
-        } else {
+//        if (showLoginScreen) {
+//            LoginScreen(
+////                viewModel = authViewModel,
+//                authViewModel = authViewModel,
+//                navController
+////                onLoginSuccess = {
+////                    // закрываем экран логина
+////                    showLoginScreen = false
+////                }
+//            )
+//        } else {
 
             Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
                 Row(
@@ -177,7 +180,7 @@ fun RecipeListScreen(
                 )
 
             }
-        }           // else
+//        }           // else
     }
 
 }

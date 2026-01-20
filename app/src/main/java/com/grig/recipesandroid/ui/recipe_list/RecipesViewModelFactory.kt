@@ -16,7 +16,7 @@ class RecipesViewModelFactory(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RecipesViewModel::class.java)) {
-            Log.d("VM_DEBUG", "Создание $modelClass")
+            Log.d("CICLE RecipesViewModelFactory", "RecipesViewModelFactory - Создание $modelClass")
             return RecipesViewModel(repository, favoritesRepository, userIdFlow) as T
         }
         throw IllegalArgumentException("Uknown ViewModel class: $modelClass")

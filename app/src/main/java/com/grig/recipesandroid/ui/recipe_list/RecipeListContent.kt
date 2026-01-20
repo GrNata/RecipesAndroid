@@ -142,20 +142,26 @@ fun RecipeListContent(
 //                                derivedStateOf { favorites.contains(recipe.id) }
 //                            }
 
+//                            Log.d("RecipeItem", "ListRecipe recipe: ${recipe.ingredients.size}")
+//                            Log.d("RecipeItem", "ListRecipe recipe: ${recipe.ingredients.forEach {
+//                                (it.unit?.label) ?: ""
+//                            }}")
+
                             RecipeItem(
                                 viewModel = viewModel,
                                 recipe = recipe,
                                 query = query,
                                 isFavorite = favorites.contains(recipe.id),
+                                isOwner = false,
 //                                isFavorite = isFavotite,
                                 onFavoriteClick = { viewModel.toggleFavorite(recipe.id) },
                                 onClick = { onRecipeClick(recipe.id) }
                             )
 
-                            Log.d("СЕРДЦЕ - 3", "Favorite = $favorites")
-                            for (l in favorites) {
-                                Log.d("СЕРДЦЕ - 2", "Favorite-ID = $l, recipeId = ${recipe.id}")
-                            }
+                            Log.d("СЕРДЦЕ - RecipeListContent", "Favorite size = ${favorites.size}")
+//                            for (l in favorites) {
+//                                Log.d("СЕРДЦЕ - 2", "Favorite-ID = $l, recipeId = ${recipe.id}")
+//                            }
                         }
                     }
 

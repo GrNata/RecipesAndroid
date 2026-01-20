@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
@@ -32,9 +33,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.grig.recipesandroid.domain.model.Recipe
+import com.grig.recipesandroid.domain.model.toUi
 
 //@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -43,8 +44,11 @@ fun RecipeItem(
     recipe: Recipe,
     query: String,
     isFavorite: Boolean,
+    isOwner: Boolean,
     onFavoriteClick: () -> Unit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onEditClick: (() -> Unit)? = null,
+    onDeleteClick: (() -> Unit)? = null
 ) {
 
     Card(
@@ -65,6 +69,25 @@ fun RecipeItem(
                 modifier = Modifier.fillMaxWidth().height(15.dp).padding(0.dp),
                 horizontalArrangement = Arrangement.End
             ) {
+            // Только для моих рецептов - кнопки добавить и удалить
+                if (isOwner) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        IconButton(onClick = {
+//                            onEditClick?.invoke()
+                        }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Редактировать")
+                        }
+                        IconButton(onClick = {
+//                            onDeleteClick?.invoke()
+                        }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Удалить")
+                        }
+                    }
+                }
+
                 val scale by animateFloatAsState(targetValue = if (isFavorite) 1.3f else 1f)
 
                 IconButton(
@@ -83,7 +106,7 @@ fun RecipeItem(
                         modifier = Modifier.size(40.dp)
                     )
                 }
-                Log.d("СЕРДЦЕ", "isFavorite = $isFavorite, recipeId = ${recipe.id}")
+//                Log.d("СЕРДЦЕ", "isFavorite = $isFavorite, recipeId = ${recipe.id}")
             }
 
             Row(
@@ -131,11 +154,15 @@ fun RecipeItem(
             Spacer(modifier = Modifier.padding(4.dp))
 //            Column {
             Row {
-                recipe.ingredients.forEach { ing ->
+                val ingredientsUi = recipe.ingredients.map { it.toUi() }
+//                recipe.ingredients.forEach { ing ->
+                ingredientsUi.forEach { ing ->
                     Text(
 //                        text = "${ing.ingredient.name}: ${ing.amount} ${ing.unit ?: ""}".trim(),
                         text = "${ing.ingredient.name}, ".trim().lowercase(),
-                        color = Color(0xFF123C69))
+                        color = Color(0xFF123C69)
+                    )
+//                    Text(text = ing.unit?.label ?: "")
                 }
             }
         }

@@ -5,6 +5,8 @@ import androidx.paging.PagingConfig
 import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.local.TokenRepository
 import com.grig.recipesandroid.data.mapper.toDomain
+import com.grig.recipesandroid.data.model.dto_request.RecipeCreateRequest
+import com.grig.recipesandroid.data.model.dto_request.RecipeUpdateRequest
 import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
 import com.grig.recipesandroid.data.paging.RecipePagingSource
 import com.grig.recipesandroid.domain.model.Recipe
@@ -38,6 +40,20 @@ class RecipeRepository(
         return dto.toDomain()
     }
 
+    suspend fun createRecipe(request: RecipeCreateRequest) {
+        api.createRecipe(request)
+    }
+
+    suspend fun updateRecipe(
+        recipeId: Long,
+        request: RecipeUpdateRequest
+    ) {
+        api.updateRecipe(recipeId, request)
+    }
+
+    suspend fun deleteRecipe(recipeId: Long) {
+        api.deleteRecipe(recipeId)
+    }
 
 
     // Временный метод для отладки

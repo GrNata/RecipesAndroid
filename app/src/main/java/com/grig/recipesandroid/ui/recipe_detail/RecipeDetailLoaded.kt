@@ -48,6 +48,7 @@ import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import kotlinx.coroutines.delay
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.rememberCoroutineScope
+import com.grig.recipesandroid.domain.model.toUi
 import kotlinx.coroutines.launch
 
 
@@ -185,9 +186,12 @@ fun RecipeDetailLoaded(
                         color = Color(0xFF656A77)
                     )
 
-                    recipe.ingredients.forEach {
+                    val ingredientsUi = recipe.ingredients.map { it.toUi() }
+//                    recipe.ingredients.forEach {
+                    ingredientsUi.forEach {
                         Text(
-                            text = "• ${it.ingredient.name}: ${it.amount ?: ""} ${it.unit}",
+//                            text = "• ${it.ingredient.name}: ${it.amount ?: ""} ${it.unit}",
+                            text = "• ${it.ingredient.name}: ${it.amount ?: ""} ${it.unit ?: ""}",
                             color = Color(0xFF656A77),
                             style = MaterialTheme.typography.bodyMedium
                         )
