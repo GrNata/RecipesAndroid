@@ -30,7 +30,6 @@ import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
-import com.grig.recipesandroid.ui.auth.LoginScreen
 
 //   разделяем UI и state - RecipeListContent
 // RecipeListScreen получает ViewModel и передаёт данные в RecipeListContent.
@@ -57,26 +56,12 @@ fun RecipeListScreen(
 //    фильтрация избранных
     var showOnlyFavorites by remember { mutableStateOf(false) }
 
-//    LaunchedEffect(accessToken) {
-//        if (!accessToken.isNullOrBlank()) {
-//            viewModel.loadFavorites()
-//        } else {
-//            viewModel.clearFavorites()
-//        }
-//    }
     val userId by authViewModel.userId.collectAsState()
-
-////     синхронизация избранного local + remote
-//    LaunchedEffect(isAuthenticated) {
-//        if (isAuthenticated) {
-////            viewModel.syncFavoritesIfLoggerdIn(true)
-//            viewModel.syncFavoritesIfLoggedIn(userId)
-//        }
-//    }
 
 //  В Scaffold передаём snackbarHost = { SnackbarHost(hostState = snackbarHostState) }.
 //	•	LaunchedEffect(message) слушает messageFlow из ViewModel и показывает Snackbar.
 //	•	Кнопка Retry на Snackbar вызывает viewModel.retryRecipes()
+
     val snackbarHostState = remember { SnackbarHostState() }
     val message by viewModel.messageFlow.collectAsState("")
 
@@ -95,14 +80,17 @@ fun RecipeListScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+
         topBar = {
             Log.d("СЕРДЦЕ RecipeListScreen", "RecipeListScreen isAuthenticated = $isAuthenticated")
             Log.d("CICLE RecipeListScreen", "RecipeListScreen isAuthenticated = $isAuthenticated")
+
+            val authRestored by authViewModel.authStateRestored.collectAsState()
+
             AppTopBar(
                 title = "Рецепты",
                 isAuthenticated = isAuthenticated,
-                showMyRecipes = false,
-//                onLoginClick = { showLoginScreen = true },
+                showMyRecipes = isAuthenticated && authRestored,
                 onLoginClick = { navController.navigate("login") },
                 onLogoutClick = {
                     authViewModel.logout()
@@ -113,23 +101,9 @@ fun RecipeListScreen(
                         launchSingleTop = true
                     }
                 },
-//                authViewModel = authViewModel
             )
         }
     ) { paddingValues ->
-
-        // 🔹 показываем LoginScreen если нужно
-//        if (showLoginScreen) {
-//            LoginScreen(
-////                viewModel = authViewModel,
-//                authViewModel = authViewModel,
-//                navController
-////                onLoginSuccess = {
-////                    // закрываем экран логина
-////                    showLoginScreen = false
-////                }
-//            )
-//        } else {
 
             Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
                 Row(

@@ -71,21 +71,16 @@ fun RecipeItem(
             ) {
             // Только для моих рецептов - кнопки добавить и удалить
                 if (isOwner) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
                         IconButton(onClick = {
-//                            onEditClick?.invoke()
+                            onEditClick?.invoke()
                         }) {
                             Icon(Icons.Default.Edit, contentDescription = "Редактировать")
                         }
                         IconButton(onClick = {
-//                            onDeleteClick?.invoke()
+                            onDeleteClick?.invoke()
                         }) {
                             Icon(Icons.Default.Delete, contentDescription = "Удалить")
                         }
-                    }
                 }
 
                 val scale by animateFloatAsState(targetValue = if (isFavorite) 1.3f else 1f)
