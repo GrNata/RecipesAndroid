@@ -17,6 +17,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,14 +27,15 @@ fun StepsWithDinamicList(viewModel: AddEditRecipeViewModel) {
     Text(
         text = "Шаги приготовления",
         style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(bottom = 8.dp)
+        modifier = Modifier.padding(top = 8.dp),
+        textAlign = TextAlign.Center
     )
     Column(modifier = Modifier.padding(top = 8.dp)) {
         viewModel.steps.forEachIndexed { index, step ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp),
+                    .padding(2.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                     TextField(
@@ -44,11 +46,15 @@ fun StepsWithDinamicList(viewModel: AddEditRecipeViewModel) {
 //                        },
 //                        readOnly = false,
 //                        colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                        modifier = Modifier.weight(1f),
-                        label = { Text("Шаг ${index + 1}")}
+                        modifier = Modifier.weight(3f),
+                        label = { Text("Шаг ${index + 1}")},
+                        textStyle = MaterialTheme.typography.bodyMedium
                     )
 
-                IconButton(onClick = { viewModel.removeStep(index) }) {
+                IconButton(
+                    modifier = Modifier.weight(0.13f),
+                    onClick = { viewModel.removeStep(index) }
+                ) {
                     Icon(Icons.Default.Delete, "Удалить шаг")
                 }
 

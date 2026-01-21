@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +38,8 @@ fun AddEditRecipeScreen(
     viewModel: AddEditRecipeViewModel = viewModel(),
     navController: NavController
 ) {
+
+    val scrollState = rememberScrollState()
 
     val isEdit = recipeId != null
 
@@ -74,6 +78,7 @@ fun AddEditRecipeScreen(
             modifier = Modifier
                 .padding((paddingValues))
                 .padding(16.dp)
+                .verticalScroll(scrollState)
         ) {
             TextField(
                 value = viewModel.name,
@@ -92,9 +97,9 @@ fun AddEditRecipeScreen(
             // --- динамический список ингредиентов ---
             IngredientsWithDinamicList(viewModel)
 
-            // --- динамический список шагов приготовления ---
             Spacer(modifier = Modifier.padding(top = 16.dp))
 
+            // --- динамический список шагов приготовления ---
             StepsWithDinamicList(viewModel)
 
             Button(
