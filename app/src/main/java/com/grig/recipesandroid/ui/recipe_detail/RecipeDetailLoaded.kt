@@ -172,7 +172,8 @@ fun RecipeDetailLoaded(
                 ) {
                     Text(
                         text = "Категория: ${
-                            recipe.categories.joinToString { it.name.lowercase() }
+                            recipe.categoryValueIds.joinToString { it.categoryValue.lowercase() }
+//                            recipe.categories.joinToString { it.name.lowercase() }
                         }",
                         color = Color(0xFF7E889F),
                         style = MaterialTheme.typography.bodyLarge

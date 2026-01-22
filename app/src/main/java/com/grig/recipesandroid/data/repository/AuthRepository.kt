@@ -2,10 +2,10 @@ package com.grig.recipesandroid.data.repository
 
 import com.grig.recipesandroid.data.api.AuthApi
 import com.grig.recipesandroid.data.local.TokenRepository
-import com.grig.recipesandroid.data.model.AuthTokens
-import com.grig.recipesandroid.data.model.LoginRequest
-import com.grig.recipesandroid.data.model.RefreshTokenRequest
-import com.grig.recipesandroid.data.model.RegisterRequest
+import com.grig.recipesandroid.data.model.auth.AuthTokens
+import com.grig.recipesandroid.data.model.auth.LoginRequest
+import com.grig.recipesandroid.data.model.auth.RefreshTokenRequest
+import com.grig.recipesandroid.data.model.auth.RegisterRequest
 import kotlinx.coroutines.flow.first
 
 class AuthRepository(

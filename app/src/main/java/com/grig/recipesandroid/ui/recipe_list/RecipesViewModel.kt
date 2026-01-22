@@ -5,8 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.grig.recipesandroid.data.model.dto.CategoryValueDto
 import com.grig.recipesandroid.data.repository.RecipeRepository
-import com.grig.recipesandroid.data.model.dto_request.RecipeDto
+import com.grig.recipesandroid.data.model.dto.RecipeDto
 import com.grig.recipesandroid.data.repository.FavoritesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -26,6 +27,9 @@ open class RecipesViewModel(
     private val favoritesRepository: FavoritesRepository,
     private val userIdFlow: StateFlow<String?>      // сюда передаем текущий userId / email
 ) : ViewModel() {
+
+    val selectedCategoryValues = mutableMapOf<Long, CategoryValueDto>()
+// key = typeId
 
 //    теперь избранное — offline-first,
     val favorites: StateFlow<Set<Long>> =

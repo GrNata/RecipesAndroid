@@ -1,13 +1,13 @@
 package com.grig.recipesandroid.data.api
 
-import com.grig.recipesandroid.data.model.dto_request.CategoryDto
-import com.grig.recipesandroid.data.model.dto_request.IngredientDto
-import com.grig.recipesandroid.data.model.dto_request.RecipeCreateRequest
-import com.grig.recipesandroid.data.model.dto_request.RecipeDto
-import com.grig.recipesandroid.data.model.dto_request.RecipeUpdateRequest
-import com.grig.recipesandroid.data.model.dto_request.UnitDto
+import com.grig.recipesandroid.data.model.dto.CategoryDto
+import com.grig.recipesandroid.data.model.dto.CategoryValueDto
+import com.grig.recipesandroid.data.model.dto.IngredientDto
+import com.grig.recipesandroid.data.model.request.RecipeCreateRequest
+import com.grig.recipesandroid.data.model.dto.RecipeDto
+import com.grig.recipesandroid.data.model.request.RecipeUpdateRequest
+import com.grig.recipesandroid.data.model.dto.UnitDto
 import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
-import com.grig.recipesandroid.domain.model.Category
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -68,8 +68,13 @@ interface RecipeApi {
 //    ++++++++++++++++++++
 //    Category
 
-    @GET("api/categories/all")
-    suspend fun getCategories(): List<CategoryDto>
+    @GET("api/category-value")
+    suspend fun getCategoryValues(): List<CategoryValueDto>
+//    @GET("api/categories/all")
+//    suspend fun getCategories(): List<CategoryDto>
+
+    @GET("api/category-value/{id}")
+    suspend fun getCategoryValuesById(@Path("id") id: Long) : CategoryValueDto
 
 //    ++++++++++++++++
 //    INGREDIENT

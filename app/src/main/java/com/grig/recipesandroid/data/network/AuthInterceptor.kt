@@ -28,10 +28,17 @@ class AuthInterceptor(
 //                    url.contains("/api/recipes") ||
 //                    url.contains("/api/recipe/") ||
 //                    url.contains("/api/auth/")
+//        val isPublicEndpoint =
+//                    url.endsWith("/api/recipes") ||          // список рецептов
+//                    url.endsWith("/api/recipes/search") ||
+//                    (url.contains("/api/recipes/") && !url.contains("/my/")) ||
+//                    url.startsWith("http://10.0.2.2:9090/api/auth/")
         val isPublicEndpoint =
-                    url.endsWith("/api/recipes") ||          // список рецептов
-                    url.endsWith("/api/recipes/search") ||
-                    (url.contains("/api/recipes/") && !url.contains("/my/")) ||
+            (originalRequest.method == "GET" &&
+                    (
+                            url.endsWith("/api/recipes") ||
+                            url.endsWith("/api/recipes/search") ||
+                            url.contains("/api/recipes/") && !url.contains("/my/"))) ||
                     url.startsWith("http://10.0.2.2:9090/api/auth/")
 
         // 👉 если public — всегда без токена

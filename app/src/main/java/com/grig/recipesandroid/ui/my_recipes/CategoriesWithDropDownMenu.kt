@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.my_recipes
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenuItem
@@ -33,10 +34,13 @@ fun CategoriesWIthDropDownMenu(viewModel: AddEditRecipeViewModel) {
     ) {
 
         TextField(
-            value = viewModel.selectedCategory?.name ?: "",
-            onValueChange = {},
+            value = viewModel.selectedCategoryValues.entries
+                .joinToString { it.value.categoryValue },   // склеиваем значения в одну строку
+//            value = viewModel.selectedCategory?.name ?: "",
+            onValueChange = {  },      //          ???
+//            onValueChange = { viewModel.selectedCategory },      //          ???
             readOnly = true,
-            label = { Text("Категория") },
+            label = { Text(text = "Категория") },
             trailingIcon = {
                 TrailingIcon(expanded = expanded)
             },
@@ -48,14 +52,15 @@ fun CategoriesWIthDropDownMenu(viewModel: AddEditRecipeViewModel) {
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-//                    Log.d("GET-CATEGORIES", "AddEditRecipeScreen categoriesAll size = ${viewModel.categoriesAll.size}")
+            Log.d("CATEGORН", "CategoriesWithDropMenu: categoryValuesAll size = ${viewModel.categoryValuesAll.size}")
 
-            viewModel.categoriesAll.forEach { category ->
+            viewModel.categoryValuesAll.forEach { category ->
                 DropdownMenuItem(
-                    text = { Text(category.name) },
+                    text = { Text(category.categoryValue) },
+//                    text = { Text(category.name) },
                     onClick = {
-                        viewModel.onCategorySelected(category)
-                        expanded = false
+//                        viewModel.onCategorySelected(category)
+//                        expanded = false
                     }
                 )
             }

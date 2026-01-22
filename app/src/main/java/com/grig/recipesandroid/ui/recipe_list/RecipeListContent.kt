@@ -110,7 +110,9 @@ fun RecipeListContent(
 //                        .groupBy({ it.first }, { it.second })   // Map<Category, List<Recipe>>
                     val grouped = filteredRecipes
                         .flatMap { recipe ->
-                            recipe.categories.map { category ->  category to recipe }       // создаём пары category -> recipe
+                            recipe.categoryValueIds.map { it.categoryValue to recipe }       // создаём пары category -> recipe
+//                            recipe.categoryValueIds.map { it.typeName to recipe }       // создаём пары category -> recipe
+//                            recipe.categories.map { category ->  category to recipe }       // создаём пары category -> recipe
                         }
                         .groupBy(
                             keySelector = { it.first },
@@ -127,7 +129,8 @@ fun RecipeListContent(
                                     .padding(8.dp)
                             ) {
                                 Text(
-                                    text = category.name,
+                                    text = category,
+//                                    text = category.name,
                                     style = MaterialTheme.typography.titleMedium,
                                     color = Color(0xFF123C69)
                                 )

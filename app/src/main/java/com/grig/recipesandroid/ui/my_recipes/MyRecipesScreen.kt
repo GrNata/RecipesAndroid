@@ -90,7 +90,7 @@ fun MyRecipesScreen(
 //    группировка по категориям
     val grouped = filteredRecipes
         .flatMap { recipe ->
-            recipe.categories.map { category -> category to recipe }
+            recipe.categoryValueIds.map { category -> category to recipe }
         }
         .groupBy(
             keySelector = { it.first },
@@ -156,7 +156,8 @@ fun MyRecipesScreen(
                                     .padding(8.dp)
                             ) {
                                 Text(
-                                    text = category.name,
+                                    text = category.categoryValue,
+//                                    text = category.name,
                                     style = MaterialTheme.typography.titleMedium,
                                     color = Color(0xFF123C69)
                                 )

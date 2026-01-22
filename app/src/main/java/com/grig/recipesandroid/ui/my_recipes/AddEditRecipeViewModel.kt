@@ -7,11 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.grig.recipesandroid.data.model.dto_request.IngredientDto
-import com.grig.recipesandroid.data.model.dto_request.IngredientRequest
-import com.grig.recipesandroid.data.model.dto_request.RecipeCreateRequest
-import com.grig.recipesandroid.data.model.dto_request.RecipeUpdateRequest
-import com.grig.recipesandroid.data.model.dto_request.UnitDto
+import com.grig.recipesandroid.data.model.dto.CategoryValueDto
+import com.grig.recipesandroid.data.model.dto.IngredientDto
+import com.grig.recipesandroid.data.model.request.IngredientRequest
+import com.grig.recipesandroid.data.model.request.RecipeCreateRequest
+import com.grig.recipesandroid.data.model.request.RecipeUpdateRequest
+import com.grig.recipesandroid.data.model.dto.UnitDto
 import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
@@ -20,6 +21,7 @@ import com.grig.recipesandroid.domain.model.Category
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import kotlinx.coroutines.launch
 import java.util.Collections.emptyList
+import kotlin.collections.forEach
 
 class AddEditRecipeViewModel(
     private val recipeRepository: RecipeRepository,
@@ -29,7 +31,7 @@ class AddEditRecipeViewModel(
     val authViewModel: AuthViewModel
 ) : ViewModel() {
 
-//    состояние формы
+//    +++++++ состояние формы
     var name by mutableStateOf("")
     private set
 
@@ -38,26 +40,27 @@ class AddEditRecipeViewModel(
 
     var image by mutableStateOf<String?> (null)
         private set
+//    ++++++++++++
 
-    var categoriesAll by mutableStateOf<List<Category>>(emptyList())
+    // +++++++++ Категории
+    val selectedCategoryValues = mutableMapOf<Long, CategoryValueDto>()
+    var categoryValuesAll by mutableStateOf<List<CategoryValueDto>>(emptyList())
         private set
-//  выбранные ингредиенты рецепта
-//    var ingredients by mutableStateOf<List<IngredientRequest>>(emptyList())
+//    +++++++++++++++
+
+// +++++++++ выбранные ингредиенты рецепта и шаги
     var ingredients = mutableStateListOf<IngredientRequest>()
         private set
 
-//    var steps by mutableStateOf<List<String>>(emptyList())
     var steps = mutableStateListOf<String>()
         private set
-//    private var _steps = mutableListOf<String>()
-//    val steps: List<String> get() = _steps
 
-//    справочник
+//  ++  справочник единиц измерения
     var unitsAll by mutableStateOf<List<UnitDto>>(emptyList())
         private set
-    //    справочник
+    // ++   справочник ингредиентов
     var ingredientsAll by mutableStateOf<List<IngredientDto>>(emptyList())
-
+//+++++++++++++++++++++++++
 
     var isLoading by mutableStateOf(false)
         private set
@@ -67,26 +70,41 @@ class AddEditRecipeViewModel(
 
     private var currentRecipeId: Long? = null
 
-    var selectedCategory by mutableStateOf<Category?>(null)
+//    var selectedCategory by mutableStateOf<Category?>(null)
+
 
 //     ++++++++++++++++++++
 //    Load (EDIT)
 //    +++++++++++++++++++++
 
-//    Отдельная загрузка справочников (ОДИН РАЗ)
-fun loadIngredientAndUnitDictionaries() {
-    viewModelScope.launch {
-        try {
-            ingredientsAll = ingredientRepository.getAllIngredients()
-            unitsAll = unitRepository.getAllUnits()
-        } catch (e: Exception) {
-            errorMessage = e.message
+// +++++++   Отдельная загрузка справочников (ОДИН РАЗ)
+    fun loadIngredientAndUnitDictionaries() {
+        viewModelScope.launch {
+            try {
+                ingredientsAll = ingredientRepository.getAllIngredients()
+                unitsAll = unitRepository.getAllUnits()
+            } catch (e: Exception) {
+                errorMessage = e.message
+            }
         }
     }
-}
+
+    // загружает все CategoryValueDto
+    fun loadCategoryValues() {
+        viewModelScope.launch {
+            try {
+                categoryValuesAll = categoryRepository.getCategoryValues()  // получаем все CategoryValueDto
+                Log.d("CATEGORY", "AddEditRecipeViewModel categoryValuesAll size = ${categoryValuesAll.size}")
+            } catch (e: Exception) {
+                errorMessage = e.message
+                Log.e("CATEGORY", "AddEditRecipeViewModel: Ошибка загрузки категорий: ${e}")
+            }
+        }
+    }
+//    +++++++++++++++++++++++
+// ===== Загрузка рецепта для редактирования =====
     fun loadRecipe(recipeId: Long) {
         if (currentRecipeId == recipeId) return
-
         currentRecipeId = recipeId
         isLoading = true
 
@@ -97,7 +115,21 @@ fun loadIngredientAndUnitDictionaries() {
                 name = recipe.name
                 description = recipe.description.orEmpty()
                 image = recipe.image
-                categoriesAll = recipe.categories
+
+
+                // ВСЕ возможные категории (для выпадающих списков)
+                loadCategoryValues() // вызываем метод загрузки справочника категорий
+                // Если recipe.categoryValueIds приходит с сервера, они уже CategoryValueDto
+                // В categoryValuesAll оставляем весь справочник, а selectedCategoryValues заполняем выбранное
+                selectedCategoryValues.clear()
+                recipe.categoryValueIds.forEach { cv ->
+                    selectedCategoryValues[cv.categoryTypeId] = CategoryValueDto(
+                        id = cv.id,
+                        typeId = cv.categoryTypeId,
+                        typeName = cv.categoryTypeName,
+                        categoryValue = cv.categoryValue
+                    )
+                }
 
                 ingredients.clear()
                 ingredients.addAll(
@@ -109,36 +141,21 @@ fun loadIngredientAndUnitDictionaries() {
                         )
                     }
                 )
-//                ingredients = recipe.ingredients.map { ing ->
-//                    IngredientRequest(
-////                    IngredientDto(
-//                        ingredientId = ing.ingredient.id,
-//                        amount = ing.amount.orEmpty(),
-//                        unitId = ing.unit?.id
-//                    )
-//                }
-//                ingredientsAll = recipe.ingredients.map { ing ->
-//                    IngredientDto(
-//                        id = ing.ingredient.id,
-//                        name = ing.ingredient.name
-//                    )
-//                }
-//                unitsAll = recipe.ingredients.map { ing ->
-//                    UnitDto(
-//                        id = ing.unit?.id ?: 0L,
-//                        code = ing.unit?.code ?: "",
-//                        label = ing.unit?.label ?: ""
-//                    )
-//                }
-//                steps = recipe.steps
                 steps.clear()
                 steps.addAll(recipe.steps)
 
-                selectedCategory = recipe.categories.firstOrNull()?.let { recCat ->
-                    categoriesAll.firstOrNull { it.id == recCat.id}
+                // заполняем selectedCategoryValues при редактировании
+                selectedCategoryValues.clear()
+                recipe.categoryValueIds.forEach { cv ->
+                    selectedCategoryValues[cv.categoryTypeId] = CategoryValueDto(
+                        id = cv.id,
+                        typeId = cv.categoryTypeId,
+                        typeName = cv.categoryTypeName,
+                        categoryValue = cv.categoryValue
+                    )
                 }
 
-                Log.d("GET-INGRED", "AddEditRecipeViewModel ingredients size: ${ingredients.size}")
+                Log.d("CATEGORY", "AddEditRecipeViewModel: ingredients size: ${ingredients.size}")
 
             } catch (e: Exception) {
                 errorMessage = e.message
@@ -151,21 +168,31 @@ fun loadIngredientAndUnitDictionaries() {
 //    +++++++++++++
 //    CREATE
 //    ++++++++++++
-    fun createRecipe() {
+// ===== Создание рецепта =====
+    fun createRecipe(onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
                 isLoading = true
+
+                Log.d("ADD RECIPE", "AddEditRecipeViewModel: START, name: ${name}, desc: $description" +
+                        ", cat.size:${categoryValuesAll.size}, ing size: ${ingredients.size}, step size: ${steps.size}")
+
+                val categoryIds = selectedCategoryValues.values.map { it.id }
+                if (categoryIds.isEmpty()) throw IllegalArgumentException("Должна быть выбрана хотя бы одна категория")
 
                 recipeRepository.createRecipe(
                     RecipeCreateRequest(
                         name = name,
                         description = description,
                         image = image,
-                        categoryIds = categoriesAll.map { it.id },
-                        ingredients = ingredients,
-                        steps = steps
+//                        categoryIds = categoriesAll.map { it.id },
+                        categoryValueIds = categoryIds,
+                        ingredients = ingredients.toList(),
+                        steps = steps.toList()
                     )
                 )
+                onSuccess()
+
             } catch (e: Exception) {
                 errorMessage = e.message
             } finally {
@@ -177,22 +204,28 @@ fun loadIngredientAndUnitDictionaries() {
 //    +++++++++++++
 //    UPDATE
 //    +++++++++++++
-    fun updateRecipe() {
+// ===== Обновление рецепта =====
+    fun updateRecipe(onSuccess: () -> Unit) {
         val recipeId = currentRecipeId ?: return
         viewModelScope.launch {
             try {
                 isLoading = true
+
+                val categoryIds = selectedCategoryValues.values.map { it.id }
+
                 recipeRepository.updateRecipe(
                     recipeId = recipeId,
                     request = RecipeUpdateRequest(
                         name = name,
                         description = description,
                         image = image,
-                        categoryIds = categoriesAll.map { it.id },
-                        ingredients = ingredients,
-                        steps = steps
+                        categoryIds = categoryIds,
+//                        categoryIds = categoryValuesAll.map { it.id },
+                        ingredients = ingredients.toList(),
+                        steps = steps.toList()
                     )
                 )
+                onSuccess()
             } catch (e: Exception) {
                 errorMessage = e.message
             } finally {
@@ -204,9 +237,9 @@ fun loadIngredientAndUnitDictionaries() {
 //    ++++++++++++
 //    DELETE
 //    ++++++++++++
+// ===== Удаление рецепта =====
     fun deleteRecipe() {
         val recipeId = currentRecipeId ?: return
-
         viewModelScope.launch {
             try {
                 recipeRepository.deleteRecipe(recipeId)
@@ -217,7 +250,7 @@ fun loadIngredientAndUnitDictionaries() {
     }
 
 //    ++++++++++++++
-//    setters для UI
+//    Setters (сеттеры) для UI
 //    ++++++++++++++
     fun onNameChange(value: String) { name = value}
     fun onDescriptionChange(value: String) { description = value }
@@ -225,88 +258,73 @@ fun loadIngredientAndUnitDictionaries() {
 
 
 //    ++++++++++++
-//    для запоминания категории (Редактирование)
+//    КАТЕГОРИИ
 //    ++++++++++++
-    fun onCategorySelected(category: Category) {
-        selectedCategory = category
+    //    Метод toggle для выбора категории по типу
+    fun toggleCategoryValue(categoryValue: CategoryValueDto) {
+        // сохраняем только по типу
+        selectedCategoryValues[categoryValue.typeId] = categoryValue
     }
 
-    fun loadCategories() {
-        viewModelScope.launch {
-            try {
-                categoriesAll = categoryRepository.getCategories()
-                Log.d("GET-CATEGORIES", "AddEditRecipeViewModel categoriesAll size = ${categoriesAll.size}")
-            } catch (e: Exception) {
-                errorMessage = e.message
-                Log.e("GET-CATEGORIES", "Ошибка загрузки категорий", e)
-            }
-        }
-    }
+
+//    fun onCategorySelected(category: Category) {
+//        selectedCategory = category
+//    }
+
+//    fun loadCategories() {
+//        viewModelScope.launch {
+//            try {
+//                categoryValuesAll = categoryRepository.getCategories()
+//                Log.d("GET-CATEGORIES", "AddEditRecipeViewModel categoriesAll size = ${categoryValuesAll.size}")
+//            } catch (e: Exception) {
+//                errorMessage = e.message
+//                Log.e("GET-CATEGORIES", "Ошибка загрузки категорий", e)
+//            }
+//        }
+//    }
 
 //    +++++++++++++
 //    INGREDIENT
 //    ++++++++++++
     fun addIngredient() {
-//        ingredients = ingredients + IngredientRequest(ingredientId = 0L, amount = "", unitId = null)
         ingredients.add(IngredientRequest(0L, "", null))
     }
 
     fun removeIngredient(index: Int) {
-//        ingredients = ingredients.toMutableList().apply { removeAt(index) }
-        ingredients.removeAt(index)
+        if (index in ingredients.indices) ingredients.removeAt(index)
     }
 
     fun onIngredientSelected(index: Int, ingredient: IngredientDto) {
-        if (index !in ingredients.indices) return
-        ingredients[index] = ingredients[index].copy(ingredient.id)
-//        ingredients = ingredients.toMutableList().apply {
-//            this[index] = this[index].copy(ingredientId =  ingredient.id)
-//        }
+        if (index in ingredients.indices) ingredients[index] = ingredients[index].copy(ingredient.id)
     }
 
     fun onIngredientAmountChange(index: Int, amount: String) {
-        if (index !in ingredients.indices) return
-        ingredients[index] = ingredients[index].copy(amount = amount)
-//        ingredients = ingredients.toMutableList().apply {
-//            this[index] = this[index].copy(amount = amount)
-//        }
+        if (index in ingredients.indices) ingredients[index] = ingredients[index].copy(amount = amount)
     }
 
     fun onUnitSelected(index: Int, unit: UnitDto) {
-        if (index !in ingredients.indices) return
-        ingredients[index] = ingredients[index].copy(unitId = unit.id)
-//        ingredients = ingredients.toMutableList().apply {
-//            this[index] = this[index].copy(unitId = unit.id)
-//        }
+        if (index in ingredients.indices) ingredients[index] = ingredients[index].copy(unitId = unit.id)
     }
 
+    // ===== Шаги =====
     fun addStep(index: Int, newStep: String) {
-//        _steps.add(index, newStep)
-//        steps = steps + newStep
         steps.add(index, newStep)
     }
 
     fun updateStep(index: Int, newText: String) {
-//        if (index in _steps.indices) {
-//            _steps[index] = newText
-//        }
         if (index in steps.indices) {   // проверка границ
             steps[index] = newText
-//            steps = steps.toMutableList().apply {
-//                this[index] = newText   // заменяем текст шага
-//            }
         }
     }
 
     fun removeStep(index: Int) {
         if (index in steps.indices) {
             steps.removeAt(index)
-//            steps = steps.toMutableList().apply { removeAt(index) }
-//            _steps.removeAt(index)
         }
     }
 
 //    // Для отображения текста в TextField
+// ===== Получение текста для UI =====
     fun getIngredientName(index: Int): String {
         val ingId = ingredients.getOrNull(index)?.ingredientId ?: return ""
         return ingredientsAll.find { it.id== ingId }?.name ?: ""
@@ -320,20 +338,18 @@ fun loadIngredientAndUnitDictionaries() {
 
 //    ++++++++++++
 //    Сбрасывание значение полей
+// ===== Сброс формы =====
     fun resetForm() {
         currentRecipeId = null
         name = ""
         description = ""
         image = null
 
-        selectedCategory = null
-        categoriesAll = categoriesAll
+        selectedCategoryValues.clear()
+//        selectedCategory = null
+//        categoryValuesAll = categoryValuesAll
 
         ingredients.clear()
-//        ingredients = emptyList()
-//        ingredientsAll = emptyList()
-//        unitsAll = emptyList()
-
         steps.clear()
         errorMessage = null
     }

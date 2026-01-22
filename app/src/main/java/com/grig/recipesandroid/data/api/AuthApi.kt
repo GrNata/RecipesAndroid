@@ -1,10 +1,10 @@
 package com.grig.recipesandroid.data.api
 
-import com.grig.recipesandroid.data.model.AuthResponse
-import com.grig.recipesandroid.data.model.LoginRequest
-import com.grig.recipesandroid.data.model.RefreshTokenRequest
-import com.grig.recipesandroid.data.model.RegisterRequest
-import com.grig.recipesandroid.data.model.TokenResponse
+import com.grig.recipesandroid.data.model.auth.AuthResponse
+import com.grig.recipesandroid.data.model.auth.LoginRequest
+import com.grig.recipesandroid.data.model.auth.RefreshTokenRequest
+import com.grig.recipesandroid.data.model.auth.RegisterRequest
+import com.grig.recipesandroid.data.model.auth.TokenResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
 

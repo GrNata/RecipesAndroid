@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.data.model
+package com.grig.recipesandroid.data.model.auth
 
 data class AuthTokens(
     val accessToken: String,

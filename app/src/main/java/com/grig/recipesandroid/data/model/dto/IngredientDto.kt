@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.data.model.dto_request
+package com.grig.recipesandroid.data.model.dto
 
 data class IngredientDto(
     val id: Long,

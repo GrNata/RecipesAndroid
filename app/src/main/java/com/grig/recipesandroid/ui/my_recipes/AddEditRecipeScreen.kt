@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -26,9 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,7 +53,8 @@ fun AddEditRecipeScreen(
 //    }
 
     LaunchedEffect(Unit) {
-        viewModel.loadCategories()  // сначала загружаем все категории
+        viewModel.loadCategoryValues()  // сначала загружаем все категории
+//        viewModel.loadCategories()  // сначала загружаем все категории
         if (isEdit && recipeId != null) {
             viewModel.loadRecipe(recipeId)  // потом загружаем рецепт
         }
@@ -88,9 +92,33 @@ fun AddEditRecipeScreen(
 
             TextField(
                 value = viewModel.description,
-                onValueChange = viewModel::onNameChange,
+                onValueChange = viewModel::onDescriptionChange,
                 label = { Text("Описание")}
             )
+
+            if (viewModel.image != null) {
+                TextField(
+                    value = viewModel.image!!,  // гарантированно не null внутри блока
+                    onValueChange = viewModel::onImageChange,
+                    label = { Text("Фото (url)") }
+                )
+                // Картинка под полем ввода
+                AsyncImage(  // требуется библиотека Coil
+                    model = requireNotNull(viewModel.image),
+                    contentDescription = "Загруженное фото",
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    contentScale = ContentScale.Fit
+                )
+            } else {
+                TextField(
+                    value = "",
+                    onValueChange = viewModel::onImageChange,
+                    label = { Text("Фото (url)") }
+                )
+            }
 
             CategoriesWIthDropDownMenu(viewModel)
 
@@ -104,10 +132,22 @@ fun AddEditRecipeScreen(
 
             Button(
                 onClick = {
-                    if (isEdit) viewModel.updateRecipe()
-                    else viewModel.createRecipe()
+                    if (isEdit) viewModel.updateRecipe(onSuccess = {
+                        // После успешного редактирования
+                        // Можно уведомить предыдущий экран, что данные изменились
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("REFRESH_RECIPES", true)
 
-                    navController.popBackStack()
+                        // И вернуться назад
+                        navController.popBackStack()
+                    })
+                    else viewModel.createRecipe {
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("REFRESH_RECIPES", true)
+                        navController.popBackStack()
+                    }
                 }
             ) {
                 Text(if (isEdit) "Сохранить" else "Создать")

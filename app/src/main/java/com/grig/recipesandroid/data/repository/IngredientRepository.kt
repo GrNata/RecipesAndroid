@@ -1,7 +1,7 @@
 package com.grig.recipesandroid.data.repository
 
 import com.grig.recipesandroid.data.api.RecipeApi
-import com.grig.recipesandroid.data.model.dto_request.IngredientDto
+import com.grig.recipesandroid.data.model.dto.IngredientDto
 import com.grig.recipesandroid.domain.model.Ingredient
 
 class IngredientRepository(private val api: RecipeApi) {

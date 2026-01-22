@@ -1,6 +1,6 @@
 package com.grig.recipesandroid.domain.model
 
-import com.grig.recipesandroid.data.model.dto_request.UnitDto
+import com.grig.recipesandroid.data.model.dto.UnitDto
 
 //  Связь рецепт ↔ ингредиент
 
