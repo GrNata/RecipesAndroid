@@ -31,9 +31,11 @@ import com.grig.recipesandroid.ui.auth.RegisterScreen
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModel
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModelFactory
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeScreen
+import com.grig.recipesandroid.ui.my_recipes.CategoryRow
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesScreen
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModelFactory
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModel
+import com.grig.recipesandroid.ui.my_recipes.SelectCategoriesScreen
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModel
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModelFactory
 
@@ -49,7 +51,8 @@ fun AppNavGraph(
     ingredientRepository: IngredientRepository,
     unitRepository: UnitRepository,
     applicationContext: Context,
-    recipeViewModel: RecipesViewModel
+    recipeViewModel: RecipesViewModel,
+    addEditRecipeViewModel: AddEditRecipeViewModel
     ) {
 
             NavHost(
@@ -181,14 +184,9 @@ fun AppNavGraph(
                     val parentEntry = remember(backEntry) {
                         navController.getBackStackEntry("my_recipes")
                     }
-
-                    val viewModel: AddEditRecipeViewModel = viewModel(
-                        parentEntry,
-                        factory = AddEditRecipeViewModelFactory(recipeRepository, categoryRepository, ingredientRepository, unitRepository, authViewModel)
-                    )
                     AddEditRecipeScreen(
                        recipeId = null,
-                        viewModel = viewModel,
+                        viewModel = addEditRecipeViewModel,
                        navController = navController
                    )
 
@@ -200,15 +198,17 @@ fun AppNavGraph(
                     val parentEntry = remember(backStackEntry) {
                         navController.getBackStackEntry("my_recipes")
                     }
-
-                    val viewModel: AddEditRecipeViewModel = viewModel(
-                        parentEntry,
-                        factory = AddEditRecipeViewModelFactory(recipeRepository, categoryRepository, ingredientRepository, unitRepository, authViewModel)
-                    )
                     AddEditRecipeScreen(
                         recipeId = recipeId,
-                        viewModel = viewModel,
+                        viewModel = addEditRecipeViewModel,
                         navController = navController
+                    )
+                }
+
+                composable("select_categories") {
+                    SelectCategoriesScreen(
+                        navController = navController,
+                        viewModel = addEditRecipeViewModel
                     )
                 }
 

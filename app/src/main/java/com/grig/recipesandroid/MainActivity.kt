@@ -17,6 +17,8 @@ import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.UnitRepository
 import com.grig.recipesandroid.ui.auth.AuthViewModel
+import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModel
+import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModelFactory
 import com.grig.recipesandroid.ui.navigation.AppNavGraph
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import com.grig.recipesandroid.ui.theme.RecipesAndroidTheme
@@ -144,6 +146,16 @@ class MainActivity : ComponentActivity() {
                     )
                 )
 
+                val addEditRecipeViewModel: AddEditRecipeViewModel = viewModel(
+                    factory = AddEditRecipeViewModelFactory(
+                        recipeRepository = recipeRepository,
+                        categoryRepository = categoryRepository,
+                        ingredientRepository = ingredientRepository,
+                        unitRepository = unitRepository,
+                        authViewModel = authViewModel
+                    )
+                )
+
                 AppNavGraph(
                     navController = navController,
                     api = recipeApi,
@@ -154,7 +166,8 @@ class MainActivity : ComponentActivity() {
                     ingredientRepository = ingredientRepository,
                     unitRepository = unitRepository,
                     applicationContext = applicationContext,
-                    recipeViewModel = recipesViewModel
+                    recipeViewModel = recipesViewModel,
+                    addEditRecipeViewModel = addEditRecipeViewModel
                 )
             }
         }

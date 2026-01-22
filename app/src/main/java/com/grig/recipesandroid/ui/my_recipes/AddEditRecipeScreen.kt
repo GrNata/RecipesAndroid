@@ -38,7 +38,7 @@ import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 @Composable
 fun AddEditRecipeScreen(
     recipeId: Long?,
-    viewModel: AddEditRecipeViewModel = viewModel(),
+    viewModel: AddEditRecipeViewModel,
     navController: NavController
 ) {
 
@@ -52,13 +52,17 @@ fun AddEditRecipeScreen(
 //        }
 //    }
 
-    LaunchedEffect(Unit) {
+//    LaunchedEffect(Unit) {
+    LaunchedEffect(recipeId) {
+        Log.d("AddEdit-category", "LaunchedEffect recipeId = $recipeId")
+
         viewModel.loadCategoryValues()  // сначала загружаем все категории
 //        viewModel.loadCategories()  // сначала загружаем все категории
         if (isEdit && recipeId != null) {
             viewModel.loadRecipe(recipeId)  // потом загружаем рецепт
         }
         if (recipeId == null) {
+            Log.d("AddEdit-category", "AddEditRecipeScreen: сброс формы recipeId == null")
             viewModel.resetForm()
         }
         viewModel.loadIngredientAndUnitDictionaries()
@@ -120,7 +124,14 @@ fun AddEditRecipeScreen(
                 )
             }
 
-            CategoriesWIthDropDownMenu(viewModel)
+//            CategoriesWIthDropDownMenu(viewModel)
+            Button(
+                onClick = {
+                    navController.navigate("select_categories")
+                }
+            ) {
+                Text("Выбрать категорию рецепта")
+            }
 
             // --- динамический список ингредиентов ---
             IngredientsWithDinamicList(viewModel)

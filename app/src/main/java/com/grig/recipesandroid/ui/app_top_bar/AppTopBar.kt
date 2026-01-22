@@ -58,27 +58,6 @@ fun AppTopBar(
                     Icon(Icons.Default.List, contentDescription = "Мои рецепты")
                 }
             }
-//            val authRestored by authViewModel.authStateRestored.collectAsState()
-//            Log.d("NAV MyRecipe", "authRestored: $authRestored")
-//            if (authRestored && isAuthenticated && onMyRecipesClick != null) {
-//                IconButton(onClick = onMyRecipesClick) {
-//                    Icon(Icons.Default.List, contentDescription = "Мои рецепты")
-//                }
-//            }
-
-////            Кнопка добавить
-//            Log.d("Add Recipe", "ADD isMyRecipe = $isMyRecipe")
-//            if (isMyRecipe) {
-//                    IconButton(
-//                        onClick = {
-////                            navController.navigate("recipe_add")
-//                        }
-//                    ) {
-//                        Icon(Icons.Default.Add, contentDescription = "Добавить рецепт")
-//                    }
-//                }
-
-
 
             // 3 Кнопка Войти / Выйти
             if (isAuthenticated) {

@@ -3,6 +3,7 @@ package com.grig.recipesandroid.ui.my_recipes
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -31,6 +32,9 @@ class AddEditRecipeViewModel(
     val authViewModel: AuthViewModel
 ) : ViewModel() {
 
+//    Id типа рецептов - Основное блюдо
+    val TIP_BLYDA_ID = 1L
+
 //    +++++++ состояние формы
     var name by mutableStateOf("")
     private set
@@ -43,9 +47,14 @@ class AddEditRecipeViewModel(
 //    ++++++++++++
 
     // +++++++++ Категории
-    val selectedCategoryValues = mutableMapOf<Long, CategoryValueDto>()
+    // Состояние выбранных категорий - списка рецептов
+    val selectedCategoryValues = mutableStateMapOf<Long, CategoryValueDto>()
+//    val selectedCategoryValues = mutableMapOf<Long, CategoryValueDto>()
+    // Состояние выбранных категорий - при создании и редактировании рецепта
+    val selectedCategoryValuesForAddUpdate = mutableMapOf<Long, CategoryValueDto>()
     var categoryValuesAll by mutableStateOf<List<CategoryValueDto>>(emptyList())
         private set
+
 //    +++++++++++++++
 
 // +++++++++ выбранные ингредиенты рецепта и шаги
@@ -265,28 +274,32 @@ class AddEditRecipeViewModel(
 //    ++++++++++++
 //    КАТЕГОРИИ
 //    ++++++++++++
-    //    Метод toggle для выбора категории по типу
+    //    Метод toggle для выбора категории по типу в списке рецептов
     fun toggleCategoryValue(categoryValue: CategoryValueDto) {
         // сохраняем только по типу
         selectedCategoryValues[categoryValue.typeId] = categoryValue
     }
 
+    fun getCategoryValuesForType(id: Long): List<CategoryValueDto> =
+        categoryValuesAll
+            .filter { it.typeId == id }
 
-//    fun onCategorySelected(category: Category) {
-//        selectedCategory = category
-//    }
+//  Для создания и редактирования рецепта
+    fun toggleCategoryValueAddEdit(categoryValue: CategoryValueDto) {
+//        selectedCategoryValuesForAddUpdate[categoryValue.typeId] = categoryValue
+        selectedCategoryValues[categoryValue.typeId] = categoryValue
+    }
 
-//    fun loadCategories() {
-//        viewModelScope.launch {
-//            try {
-//                categoryValuesAll = categoryRepository.getCategories()
-//                Log.d("GET-CATEGORIES", "AddEditRecipeViewModel categoriesAll size = ${categoryValuesAll.size}")
-//            } catch (e: Exception) {
-//                errorMessage = e.message
-//                Log.e("GET-CATEGORIES", "Ошибка загрузки категорий", e)
-//            }
-//        }
-//    }
+    // Проверка при сохранении
+    fun validateCategoriesForCreateRecipe() : Boolean {
+//        val temp = selectedCategoryValuesForAddUpdate.containsKey(TIP_BLYDA_ID)    // TIP_BLYDA_ID = 4 (Основное блюдо)
+        val temp = selectedCategoryValues.containsKey(TIP_BLYDA_ID)    // TIP_BLYDA_ID = 4 (Основное блюдо)
+//        Log.d("AddEdit-category", "AddEditViewModul: temp: $temp,  selectedCategoryValuesForAddUpdate: $selectedCategoryValuesForAddUpdate")
+        Log.d("AddEdit-category", "AddEditViewModul: temp: $temp,  selectedCategoryValues: $selectedCategoryValues")
+        return temp
+    }
+
+//++++++++++++++++++++
 
 //    +++++++++++++
 //    INGREDIENT
@@ -351,6 +364,7 @@ class AddEditRecipeViewModel(
         image = null
 
         selectedCategoryValues.clear()
+//        selectedCategoryValuesForAddUpdate.clear()
 //        selectedCategory = null
 //        categoryValuesAll = categoryValuesAll
 
