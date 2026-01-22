@@ -1,13 +1,18 @@
 package com.grig.recipesandroid.ui.recipe_list
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.model.dto.RecipeDto
+import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.FavoritesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -20,11 +25,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Collections
 
 //  ViewModel отвечает за данные (Flow<PagingData>) и их загрузку из репозитория
 open class RecipesViewModel(
     private val repository: RecipeRepository,
     private val favoritesRepository: FavoritesRepository,
+    private val categoryRepository: CategoryRepository,
     private val userIdFlow: StateFlow<String?>      // сюда передаем текущий userId / email
 ) : ViewModel() {
 
@@ -48,6 +55,10 @@ open class RecipesViewModel(
 
     private val _query = MutableStateFlow("")       // _query — хранит текущий текст поиска
     val query: StateFlow<String> = _query               // setQuery() — вызывается при вводе в текстовое поле
+
+    //    +++  справочник типов категорий
+    var categoryTypesAll by mutableStateOf<List<CategoryTypeDto>>(emptyList())
+
 
     fun setQuery(newQuery: String) {
         _query.value = newQuery
@@ -82,6 +93,10 @@ open class RecipesViewModel(
     init {
         Log.d("CICLE RecipeViewModel", "RecipeViewModel - init ")
         viewModelScope.launch {
+//            загрузка справочника CategotyType
+            categoryTypesAll = categoryRepository.getCategoryTypes()
+            Log.d("CATEGORY-ch-load", "RecipeViewModel - init categoryTypesAll: ${categoryTypesAll}")
+
             userIdFlow
                 .collect { userId ->
                     when {
@@ -97,7 +112,6 @@ open class RecipesViewModel(
                         }
                     }
                 }
-
         }
     }
 

@@ -1,6 +1,7 @@
 package com.grig.recipesandroid.data.api
 
 import com.grig.recipesandroid.data.model.dto.CategoryDto
+import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
 import com.grig.recipesandroid.data.model.dto.IngredientDto
 import com.grig.recipesandroid.data.model.request.RecipeCreateRequest
@@ -75,6 +76,12 @@ interface RecipeApi {
 
     @GET("api/category-value/{id}")
     suspend fun getCategoryValuesById(@Path("id") id: Long) : CategoryValueDto
+
+    @GET("api/category-type")
+    suspend fun getCategoryTypes(): List<CategoryTypeDto>
+
+    @GET("api/category-type/{id}")
+    suspend fun getCategoryTypeById(@Path("id") id: Long) : CategoryTypeDto
 
 //    ++++++++++++++++
 //    INGREDIENT

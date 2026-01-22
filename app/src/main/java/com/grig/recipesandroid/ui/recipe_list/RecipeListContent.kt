@@ -47,7 +47,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.grig.recipesandroid.ui.utilRecipe.CategoryTypeDropDown
+import com.grig.recipesandroid.ui.utilRecipe.ShimmerRecipeItem
 
 
 //   разделяем UI и state - RecipeListScreen
@@ -76,6 +80,9 @@ fun RecipeListContent(
     // создаём SnackbarHostState
     val snackbarHostState = remember { SnackbarHostState() }
 
+    var selectedCategoryTypeId by remember { mutableStateOf(1L) }
+    val categoryTypesAll = viewModel.categoryTypesAll
+
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
@@ -93,60 +100,108 @@ fun RecipeListContent(
                     recipes.itemSnapshotList.items
                 }
 
-            // Основной список
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFF7EDE9))
+            Column(
+                modifier = Modifier.padding(start = 10.dp)
             ) {
+                // Dropdown для выбора группировки
+                CategoryTypeDropDown(
+                    categoryTypes = categoryTypesAll,
+                    selectedId = selectedCategoryTypeId,
+                    onSelected = { selectedCategoryTypeId = it }
+                )
 
-                Log.d("CATEGORY-ch", "RecipeListContent: start recipes: ${recipes.itemSnapshotList.items}")
-                Log.d("CATEGORY-ch", "RecipeListContent: start filteredRecipes: ${filteredRecipes}")
-                Log.d("CATEGORY-ch", "RecipeListContent: start filteredRecipes:" +
-                        " ${filteredRecipes.forEach { 
-                            it.categories.forEach { it.categoryValue }
-                        }}")
-
-
-                if (recipes.loadState.refresh is LoadState.Loading) {
-                    items(5) { ShimmerRecipeItem() }
-                } else {
-
-//            Группируем рецепты по первой категории (можно доработать для нескольких)
-//                    val grouped = recipes.itemSnapshotList.items
-//                        .flatMap { it.categories.map { cat -> cat to it } }     // создаём пары category -> recipe
-//                        .groupBy({ it.first }, { it.second })   // Map<Category, List<Recipe>>
-                    val grouped = filteredRecipes
-                        .flatMap { recipe ->
-                            recipe.categories.map { it.categoryValue to recipe }       // создаём пары category -> recipe
-//                            recipe.categoryValueIds.map { it.typeName to recipe }       // создаём пары category -> recipe
-//                            recipe.categories.map { category ->  category to recipe }       // создаём пары category -> recipe
-                        }
-                        .groupBy(
-                            keySelector = { it.first },
-                            valueTransform = { it.second }
+                //            Группируем рецепты по первой категории (можно доработать для нескольких)
+                val grouped = filteredRecipes
+                    .flatMap { recipe ->
+                        Log.d(
+                            "CATEGORY-ch", "RecipeListContent: category:" +
+                                    " ${recipe.categories}"
                         )
+                        recipe.categories
+                            .filter { it.categoryTypeId == selectedCategoryTypeId }
+//                                .filter { it.categoryTypeId == 1L }
+                            .map { it.categoryValue to recipe }       // создаём пары category -> recipe
+                    }
+                    .groupBy(
+                        keySelector = { it.first },
+                        valueTransform = { it.second }
+                    )
+//            }
 
-                    grouped.forEach { (category, recipesInCategory) ->
+                // Основной список
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFFF7EDE9))
+                ) {
+
+                    Log.d(
+                        "CATEGORY-ch",
+                        "RecipeListContent: start recipes: ${recipes.itemSnapshotList.items}"
+                    )
+                    Log.d(
+                        "CATEGORY-ch",
+                        "RecipeListContent: start filteredRecipes: ${filteredRecipes}"
+                    )
+                    Log.d(
+                        "CATEGORY-ch", "RecipeListContent: start filteredRecipes:" +
+                                " ${
+                                    filteredRecipes.forEach {
+                                        it.categories.forEach { it.categoryValue }
+                                    }
+                                }"
+                    )
+
+
+                    if (recipes.loadState.refresh is LoadState.Loading) {
+                        items(5) { ShimmerRecipeItem() }
+                    } else {
+
+//                    // Dropdown для выбора группировки
+//                    CategoryTypeDropDown(
+//                        categoryTypes = categoryTypesAll,
+//                        selectedId = selectedCategoryTypeId,
+//                        onSelected = { selectedCategoryTypeId = it }
+//                    )
+
+////            Группируем рецепты по первой категории (можно доработать для нескольких)
+//                    val grouped = filteredRecipes
+//                        .flatMap { recipe ->
+//                            Log.d(
+//                                "CATEGORY-ch", "RecipeListContent: category:" +
+//                                        " ${recipe.categories}"
+//                            )
+//                            recipe.categories
+//                                .filter { it.categoryTypeId == selectedCategoryTypeId }
+////                                .filter { it.categoryTypeId == 1L }
+//                                .map { it.categoryValue to recipe }       // создаём пары category -> recipe
+//                        }
+//                        .groupBy(
+//                            keySelector = { it.first },
+//                            valueTransform = { it.second }
+//                        )
+
+                        grouped.forEach { (category, recipesInCategory) ->
+
 // Sticky Header для категории - объединение рецептов по категориям
-                        stickyHeader {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(Color(0xFFEFEFEF))
-                                    .padding(8.dp)
-                            ) {
-                                Text(
-                                    text = category,
+                            stickyHeader {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color(0xFFEFEFEF))
+                                        .padding(8.dp)
+                                ) {
+                                    Text(
+                                        text = category,
 //                                    text = category.name,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = Color(0xFF123C69)
-                                )
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = Color(0xFF123C69)
+                                    )
+                                }
                             }
-                        }
 //                Рецепты в категории - стандартные карточки рецептов
-                        items(recipesInCategory) { recipe ->
-                            val fav = favorites
+                            items(recipesInCategory) { recipe ->
+                                val fav = favorites
 
 //                            // Локальная реактивная переменная isFavorite для этого конкретного RecipeItem
 //                            val isFavotite by remember {
@@ -158,111 +213,115 @@ fun RecipeListContent(
 //                                (it.unit?.label) ?: ""
 //                            }}")
 
-                            RecipeItem(
-                                viewModel = viewModel,
-                                recipe = recipe,
-                                query = query,
-                                isFavorite = favorites.contains(recipe.id),
-                                isOwner = false,
+                                RecipeItem(
+                                    viewModel = viewModel,
+                                    recipe = recipe,
+                                    query = query,
+                                    isFavorite = favorites.contains(recipe.id),
+                                    isOwner = false,
 //                                isFavorite = isFavotite,
-                                onFavoriteClick = { viewModel.toggleFavorite(recipe.id) },
-                                onClick = { onRecipeClick(recipe.id) }
-                            )
+                                    onFavoriteClick = { viewModel.toggleFavorite(recipe.id) },
+                                    onClick = { onRecipeClick(recipe.id) }
+                                )
 
-                            Log.d("СЕРДЦЕ - RecipeListContent", "Favorite size = ${favorites.size}")
+                                Log.d(
+                                    "СЕРДЦЕ - RecipeListContent",
+                                    "Favorite size = ${favorites.size}"
+                                )
 //                            for (l in favorites) {
 //                                Log.d("СЕРДЦЕ - 2", "Favorite-ID = $l, recipeId = ${recipe.id}")
 //                            }
+                            }
                         }
-                    }
 
 //            -------- ???????
-                    //        Error State для refresh (анимированный)
-                    val isError = recipes.loadState.refresh is LoadState.Error
-                    if (isError) {
-                        item {
-                            AnimatedVisibility(
-                                visible = true,
-                                enter = fadeIn() + scaleIn(),
-                                exit = fadeOut()
-                            ) {
-                                Column(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                        //        Error State для refresh (анимированный)
+                        val isError = recipes.loadState.refresh is LoadState.Error
+                        if (isError) {
+                            item {
+                                AnimatedVisibility(
+                                    visible = true,
+                                    enter = fadeIn() + scaleIn(),
+                                    exit = fadeOut()
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Warning,
-                                        contentDescription = null,
-                                        tint = Color(0xFFAC3B61),
-                                        modifier = Modifier.size(64.dp)
-                                    )
-                                    Spacer(modifier = Modifier.height(12.dp))
-                                    Text(
-                                        text = "Ошибка загрузки данных",
-                                        color = Color(0xFFAC3B61)
-                                    )
+                                    Column(
+                                        modifier = Modifier.fillMaxSize(),
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Warning,
+                                            contentDescription = null,
+                                            tint = Color(0xFFAC3B61),
+                                            modifier = Modifier.size(64.dp)
+                                        )
+                                        Spacer(modifier = Modifier.height(12.dp))
+                                        Text(
+                                            text = "Ошибка загрузки данных",
+                                            color = Color(0xFFAC3B61)
+                                        )
 
+                                    }
                                 }
                             }
                         }
-                    }
 
 //            Empty Search State с анимацией
-                    item {
-                        val isEmptySearch =
-                            recipes.itemCount == 0 &&
-                                    recipes.loadState.refresh is LoadState.NotLoading &&
-                                    query.isNotBlank()
-                        val isEmptyAll =
-                            recipes.itemCount == 0 &&
-                                    recipes.loadState.refresh is LoadState.NotLoading &&
-                                    query.isBlank()
+                        item {
+                            val isEmptySearch =
+                                recipes.itemCount == 0 &&
+                                        recipes.loadState.refresh is LoadState.NotLoading &&
+                                        query.isNotBlank()
+                            val isEmptyAll =
+                                recipes.itemCount == 0 &&
+                                        recipes.loadState.refresh is LoadState.NotLoading &&
+                                        query.isBlank()
 
-                        if (isEmptySearch || isEmptyAll) {
-                            AnimatedVisibility(
-                                visible = isEmptySearch,
-                                enter = fadeIn(),
-                                exit = fadeOut()
-                            ) {
-                                EmptyState(
-                                    icon = if (isEmptySearch) Icons.Outlined.Search else Icons.Default.Search,
-                                    title = if (isEmptySearch) "Ничего не найдено \uD83D\uDD0D" else "Список пуст",
-                                    subtitle = if (isEmptySearch) "Попробуй изменить запрос" else "Добавьте рецепты, чтобы начать"
-                                )
-                            }
-                        }
-                    }
-
-                    // Loader снизу (append) - при подгрузке следующей страницы
-                    when (recipes.loadState.append) {
-                        is LoadState.Loading -> {
-                            item {
-                                CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp)
-                                )
+                            if (isEmptySearch || isEmptyAll) {
+                                AnimatedVisibility(
+                                    visible = isEmptySearch,
+                                    enter = fadeIn(),
+                                    exit = fadeOut()
+                                ) {
+                                    EmptyState(
+                                        icon = if (isEmptySearch) Icons.Outlined.Search else Icons.Default.Search,
+                                        title = if (isEmptySearch) "Ничего не найдено \uD83D\uDD0D" else "Список пуст",
+                                        subtitle = if (isEmptySearch) "Попробуй изменить запрос" else "Добавьте рецепты, чтобы начать"
+                                    )
+                                }
                             }
                         }
 
-                        is LoadState.Error -> {
-                            item {
-                                Text(
-                                    text = "Ошибка загрузки",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    textAlign = TextAlign.Center
-                                )
+                        // Loader снизу (append) - при подгрузке следующей страницы
+                        when (recipes.loadState.append) {
+                            is LoadState.Loading -> {
+                                item {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
+                                    )
+                                }
                             }
+
+                            is LoadState.Error -> {
+                                item {
+                                    Text(
+                                        text = "Ошибка загрузки",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+
+                            else -> Unit
                         }
 
-                        else -> Unit
-                    }
-
-                }       //   else
-            }       // LazyColumn
+                    }       //   else
+                }       // LazyColumn
+            }   //      Column
         }
     }
 

@@ -1,6 +1,5 @@
 package com.grig.recipesandroid.ui.recipe_list
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.grig.recipesandroid.domain.model.Recipe
 import com.grig.recipesandroid.domain.model.toUi
+import com.grig.recipesandroid.ui.utilRecipe.HighlightedText
 
 //@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalFoundationApi::class)
 @Composable

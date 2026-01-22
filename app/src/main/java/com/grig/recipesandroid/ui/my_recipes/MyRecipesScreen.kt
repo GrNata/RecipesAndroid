@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,7 @@ import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.recipe_list.RecipeItem
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
+import com.grig.recipesandroid.ui.utilRecipe.CategoryTypeDropDown
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -54,6 +56,9 @@ fun MyRecipesScreen(
 //    val myRecipes by myViewModul.myRecipes.collectAsState(initial = emptyList())
     val myRecipes = myViewModul.myRecipesPagingFlow.collectAsLazyPagingItems()
     val favorites by recipeViewModel.favorites.collectAsState()
+
+    var selectedCategoryTypeId by remember { mutableStateOf(1L) }
+    val categoryTypesAll = recipeViewModel.categoryTypesAll
 
 
 //    Для проверки
@@ -90,7 +95,9 @@ fun MyRecipesScreen(
 //    группировка по категориям
     val grouped = filteredRecipes
         .flatMap { recipe ->
-            recipe.categories.map { category -> category to recipe }
+            recipe.categories
+                .filter { it.categoryTypeId == 1L }
+                .map { category -> category to recipe }
         }
         .groupBy(
             keySelector = { it.first },
@@ -144,51 +151,85 @@ fun MyRecipesScreen(
             if (myRecipes.loadState.refresh is LoadState.Loading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    grouped.forEach { (category, recipesInCategory) ->
-                        stickyHeader {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(Color(0xFFEFEFEF))
-                                    .padding(8.dp)
-                            ) {
-                                Text(
-                                    text = category.categoryValue,
-//                                    text = category.name,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = Color(0xFF123C69)
-                                )
-                            }
-                        }
-//                            }
-                        Log.d("СЕРДЦЕ MyRecipeScreen", "recipesInCategory size ${recipesInCategory.size}")
 
-                        items(recipesInCategory) { recipe ->
+                Column(
+                    modifier = Modifier.padding(start = 10.dp)
+                ) {
+                    // Dropdown для выбора группировки
+                    CategoryTypeDropDown(
+                        categoryTypes = categoryTypesAll,
+                        selectedId = selectedCategoryTypeId,
+                        onSelected = { selectedCategoryTypeId = it }
+                    )
+
+                    //            Группируем рецепты по первой категории (можно доработать для нескольких)
+                    val grouped = filteredRecipes
+                        .flatMap { recipe ->
+                            Log.d(
+                                "CATEGORY-ch", "RecipeListContent: category:" +
+                                        " ${recipe.categories}"
+                            )
+                            recipe.categories
+                                .filter { it.categoryTypeId == selectedCategoryTypeId }
+//                                .filter { it.categoryTypeId == 1L }
+                                .map { it.categoryValue to recipe }       // создаём пары category -> recipe
+                        }
+                        .groupBy(
+                            keySelector = { it.first },
+                            valueTransform = { it.second }
+                        )
+//            }
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        grouped.forEach { (category, recipesInCategory) ->
+                            stickyHeader {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color(0xFFEFEFEF))
+                                        .padding(8.dp)
+                                ) {
+                                    Text(
+                                        text = category,
+//                                        text = category.categoryValue,
+//                                    text = category.name,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = Color(0xFF123C69)
+                                    )
+                                }
+                            }
+//                            }
+                            Log.d(
+                                "СЕРДЦЕ MyRecipeScreen",
+                                "recipesInCategory size ${recipesInCategory.size}"
+                            )
+
+                            items(recipesInCategory) { recipe ->
 //                            Log.d("MyRecipeItem", "MyRecipe recipe: ${recipe.ingredients.forEach {
 //                                (it.unit?.label) ?: ""
 //                            }}")
 
-                            RecipeItem(
-                                viewModel = recipeViewModel,
-                                recipe = recipe,
-                                query = "",
-                                isFavorite = favorites.contains(recipe.id),         //  по желанию
-                                isOwner = true,
-                                onFavoriteClick = { recipeViewModel.toggleFavorite(recipe.id) },
-                                onClick = { navController.navigate("recipe_detail/${recipe.id}") },
-                                onEditClick = {
-                                    navController.navigate("recipe_edit/${recipe.id}")
-                                },
-                                onDeleteClick = {
+                                RecipeItem(
+                                    viewModel = recipeViewModel,
+                                    recipe = recipe,
+                                    query = "",
+                                    isFavorite = favorites.contains(recipe.id),         //  по желанию
+                                    isOwner = true,
+                                    onFavoriteClick = { recipeViewModel.toggleFavorite(recipe.id) },
+                                    onClick = { navController.navigate("recipe_detail/${recipe.id}") },
+                                    onEditClick = {
+                                        navController.navigate("recipe_edit/${recipe.id}")
+                                    },
+                                    onDeleteClick = {
 //                                    myViewModul.deleteRecipe(recipe.id)
-                                }
-                            )
+                                    }
+                                )
+                            }
                         }
-                    }
-                }           // if
+                    }           // LazyColumn
+                }
             }
         }
     }

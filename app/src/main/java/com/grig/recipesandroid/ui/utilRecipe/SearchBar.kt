@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.ui.recipe_list
+package com.grig.recipesandroid.ui.utilRecipe
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

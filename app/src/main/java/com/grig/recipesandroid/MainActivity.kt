@@ -139,6 +139,7 @@ class MainActivity : ComponentActivity() {
                     factory = RecipesViewModelFactory(
                         repository = recipeRepository,
                         favoritesRepository = favoritesRepository,
+                        categoryRepository = categoryRepository,
                         userIdFlow = authViewModel.userId
                     )
                 )

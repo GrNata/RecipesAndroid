@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.ui.recipe_list
+package com.grig.recipesandroid.ui.utilRecipe
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.SpanStyle

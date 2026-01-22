@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
 import com.grig.recipesandroid.data.model.dto.IngredientDto
 import com.grig.recipesandroid.data.model.request.IngredientRequest
@@ -59,6 +60,8 @@ class AddEditRecipeViewModel(
         private set
     // ++   справочник ингредиентов
     var ingredientsAll by mutableStateOf<List<IngredientDto>>(emptyList())
+//    +++  справочник типов категорий
+    var categoryTypesAll by mutableStateOf<List<CategoryTypeDto>>(emptyList())
 //+++++++++++++++++++++++++
 
     var isLoading by mutableStateOf(false)
@@ -129,6 +132,9 @@ class AddEditRecipeViewModel(
                         categoryValue = cv.categoryValue
                     )
                 }
+                categoryTypesAll = categoryRepository.getCategoryTypes()
+                Log.d("CATEGORY-ch", "AddEditRecipeViewModel: loaded ${categoryTypesAll.size} category type")
+
 
                 ingredients.clear()
                 ingredients.addAll(

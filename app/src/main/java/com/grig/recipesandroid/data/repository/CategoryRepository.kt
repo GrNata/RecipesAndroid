@@ -2,12 +2,13 @@ package com.grig.recipesandroid.data.repository
 
 import android.util.Log
 import com.grig.recipesandroid.data.api.RecipeApi
+import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
 import com.grig.recipesandroid.domain.model.Category
 
 class CategoryRepository(private val api: RecipeApi) {
 
-    // Получение всех значений категорий
+    // ++++++++++ CategoryValue
     suspend fun getCategoryValues(): List<CategoryValueDto> {
 //        val categoriesDto = api.getCategories()     // API метод возвращает List<CategoryDto>
         return try {
@@ -29,6 +30,29 @@ class CategoryRepository(private val api: RecipeApi) {
             null
         }
     }
+//    ++++++++++++++++++
+//    +++++++   CategoryType
+    suspend fun getCategoryTypes(): List<CategoryTypeDto> {
+        return try {
+            val response = api.getCategoryTypes()
+            Log.d("CATEGORY-ch", "CategoryRepository loaded ${response.size} category type")
+            response
+        } catch (e: Exception) {
+            Log.e("CATEGORY-ch", "CategoryRepository: Error loading category type", e)
+            emptyList()
+        }
+    }
+
+    suspend fun getCategoryTypeById(id: Long): CategoryTypeDto? {
+        return try {
+            api.getCategoryTypeById(id)
+        } catch (e: Exception) {
+            Log.e("CATEGORY-ch", "CategoryRepository: Error loading category type", e)
+            null
+        }
+    }
+
+
 
 //    suspend fun getCategories(): List<Category> {
 //        val categoriesDto = api.getCategories()     // API метод возвращает List<CategoryDto>
