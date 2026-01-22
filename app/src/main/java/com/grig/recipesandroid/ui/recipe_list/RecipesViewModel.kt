@@ -80,7 +80,7 @@ open class RecipesViewModel(
     private var favoritesSyncedForUser: String? = null
 
     init {
-        Log.d("CICLE RecipeViewModel", "RecipeViewModel - init")
+        Log.d("CICLE RecipeViewModel", "RecipeViewModel - init ")
         viewModelScope.launch {
             userIdFlow
                 .collect { userId ->
@@ -93,9 +93,11 @@ open class RecipesViewModel(
                         favoritesSyncedForUser != userId -> {
                             favoritesSyncedForUser = userId
                             syncFavoritesIfLoggedIn(userId)
+                            Log.d("CICLE RecipeViewModel", "RecipeViewModel - init favoritesSyncedForUser: ${favoritesSyncedForUser}")
                         }
                     }
                 }
+
         }
     }
 

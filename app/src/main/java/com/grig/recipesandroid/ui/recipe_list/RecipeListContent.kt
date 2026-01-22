@@ -100,6 +100,14 @@ fun RecipeListContent(
                     .background(Color(0xFFF7EDE9))
             ) {
 
+                Log.d("CATEGORY-ch", "RecipeListContent: start recipes: ${recipes.itemSnapshotList.items}")
+                Log.d("CATEGORY-ch", "RecipeListContent: start filteredRecipes: ${filteredRecipes}")
+                Log.d("CATEGORY-ch", "RecipeListContent: start filteredRecipes:" +
+                        " ${filteredRecipes.forEach { 
+                            it.categories.forEach { it.categoryValue }
+                        }}")
+
+
                 if (recipes.loadState.refresh is LoadState.Loading) {
                     items(5) { ShimmerRecipeItem() }
                 } else {
@@ -110,7 +118,7 @@ fun RecipeListContent(
 //                        .groupBy({ it.first }, { it.second })   // Map<Category, List<Recipe>>
                     val grouped = filteredRecipes
                         .flatMap { recipe ->
-                            recipe.categoryValueIds.map { it.categoryValue to recipe }       // создаём пары category -> recipe
+                            recipe.categories.map { it.categoryValue to recipe }       // создаём пары category -> recipe
 //                            recipe.categoryValueIds.map { it.typeName to recipe }       // создаём пары category -> recipe
 //                            recipe.categories.map { category ->  category to recipe }       // создаём пары category -> recipe
                         }

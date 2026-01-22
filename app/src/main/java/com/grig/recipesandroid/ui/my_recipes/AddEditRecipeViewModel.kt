@@ -17,7 +17,6 @@ import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.UnitRepository
-import com.grig.recipesandroid.domain.model.Category
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import kotlinx.coroutines.launch
 import java.util.Collections.emptyList
@@ -94,10 +93,10 @@ class AddEditRecipeViewModel(
         viewModelScope.launch {
             try {
                 categoryValuesAll = categoryRepository.getCategoryValues()  // получаем все CategoryValueDto
-                Log.d("CATEGORY", "AddEditRecipeViewModel categoryValuesAll size = ${categoryValuesAll.size}")
+                Log.d("CATEGORY-ch", "AddEditRecipeViewModel categoryValuesAll size = ${categoryValuesAll.size}")
             } catch (e: Exception) {
                 errorMessage = e.message
-                Log.e("CATEGORY", "AddEditRecipeViewModel: Ошибка загрузки категорий: ${e}")
+                Log.e("CATEGORY-ch", "AddEditRecipeViewModel: Ошибка загрузки категорий: ${e}")
             }
         }
     }
@@ -122,7 +121,7 @@ class AddEditRecipeViewModel(
                 // Если recipe.categoryValueIds приходит с сервера, они уже CategoryValueDto
                 // В categoryValuesAll оставляем весь справочник, а selectedCategoryValues заполняем выбранное
                 selectedCategoryValues.clear()
-                recipe.categoryValueIds.forEach { cv ->
+                recipe.categories.forEach { cv ->
                     selectedCategoryValues[cv.categoryTypeId] = CategoryValueDto(
                         id = cv.id,
                         typeId = cv.categoryTypeId,
@@ -146,7 +145,7 @@ class AddEditRecipeViewModel(
 
                 // заполняем selectedCategoryValues при редактировании
                 selectedCategoryValues.clear()
-                recipe.categoryValueIds.forEach { cv ->
+                recipe.categories.forEach { cv ->
                     selectedCategoryValues[cv.categoryTypeId] = CategoryValueDto(
                         id = cv.id,
                         typeId = cv.categoryTypeId,
@@ -155,7 +154,7 @@ class AddEditRecipeViewModel(
                     )
                 }
 
-                Log.d("CATEGORY", "AddEditRecipeViewModel: ingredients size: ${ingredients.size}")
+                Log.d("CATEGORY-ch", "AddEditRecipeViewModel: ingredients size: ${ingredients.size}")
 
             } catch (e: Exception) {
                 errorMessage = e.message

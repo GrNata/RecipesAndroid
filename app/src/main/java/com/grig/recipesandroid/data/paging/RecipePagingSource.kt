@@ -19,6 +19,7 @@ class RecipePagingSource(
             val page = params.key ?: 0
 //            Log.d("PAGING", "Loading page=$page size=${params.loadSize}")
             val response = api.getRecipes(page = page, size = params.loadSize)
+            Log.d("CATEGORY-ch", "RecipePagingSource: recipes = $response.itemSnapshotList.items")
 
 //            Фильтруем по query прямо здесь
             val recipes = response.content

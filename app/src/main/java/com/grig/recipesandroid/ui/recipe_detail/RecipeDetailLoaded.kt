@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -172,7 +171,7 @@ fun RecipeDetailLoaded(
                 ) {
                     Text(
                         text = "Категория: ${
-                            recipe.categoryValueIds.joinToString { it.categoryValue.lowercase() }
+                            recipe.categories.joinToString { it.categoryValue.lowercase() }
 //                            recipe.categories.joinToString { it.name.lowercase() }
                         }",
                         color = Color(0xFF7E889F),

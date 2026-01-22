@@ -12,10 +12,10 @@ class CategoryRepository(private val api: RecipeApi) {
 //        val categoriesDto = api.getCategories()     // API метод возвращает List<CategoryDto>
         return try {
             val response = api.getCategoryValues()     // // API возвращает List<CategoryValueDto>
-            Log.d("CATEGORY", "CategoryRepository loaded ${response.size} category values")
+            Log.d("CATEGORY-ch", "CategoryRepository loaded ${response.size} category values")
             response
         } catch (e: Exception) {
-            Log.e("CATEGORY", "CategoryRepository: Error loading category values", e)
+            Log.e("CATEGORY-ch", "CategoryRepository: Error loading category values", e)
             emptyList()
         }
     }
@@ -25,7 +25,7 @@ class CategoryRepository(private val api: RecipeApi) {
         return try {
             api.getCategoryValuesById(id)
         } catch (e: Exception) {
-            Log.e("CATEGORY", "CategoryRepository: Error loading category value $id", e)
+            Log.e("CATEGORY-ch", "CategoryRepository: Error loading category value $id", e)
             null
         }
     }

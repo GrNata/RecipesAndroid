@@ -7,10 +7,8 @@ data class RecipeDto(
     @SerializedName("name") val name: String,
     @SerializedName("description") val description: String?,
     @SerializedName("image") val image: String?,
-    @SerializedName("categories") val categoryValues: List<CategoryValueDto>?,
-//    @SerializedName("categories") val categories: List<CategoryDto>?,
+    @SerializedName("categoryValues") val categories: Map<String, CategoryValueDto>?,
     @SerializedName("ingredients") val ingredients: List<IngredientWithAmountDto>?,
     @SerializedName("steps") val steps: List<String>?,
-//    var isFavorite: Boolean = false
 )
 

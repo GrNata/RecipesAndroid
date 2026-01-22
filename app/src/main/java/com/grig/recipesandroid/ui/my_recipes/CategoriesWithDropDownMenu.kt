@@ -52,7 +52,7 @@ fun CategoriesWIthDropDownMenu(viewModel: AddEditRecipeViewModel) {
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            Log.d("CATEGORН", "CategoriesWithDropMenu: categoryValuesAll size = ${viewModel.categoryValuesAll.size}")
+            Log.d("CATEGORН-ch", "CategoriesWithDropMenu: categoryValuesAll size = ${viewModel.categoryValuesAll.size}")
 
             viewModel.categoryValuesAll.forEach { category ->
                 DropdownMenuItem(

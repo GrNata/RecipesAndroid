@@ -90,7 +90,7 @@ fun MyRecipesScreen(
 //    группировка по категориям
     val grouped = filteredRecipes
         .flatMap { recipe ->
-            recipe.categoryValueIds.map { category -> category to recipe }
+            recipe.categories.map { category -> category to recipe }
         }
         .groupBy(
             keySelector = { it.first },

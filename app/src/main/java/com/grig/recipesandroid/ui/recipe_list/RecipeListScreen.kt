@@ -83,7 +83,7 @@ fun RecipeListScreen(
 
         topBar = {
             Log.d("СЕРДЦЕ RecipeListScreen", "RecipeListScreen isAuthenticated = $isAuthenticated")
-            Log.d("CICLE RecipeListScreen", "RecipeListScreen isAuthenticated = $isAuthenticated")
+            Log.d("CATEGORY-ch", "RecipeListScreen: recipes = $recipes.itemSnapshotList.items")
 
             val authRestored by authViewModel.authStateRestored.collectAsState()
 
@@ -96,7 +96,7 @@ fun RecipeListScreen(
                     authViewModel.logout()
                 },
                 onMyRecipesClick = {
-                    Log.d("NAV MyRecipe", "Navigating to MyRecipesScreen")
+                    Log.d("CATEGORY-ch", "RecipeListScreen: Navigating to MyRecipesScreen")
                     navController.navigate("my_recipes") {
                         launchSingleTop = true
                     }
