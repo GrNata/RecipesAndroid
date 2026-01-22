@@ -1,6 +1,6 @@
 package com.grig.recipesandroid.data.api
 
-import com.grig.recipesandroid.data.model.dto.CategoryDto
+//import com.grig.recipesandroid.data.model.dto.CategoryDto
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
 import com.grig.recipesandroid.data.model.dto.IngredientDto

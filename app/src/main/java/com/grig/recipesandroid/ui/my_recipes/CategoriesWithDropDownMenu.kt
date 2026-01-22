@@ -18,52 +18,52 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CategoriesWIthDropDownMenu(viewModel: AddEditRecipeViewModel) {
-
-    var expanded by remember { mutableStateOf(false) }
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-//                onExpandedChange = { expanded = !expanded },
-        onExpandedChange = { expanded = it },    // <- прямо передаем новое значение
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)
-    ) {
-
-        TextField(
-            value = viewModel.selectedCategoryValues.entries
-                .joinToString { it.value.categoryValue },   // склеиваем значения в одну строку
-//            value = viewModel.selectedCategory?.name ?: "",
-            onValueChange = {  },      //          ???
-//            onValueChange = { viewModel.selectedCategory },      //          ???
-            readOnly = true,
-            label = { Text(text = "Категория") },
-            trailingIcon = {
-                TrailingIcon(expanded = expanded)
-            },
-            colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            modifier = Modifier.menuAnchor() // обязательно для работы dropdown
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            Log.d("CATEGORН-ch", "CategoriesWithDropMenu: categoryValuesAll size = ${viewModel.categoryValuesAll.size}")
-
-            viewModel.categoryValuesAll.forEach { category ->
-                DropdownMenuItem(
-                    text = { Text(category.categoryValue) },
-//                    text = { Text(category.name) },
-                    onClick = {
-//                        viewModel.onCategorySelected(category)
-//                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun CategoriesWIthDropDownMenu(viewModel: AddEditRecipeViewModel) {
+//
+//    var expanded by remember { mutableStateOf(false) }
+//
+//    ExposedDropdownMenuBox(
+//        expanded = expanded,
+////                onExpandedChange = { expanded = !expanded },
+//        onExpandedChange = { expanded = it },    // <- прямо передаем новое значение
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(top = 8.dp)
+//    ) {
+//
+//        TextField(
+//            value = viewModel.selectedCategoryValues.entries
+//                .joinToString { it.value.categoryValue },   // склеиваем значения в одну строку
+////            value = viewModel.selectedCategory?.name ?: "",
+//            onValueChange = {  },      //          ???
+////            onValueChange = { viewModel.selectedCategory },      //          ???
+//            readOnly = true,
+//            label = { Text(text = "Категория") },
+//            trailingIcon = {
+//                TrailingIcon(expanded = expanded)
+//            },
+//            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+//            modifier = Modifier.menuAnchor() // обязательно для работы dropdown
+//        )
+//
+//        ExposedDropdownMenu(
+//            expanded = expanded,
+//            onDismissRequest = { expanded = false }
+//        ) {
+//            Log.d("CATEGORН-ch", "CategoriesWithDropMenu: categoryValuesAll size = ${viewModel.categoryValuesAll.size}")
+//
+//            viewModel.categoryValuesAll.forEach { category ->
+//                DropdownMenuItem(
+//                    text = { Text(category.categoryValue) },
+////                    text = { Text(category.name) },
+//                    onClick = {
+////                        viewModel.onCategorySelected(category)
+////                        expanded = false
+//                    }
+//                )
+//            }
+//        }
+//    }
+//}

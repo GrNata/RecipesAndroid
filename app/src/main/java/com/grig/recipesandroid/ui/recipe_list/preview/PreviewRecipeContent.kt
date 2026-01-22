@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
-import com.grig.recipesandroid.domain.model.Category
+//import com.grig.recipesandroid.domain.model.Category
 import com.grig.recipesandroid.domain.model.Ingredient
 import com.grig.recipesandroid.domain.model.Recipe
 import com.grig.recipesandroid.domain.model.RecipeIngredient

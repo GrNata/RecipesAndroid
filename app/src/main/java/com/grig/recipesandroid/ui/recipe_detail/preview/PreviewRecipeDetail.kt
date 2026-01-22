@@ -2,7 +2,7 @@ package com.grig.recipesandroid.ui.recipe_detail.preview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.grig.recipesandroid.domain.model.Category
+//import com.grig.recipesandroid.domain.model.Category
 import com.grig.recipesandroid.domain.model.Ingredient
 import com.grig.recipesandroid.domain.model.Recipe
 import com.grig.recipesandroid.domain.model.RecipeIngredient

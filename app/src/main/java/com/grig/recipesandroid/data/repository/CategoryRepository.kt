@@ -4,7 +4,7 @@ import android.util.Log
 import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
-import com.grig.recipesandroid.domain.model.Category
+//import com.grig.recipesandroid.domain.model.Category
 
 class CategoryRepository(private val api: RecipeApi) {
 

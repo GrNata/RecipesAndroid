@@ -100,29 +100,17 @@ fun AddEditRecipeScreen(
                 label = { Text("Описание")}
             )
 
-            if (viewModel.image != null) {
-                TextField(
-                    value = viewModel.image!!,  // гарантированно не null внутри блока
-                    onValueChange = viewModel::onImageChange,
-                    label = { Text("Фото (url)") }
-                )
-                // Картинка под полем ввода
-                AsyncImage(  // требуется библиотека Coil
-                    model = requireNotNull(viewModel.image),
-                    contentDescription = "Загруженное фото",
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .fillMaxWidth()
-                        .height(120.dp),
-                    contentScale = ContentScale.Fit
-                )
-            } else {
-                TextField(
-                    value = "",
-                    onValueChange = viewModel::onImageChange,
-                    label = { Text("Фото (url)") }
-                )
+
+//            ++++++++++
+            Button(
+                onClick = {
+                    navController.navigate("image")
+                }
+            ) {
+                Text("Картинка рецепта")
             }
+//      ++++++++++++++++++++++++++
+
 
 //            CategoriesWIthDropDownMenu(viewModel)
             Button(
