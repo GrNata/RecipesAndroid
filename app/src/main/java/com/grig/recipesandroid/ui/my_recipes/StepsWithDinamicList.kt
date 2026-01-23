@@ -28,14 +28,14 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun StepsWithDinamicList(viewModel: AddEditRecipeViewModel) {
 
-    Text(
-        text = "Шаги приготовления",
-        style = MaterialTheme.typography.titleMedium,
-//        modifier = Modifier.padding(top = 8.dp),
-        modifier = Modifier.fillMaxWidth(),
-        textAlign = TextAlign.Center,
-        color = Color(0xFF123C69)
-    )
+//    Text(
+//        text = "Шаги приготовления",
+//        style = MaterialTheme.typography.titleMedium,
+////        modifier = Modifier.padding(top = 8.dp),
+//        modifier = Modifier.fillMaxWidth(),
+//        textAlign = TextAlign.Center,
+//        color = Color(0xFF123C69)
+//    )
     Column(modifier = Modifier.padding(top = 8.dp)) {
         viewModel.steps.forEachIndexed { index, step ->
             Row(

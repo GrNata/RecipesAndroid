@@ -122,6 +122,8 @@ fun AddEditRecipeScreen(
                 textStyle = MaterialTheme.typography.bodyMedium
             )
 
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = viewModel.description,
@@ -145,6 +147,7 @@ fun AddEditRecipeScreen(
                 textStyle = MaterialTheme.typography.bodySmall
             )
 
+            Spacer(modifier = Modifier.padding(top = 16.dp))
 
 //            ++++++++++
             Button(
@@ -163,6 +166,8 @@ fun AddEditRecipeScreen(
             }
 //      ++++++++++++++++++++++++++
 
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+
 
 //            CategoriesWIthDropDownMenu(viewModel)
             Button(
@@ -180,6 +185,8 @@ fun AddEditRecipeScreen(
                 Text("Выбрать категорию рецепта")
             }
 
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+
             // --- динамический список ингредиентов ---
 //            IngredientsWithDinamicList(viewModel)
             Button(
@@ -196,11 +203,25 @@ fun AddEditRecipeScreen(
                 Text("Ингредиенты")
             }
 
-
             Spacer(modifier = Modifier.padding(top = 16.dp))
 
             // --- динамический список шагов приготовления ---
-            StepsWithDinamicList(viewModel)
+            Button(
+                modifier = Modifier.fillMaxWidth()
+                    .background(Color(0xFFEFEFEF)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFEEE2DC),
+                    contentColor = Color(0xFF123C69)
+                ),
+                onClick = {
+                    navController.navigate("steps")
+                }
+            ) {
+                Text("Шаги приготовления")
+            }
+//            StepsWithDinamicList(viewModel)
+
+            Spacer(modifier = Modifier.padding(top = 16.dp))
 
             Button(
                 modifier = Modifier.fillMaxWidth()

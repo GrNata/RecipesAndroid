@@ -38,6 +38,7 @@ import com.grig.recipesandroid.ui.my_recipes.MyRecipesScreen
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModelFactory
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModel
 import com.grig.recipesandroid.ui.my_recipes.SelectCategoriesScreen
+import com.grig.recipesandroid.ui.my_recipes.StepScreen
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModel
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModelFactory
 
@@ -223,6 +224,13 @@ fun AppNavGraph(
 
                 composable("ingredients") {
                     IngredientsScreen(
+                        viewModel = addEditRecipeViewModel,
+                        navController = navController
+                    )
+                }
+
+                composable("steps") {
+                    StepScreen(
                         viewModel = addEditRecipeViewModel,
                         navController = navController
                     )
