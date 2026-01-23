@@ -269,8 +269,10 @@ class AddEditRecipeViewModel(
 //    DELETE
 //    ++++++++++++
 // ===== Удаление рецепта =====
-    fun deleteRecipe() {
-        val recipeId = currentRecipeId ?: return
+    fun deleteRecipe(recipeId: Long) {
+    Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: deleteRecipe, START")
+//        val recipeId = currentRecipeId ?: return
+    Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: deleteRecipe, recipeID=$recipeId")
         viewModelScope.launch {
             try {
                 recipeRepository.deleteRecipe(recipeId)

@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -45,7 +46,8 @@ fun MyRecipesScreen(
     myViewModul: MyRecipesViewModel,
     recipeViewModel: RecipesViewModel,
     navController: NavController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    addEditRecipeViewModel: AddEditRecipeViewModel
 ) {
 
     Log.d("СЕРДЦЕ MyRecipesScreen VM_CHECK", " начало MyRecipesScreen, recipeViewModel: $recipeViewModel")  // ← проверьте, что не null
@@ -223,7 +225,8 @@ fun MyRecipesScreen(
                                         navController.navigate("recipe_edit/${recipe.id}")
                                     },
                                     onDeleteClick = {
-//                                    myViewModul.deleteRecipe(recipe.id)
+//                                    addEditRecipeViewModel.deleteRecipe()
+                                    addEditRecipeViewModel.deleteRecipe(recipe.id)
                                     }
                                 )
                             }

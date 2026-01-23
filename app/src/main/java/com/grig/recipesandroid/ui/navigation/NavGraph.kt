@@ -179,7 +179,8 @@ fun AppNavGraph(
                             myViewModul = myRecipesViewModel,
                             recipeViewModel = recipeViewModel,
                             navController = navController,
-                            authViewModel = authViewModel
+                            authViewModel = authViewModel,
+                            addEditRecipeViewModel = addEditRecipeViewModel
                         )
                 }
 
