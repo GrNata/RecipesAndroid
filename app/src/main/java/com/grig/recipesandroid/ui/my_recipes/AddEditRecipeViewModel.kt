@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
 import com.grig.recipesandroid.data.model.dto.IngredientDto
@@ -20,6 +21,7 @@ import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.UnitRepository
 import com.grig.recipesandroid.ui.auth.AuthViewModel
+import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import kotlinx.coroutines.launch
 import java.util.Collections.emptyList
 import kotlin.collections.forEach
@@ -29,7 +31,10 @@ class AddEditRecipeViewModel(
     private val categoryRepository: CategoryRepository,
     private val ingredientRepository: IngredientRepository,
     private val unitRepository: UnitRepository,
-    val authViewModel: AuthViewModel
+    val authViewModel: AuthViewModel,
+    private val recipesViewModel: RecipesViewModel,
+    private val myRecipesViewModel: MyRecipesViewModel,
+    private val navController: NavController
 ) : ViewModel() {
 
 //    Флаг при загрузке формы создания (редактирования) - убрать удаление вводимых данных
@@ -222,6 +227,7 @@ class AddEditRecipeViewModel(
                         steps = steps.toList()
                     )
                 )
+                onRecipeSave()
                 onSuccess()
 
             } catch (e: Exception) {
@@ -256,6 +262,7 @@ class AddEditRecipeViewModel(
                         steps = steps.toList()
                     )
                 )
+                onRecipeUpdate(recipeId)
                 onSuccess()
             } catch (e: Exception) {
                 errorMessage = e.message
@@ -276,10 +283,29 @@ class AddEditRecipeViewModel(
         viewModelScope.launch {
             try {
                 recipeRepository.deleteRecipe(recipeId)
+                onRecipeSave()
             } catch (e: Exception) {
                 errorMessage = e.message
             }
         }
+    }
+
+    fun onRecipeSave() {
+        recipesViewModel.refresh()
+        myRecipesViewModel.refresh()
+        navController.navigate("my_recipes") {
+            popUpTo("recipe_add") { inclusive = true }
+        }
+//        navController.popBackStack()
+    }
+
+    fun onRecipeUpdate(recipeId: Long) {
+        recipesViewModel.refresh()
+        myRecipesViewModel.refresh()
+        navController.navigate("my_recipes") {
+            popUpTo("recipe_edit/${recipeId}") { inclusive = true }
+        }
+//        navController.popBackStack()
     }
 
 //    ++++++++++++++
@@ -385,22 +411,17 @@ class AddEditRecipeViewModel(
 // ===== Сброс формы =====
     fun resetForm() {
     Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: resetForm, name: ${name}")
-
         currentRecipeId = null
         name = ""
         description = ""
         image = null
 
         selectedCategoryValues.clear()
-//        selectedCategoryValuesForAddUpdate.clear()
-//        selectedCategory = null
-//        categoryValuesAll = categoryValuesAll
-
         ingredients.clear()
         steps.clear()
         errorMessage = null
 
-        isFormInitialized = false
+//        isFormInitialized = false
     }
 
 }

@@ -14,6 +14,8 @@ class MyRecipesViewModel(
     private val authViewModel: AuthViewModel
 ) : ViewModel() {
 
+    private val refreshTrigger = MutableStateFlow(0)
+
     // Преобразуем Flow<String?> → StateFlow<String?> прямо здесь
     private val accessTokenState: StateFlow<String?> = authViewModel.accessToken
         .stateIn(
@@ -21,10 +23,26 @@ class MyRecipesViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = null
         )
-    val myRecipesPagingFlow = Pager(
-        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
-//        pagingSourceFactory = { MyRecipesPagingSource(repository, accessTokenState) }
-        pagingSourceFactory = { MyRecipesPagingSource(repository) }
-    ).flow.cachedIn(viewModelScope)
+
+    val myRecipesPagingFlow = refreshTrigger
+        .flatMapLatest {
+            Pager(
+                config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+                pagingSourceFactory = { MyRecipesPagingSource(repository) }
+            ).flow
+        }
+        .cachedIn(viewModelScope)
+//    val myRecipesPagingFlow = Pager(
+//        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+////        pagingSourceFactory = { MyRecipesPagingSource(repository, accessTokenState) }
+//        pagingSourceFactory = { MyRecipesPagingSource(repository) }
+//    ).flow.cachedIn(viewModelScope)
+
+
+    fun refresh() {
+        refreshTrigger.update { it + 1 }
+    }
+
+
 
 }

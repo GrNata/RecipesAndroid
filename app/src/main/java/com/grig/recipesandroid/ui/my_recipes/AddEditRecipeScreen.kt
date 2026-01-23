@@ -63,22 +63,32 @@ fun AddEditRecipeScreen(
 
 //    LaunchedEffect(Unit) {
     LaunchedEffect(recipeId) {
-        Log.d("AddEdit-category", "LaunchedEffect recipeId = $recipeId")
+        viewModel.loadCategoryValues()  // сначала загружаем все категории
+        viewModel.loadIngredientAndUnitDictionaries()
+        viewModel.loadCategoryTypes()
 
-        if (!viewModel.isFormInitialized) {
-
-            viewModel.loadCategoryValues()  // сначала загружаем все категории
-            viewModel.loadIngredientAndUnitDictionaries()
-            viewModel.loadCategoryTypes()
-//        viewModel.loadCategories()  // сначала загружаем все категории
-            if (isEdit && recipeId != null) {
-                viewModel.loadRecipe(recipeId)  // потом загружаем рецепт
-            } else {
-                viewModel.resetForm()
-            }
-            viewModel.isFormInitialized = true
+        if (recipeId != null) {
+            // редактирование
+            viewModel.loadRecipe(recipeId)
         }
     }
+//    LaunchedEffect(recipeId) {
+//        Log.d("AddEdit-category", "LaunchedEffect recipeId = $recipeId")
+//
+//        if (!viewModel.isFormInitialized) {
+//
+//            viewModel.loadCategoryValues()  // сначала загружаем все категории
+//            viewModel.loadIngredientAndUnitDictionaries()
+//            viewModel.loadCategoryTypes()
+////        viewModel.loadCategories()  // сначала загружаем все категории
+//            if (isEdit && recipeId != null) {
+//                viewModel.loadRecipe(recipeId)  // потом загружаем рецепт
+//            } else {
+//                viewModel.resetForm()
+//            }
+//            viewModel.isFormInitialized = true
+//        }
+//    }
 
     Scaffold(
         topBar = {

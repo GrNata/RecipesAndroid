@@ -19,6 +19,8 @@ import com.grig.recipesandroid.data.repository.UnitRepository
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModel
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModelFactory
+import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModel
+import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModelFactory
 import com.grig.recipesandroid.ui.navigation.AppNavGraph
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import com.grig.recipesandroid.ui.theme.RecipesAndroidTheme
@@ -146,13 +148,21 @@ class MainActivity : ComponentActivity() {
                     )
                 )
 
+                val myRecipesViewModel: MyRecipesViewModel = viewModel(
+//                    parentEntry,
+                    factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
+                )
+
                 val addEditRecipeViewModel: AddEditRecipeViewModel = viewModel(
                     factory = AddEditRecipeViewModelFactory(
                         recipeRepository = recipeRepository,
                         categoryRepository = categoryRepository,
                         ingredientRepository = ingredientRepository,
                         unitRepository = unitRepository,
-                        authViewModel = authViewModel
+                        authViewModel = authViewModel,
+                        recipesViewModel,
+                        myRecipesViewModel,
+                        navController
                     )
                 )
 
@@ -167,7 +177,8 @@ class MainActivity : ComponentActivity() {
                     unitRepository = unitRepository,
                     applicationContext = applicationContext,
                     recipeViewModel = recipesViewModel,
-                    addEditRecipeViewModel = addEditRecipeViewModel
+                    addEditRecipeViewModel = addEditRecipeViewModel,
+                    myRecipesViewModel
                 )
             }
         }

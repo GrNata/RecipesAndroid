@@ -14,6 +14,7 @@ import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.model.dto.RecipeDto
 import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.FavoritesRepository
+import com.grig.recipesandroid.domain.model.Recipe
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,7 +25,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import java.util.Collections
 
 //  ViewModel отвечает за данные (Flow<PagingData>) и их загрузку из репозитория
@@ -34,6 +39,16 @@ open class RecipesViewModel(
     private val categoryRepository: CategoryRepository,
     private val userIdFlow: StateFlow<String?>      // сюда передаем текущий userId / email
 ) : ViewModel() {
+
+//    Любое изменение данных → invalidate()
+    private val refreshTrigger = MutableStateFlow(0)
+//    val recipes = refreshTrigger.flatMapLatest {
+//        repository.getRecipesPaper().flow
+//    }.cachedIn(viewModelScope)
+
+    fun refresh() {
+        refreshTrigger.update { it + 1 }
+    }
 
     val selectedCategoryValues = mutableMapOf<Long, CategoryValueDto>()
 // key = typeId
@@ -67,25 +82,38 @@ open class RecipesViewModel(
     private val _messageFlow = MutableStateFlow<String>("")
     val messageFlow: SharedFlow<String> = _messageFlow
 
-//    Теперь добавим объект Pager с Retry. Paging уже умеет повторять загрузку через метод retry() у PagingData. Нам нужно просто сохранить Flow, чтобы в UI можно было вызвать повтор
-    lateinit var lastRecipesPagingFlow: PagingData<RecipeDto>
+////    Теперь добавим объект Pager с Retry. Paging уже умеет повторять загрузку через метод retry() у PagingData. Нам нужно просто сохранить Flow, чтобы в UI можно было вызвать повтор
+//    lateinit var lastRecipesPagingFlow: PagingData<RecipeDto>
 
 //    Поиск
 //🔹 Никаких launch, loadRecipes, StateFlow
 //🔹 Paging сам управляет загрузкой
 // Flow с debounce и фильтрацией в PagingSource
-    val recipesPagingFlow = _query
-        .debounce(300)          // чтобы не фильтровать на каждый символ - ждем 300ms после последнего ввода
-        .distinctUntilChanged()             // пропускаем повторные значения
-        .flatMapLatest { q ->
-            repository.getRecipesPaper(query = q)       // передаем query в Pager/PagingSource
-                .flow
-                .catch { e ->
-                    // Отлавливаем ошибки Paging
-                    _messageFlow.emit("Ошибка загрузки рецептов: ${e.localizedMessage}")
+//    val recipesPagingFlow: Flow<PagingData<RecipeDto>> =
+    val recipesPagingFlow: Flow<PagingData<Recipe>> =
+        combine(
+            refreshTrigger,
+            _query.debounce(300).distinctUntilChanged()
+        ) { _, query -> query }
+            .flatMapLatest { query ->
+                repository.getRecipesPaper(query = query)
+                    .catch { e ->
+                        _messageFlow.emit("Ошибка загрузки рецептов: ${e.localizedMessage}")
                     }
-                }
-                .cachedIn(viewModelScope)
+            }
+            .cachedIn(viewModelScope)
+//    val recipesPagingFlow = _query
+//        .debounce(300)          // чтобы не фильтровать на каждый символ - ждем 300ms после последнего ввода
+//        .distinctUntilChanged()             // пропускаем повторные значения
+//        .flatMapLatest { q ->
+//            repository.getRecipesPaper(query = q)       // передаем query в Pager/PagingSource
+//                .flow
+//                .catch { e ->
+//                    // Отлавливаем ошибки Paging
+//                    _messageFlow.emit("Ошибка загрузки рецептов: ${e.localizedMessage}")
+//                    }
+//                }
+//                .cachedIn(viewModelScope)
 
 
     private var favoritesSyncedForUser: String? = null

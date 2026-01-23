@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.recipe_list
 
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -66,28 +67,45 @@ fun RecipeItem(
 //                .background(Color(0xFFF6E5D7))
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth().height(15.dp).padding(0.dp),
+                modifier = Modifier.fillMaxWidth().height(21.dp),
                 horizontalArrangement = Arrangement.End
             ) {
+
             // Только для моих рецептов - кнопки добавить и удалить
                 if (isOwner) {
-                        IconButton(onClick = {
+                        IconButton(
+                            onClick = {
                             onEditClick?.invoke()
-                        }) {
+                        },
+                            modifier = Modifier.size(18.dp) // Размер кнопки
+                            ) {
                             Icon(Icons.Default.Edit, contentDescription = "Редактировать")
                         }
-                        IconButton(onClick = {
+
+                        // Отступ 8 dp между кнопками
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        IconButton(
+                            onClick = {
                             onDeleteClick?.invoke()
-                        }) {
+                        },
+                            modifier = Modifier.size(18.dp)  // Размер кнопки
+                            ) {
                             Icon(Icons.Default.Delete, contentDescription = "Удалить")
                         }
+
+                    // Отступ 8 dp между кнопками
+                    Spacer(modifier = Modifier.width(16.dp))
+
                 }
 
-                val scale by animateFloatAsState(targetValue = if (isFavorite) 1.3f else 1f)
+//                val scale by animateFloatAsState(targetValue = if (isFavorite) 1.3f else 1f)
+                val scale by animateFloatAsState(targetValue = if (isFavorite) 1f else 0.9f)
 
                 IconButton(
                     onClick = { viewModel.toggleFavorite(recipe.id) },
-                    modifier = Modifier.scale(scale)
+//                    modifier = Modifier.scale(scale)
+                    modifier = Modifier.size(20.dp).scale(scale)  // Размер кнопки
                 ) {
                     Icon(
                         imageVector = if (isFavorite) {
@@ -117,7 +135,8 @@ fun RecipeItem(
                         model = recipe.image,
                         contentDescription = recipe.name,
                         modifier = Modifier
-                            .height(80.dp)
+//                            .height(80.dp)
+                            .size(80.dp)
                             .clip(RoundedCornerShape(12.dp))
                     )
                 }
@@ -125,6 +144,7 @@ fun RecipeItem(
 
                 // Колонка с текстом и Spacer между текстом и иконкой
 //                Row(modifier = Modifier.fillMaxWidth()) {
+                Log.d("ADD RECIPE-newEdit", "RecipeItem: name: ${recipe.name}, description=${recipe.description}")
                     Column {
                         HighlightedText(
                             text = recipe.name,

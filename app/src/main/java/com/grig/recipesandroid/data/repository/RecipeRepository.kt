@@ -3,24 +3,33 @@ package com.grig.recipesandroid.data.repository
 import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.local.TokenRepository
 import com.grig.recipesandroid.data.mapper.toDomain
+import com.grig.recipesandroid.data.model.dto.RecipeDto
 import com.grig.recipesandroid.data.model.request.RecipeCreateRequest
 import com.grig.recipesandroid.data.model.request.RecipeUpdateRequest
 import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
 import com.grig.recipesandroid.data.paging.RecipePagingSource
 import com.grig.recipesandroid.domain.model.Recipe
+import kotlinx.coroutines.flow.Flow
 
 class RecipeRepository(
     private val api: RecipeApi
 ) {
 
-    fun getRecipesPaper(query: String = "") : Pager<Int, Recipe> {
+//    fun getRecipesPaper(query: String = "") : Pager<Int, Recipe> {
+//    fun getRecipesPaper(query: String = "") : Flow<PagingData<RecipeDto>> {
+    fun getRecipesPaper(query: String = "") : Flow<PagingData<Recipe>> {
         return Pager(
-            config = PagingConfig(pageSize = 10),
+            config = PagingConfig(pageSize = 10, enablePlaceholders = false),
             pagingSourceFactory = { RecipePagingSource(api, query) }
-        )
+        ).flow
+//        return Pager(
+//            config = PagingConfig(pageSize = 10),
+//            pagingSourceFactory = { RecipePagingSource(api, query) }
+//        )
     }
 
     suspend fun getMyRecipes(

@@ -55,7 +55,8 @@ fun AppNavGraph(
     unitRepository: UnitRepository,
     applicationContext: Context,
     recipeViewModel: RecipesViewModel,
-    addEditRecipeViewModel: AddEditRecipeViewModel
+    addEditRecipeViewModel: AddEditRecipeViewModel,
+    myRecipesViewModel: MyRecipesViewModel
     ) {
 
             NavHost(
@@ -170,10 +171,10 @@ fun AppNavGraph(
                             navController.getBackStackEntry("recipe_list")
                         }
 
-                        val myRecipesViewModel: MyRecipesViewModel = viewModel(
-                            parentEntry,
-                            factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
-                        )
+//                        val myRecipesViewModel: MyRecipesViewModel = viewModel(
+//                            parentEntry,
+//                            factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
+//                        )
 
                         MyRecipesScreen(
                             myViewModul = myRecipesViewModel,

@@ -115,6 +115,7 @@ fun MyRecipesScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
+                    addEditRecipeViewModel.resetForm()
                     navController.navigate("recipe_add")
                 },
                 containerColor = Color.Red
@@ -212,7 +213,10 @@ fun MyRecipesScreen(
 //                            Log.d("MyRecipeItem", "MyRecipe recipe: ${recipe.ingredients.forEach {
 //                                (it.unit?.label) ?: ""
 //                            }}")
-
+                                Log.d(
+                                    "ADD RECIPE-newEdit",
+                                    "MyRecipeScreen: для списка recipe: ${recipe}"
+                                )
                                 RecipeItem(
                                     viewModel = recipeViewModel,
                                     recipe = recipe,
