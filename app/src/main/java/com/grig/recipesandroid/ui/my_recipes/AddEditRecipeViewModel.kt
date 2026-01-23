@@ -32,6 +32,9 @@ class AddEditRecipeViewModel(
     val authViewModel: AuthViewModel
 ) : ViewModel() {
 
+//    Флаг при загрузке формы создания (редактирования) - убрать удаление вводимых данных
+    var isFormInitialized by mutableStateOf(false)
+
 //    Id типа рецептов - Основное блюдо
     val TIP_BLYDA_ID = 1L
 
@@ -106,6 +109,17 @@ class AddEditRecipeViewModel(
             try {
                 categoryValuesAll = categoryRepository.getCategoryValues()  // получаем все CategoryValueDto
                 Log.d("CATEGORY-ch", "AddEditRecipeViewModel categoryValuesAll size = ${categoryValuesAll.size}")
+            } catch (e: Exception) {
+                errorMessage = e.message
+                Log.e("CATEGORY-ch", "AddEditRecipeViewModel: Ошибка загрузки категорий: ${e}")
+            }
+        }
+    }
+
+    fun loadCategoryTypes() {
+        viewModelScope.launch {
+            try {
+                categoryTypesAll = categoryRepository.getCategoryTypes()
             } catch (e: Exception) {
                 errorMessage = e.message
                 Log.e("CATEGORY-ch", "AddEditRecipeViewModel: Ошибка загрузки категорий: ${e}")
@@ -191,8 +205,8 @@ class AddEditRecipeViewModel(
             try {
                 isLoading = true
 
-                Log.d("ADD RECIPE", "AddEditRecipeViewModel: START, name: ${name}, desc: $description" +
-                        ", cat.size:${categoryValuesAll.size}, ing size: ${ingredients.size}, step size: ${steps.size}")
+                Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: createRecipe, name: ${name}, desc: $description" +
+                        ", selectedCategoryValues:${selectedCategoryValues}, ing size: ${ingredients.size}, step size: ${steps.size}")
 
                 val categoryIds = selectedCategoryValues.values.map { it.id }
                 if (categoryIds.isEmpty()) throw IllegalArgumentException("Должна быть выбрана хотя бы одна категория")
@@ -269,7 +283,10 @@ class AddEditRecipeViewModel(
 //    ++++++++++++++
 //    Setters (сеттеры) для UI
 //    ++++++++++++++
-    fun onNameChange(value: String) { name = value}
+    fun onNameChange(value: String) {
+        name = value
+//        Log.d("ADD RECIPE-newEdit", "AddEditRecipeScreenViewModel onNameChange: value=$value, name=$name")
+    }
     fun onDescriptionChange(value: String) { description = value }
     fun onImageChange(value: String?) { image = value }
 
@@ -365,6 +382,8 @@ class AddEditRecipeViewModel(
 //    Сбрасывание значение полей
 // ===== Сброс формы =====
     fun resetForm() {
+    Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: resetForm, name: ${name}")
+
         currentRecipeId = null
         name = ""
         description = ""
@@ -378,6 +397,8 @@ class AddEditRecipeViewModel(
         ingredients.clear()
         steps.clear()
         errorMessage = null
+
+        isFormInitialized = false
     }
 
 }

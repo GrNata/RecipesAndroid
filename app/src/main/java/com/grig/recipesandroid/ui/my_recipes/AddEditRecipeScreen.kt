@@ -65,16 +65,19 @@ fun AddEditRecipeScreen(
     LaunchedEffect(recipeId) {
         Log.d("AddEdit-category", "LaunchedEffect recipeId = $recipeId")
 
-        viewModel.loadCategoryValues()  // сначала загружаем все категории
+        if (!viewModel.isFormInitialized) {
+
+            viewModel.loadCategoryValues()  // сначала загружаем все категории
+            viewModel.loadIngredientAndUnitDictionaries()
+            viewModel.loadCategoryTypes()
 //        viewModel.loadCategories()  // сначала загружаем все категории
-        if (isEdit && recipeId != null) {
-            viewModel.loadRecipe(recipeId)  // потом загружаем рецепт
+            if (isEdit && recipeId != null) {
+                viewModel.loadRecipe(recipeId)  // потом загружаем рецепт
+            } else {
+                viewModel.resetForm()
+            }
+            viewModel.isFormInitialized = true
         }
-        if (recipeId == null) {
-            Log.d("AddEdit-category", "AddEditRecipeScreen: сброс формы recipeId == null")
-            viewModel.resetForm()
-        }
-        viewModel.loadIngredientAndUnitDictionaries()
     }
 
     Scaffold(
@@ -98,6 +101,7 @@ fun AddEditRecipeScreen(
                 .verticalScroll(scrollState)
                 .background(Color(0xFFEFEFEF))
         ) {
+            Log.d("ADD RECIPE-newEdit", "AddEditRecipeScreen: name: ${viewModel.name}")
             TextField(
                 modifier = Modifier
                     .fillMaxWidth(),

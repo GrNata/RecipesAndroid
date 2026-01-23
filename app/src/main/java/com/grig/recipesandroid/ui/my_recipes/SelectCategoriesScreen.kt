@@ -29,9 +29,9 @@ fun SelectCategoriesScreen(
     viewModel: AddEditRecipeViewModel,
     navController: NavController
 ) {
+    Log.d("ADD RECIPE-newEdit", "SelectCategoryScreen START-1")
 
     Scaffold(
-        
         topBar = {
             AppTopBar(
                 title = "Выбор категорий",
@@ -45,15 +45,19 @@ fun SelectCategoriesScreen(
             )
         }
     ) { paddingValues ->
+        Log.d("ADD RECIPE-newEdit", "SelectCategoryScreen START-2")
+
         Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Log.d("AddEdit-category", "SelectCategoriesScreen: start")
+            Log.d("AddEdit-category", "SelectCategoriesScreen: start categoryValuesAll size=${viewModel.categoryValuesAll.size}")
+            Log.d("AddEdit-category", "SelectCategoriesScreen: start categoryTypesAll size=${viewModel.categoryTypesAll.size}")
             Log.d("AddEdit-category", "SelectCategoriesScreen: selectedCategoryValues = ${viewModel.selectedCategoryValues}")
 
             viewModel.categoryTypesAll.forEach { type ->
+
                 CategoryRow(
                     typeName = type.nameType,
                     values = viewModel.getCategoryValuesForType(type.id),
