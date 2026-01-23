@@ -155,6 +155,9 @@ class AddEditRecipeViewModel(
                         )
                     }
                 )
+                Log.d("AddEdit-ingredient", "AddEditRecipeViewModel: ingredients: ${ingredients}")
+                Log.d("AddEdit-ingredient", "AddEditRecipeViewModel: recipe.id: ${recipe.id} recipe.ingredients: ${recipe.ingredients}")
+
                 steps.clear()
                 steps.addAll(recipe.steps)
 
@@ -322,6 +325,10 @@ class AddEditRecipeViewModel(
 
     fun onUnitSelected(index: Int, unit: UnitDto) {
         if (index in ingredients.indices) ingredients[index] = ingredients[index].copy(unitId = unit.id)
+    }
+
+    fun cleanEmptyIngredients() {
+        ingredients.removeAll { it.ingredientId == 0L && (it.amount?.isBlank() ?: true) && it.unitId == null }
     }
 
     // ===== Шаги =====

@@ -1,6 +1,8 @@
 package com.grig.recipesandroid.ui.my_recipes
 
+import android.R
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,14 +13,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ExposedDropdownMenuDefaults.TrailingIcon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,7 +34,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -87,22 +96,65 @@ fun AddEditRecipeScreen(
                 .padding((paddingValues))
                 .padding(16.dp)
                 .verticalScroll(scrollState)
+                .background(Color(0xFFEFEFEF))
         ) {
             TextField(
+                modifier = Modifier
+                    .fillMaxWidth(),
                 value = viewModel.name,
                 onValueChange = viewModel::onNameChange,
-                label = { Text("Название")}
+                label = { Text("Название") },
+                colors = TextFieldDefaults.colors(
+                    // Фон поля
+                    focusedContainerColor = Color( 0xFFF7EDE9),
+                    unfocusedContainerColor = Color(0xFFEEE2DC),
+                    disabledContainerColor = Color(0xBFFF6A00).copy(alpha = 0.5f), // полупрозрачный при отключении
+
+                    // Цвет текста
+                    focusedTextColor = Color(0xFF062444),
+                    unfocusedTextColor = Color(0xFF1E364F),
+                    disabledTextColor = Color.Gray,
+
+                    // Дополнительные цвета (настройка по желанию)
+                    cursorColor = Color(0xFF123C69),
+                    errorTextColor = Color.Red
+                ),
+                textStyle = MaterialTheme.typography.bodyMedium
             )
 
             TextField(
+                modifier = Modifier.fillMaxWidth(),
                 value = viewModel.description,
                 onValueChange = viewModel::onDescriptionChange,
-                label = { Text("Описание")}
+                label = { Text("Описание")},
+                colors = TextFieldDefaults.colors(
+                    // Фон поля
+                    focusedContainerColor = Color(0xFFF7EDE9),
+                    unfocusedContainerColor = Color(0xFFEEE2DC),
+                    disabledContainerColor = Color(0xBFFF6A00).copy(alpha = 0.5f), // полупрозрачный при отключении
+
+                    // Цвет текста
+                    focusedTextColor = Color(0xFF062444),
+                    unfocusedTextColor = Color(0xFF123C69),
+                    disabledTextColor = Color.Gray,
+
+                    // Дополнительные цвета (настройка по желанию)
+                    cursorColor = Color(0xFF123C69),
+                    errorTextColor = Color.Red
+                ),
+                textStyle = MaterialTheme.typography.bodySmall
             )
 
 
 //            ++++++++++
             Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFEFEFEF)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFEEE2DC),
+                    contentColor = Color(0xFF123C69)
+                ),
                 onClick = {
                     navController.navigate("image")
                 }
@@ -114,6 +166,13 @@ fun AddEditRecipeScreen(
 
 //            CategoriesWIthDropDownMenu(viewModel)
             Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFEFEFEF)),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFEEE2DC),
+                contentColor = Color(0xFF123C69)
+            ),
                 onClick = {
                     navController.navigate("select_categories")
                 }
@@ -122,7 +181,21 @@ fun AddEditRecipeScreen(
             }
 
             // --- динамический список ингредиентов ---
-            IngredientsWithDinamicList(viewModel)
+//            IngredientsWithDinamicList(viewModel)
+            Button(
+                modifier = Modifier.fillMaxWidth()
+                    .background(Color(0xFFEFEFEF)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFEEE2DC),
+                    contentColor = Color(0xFF123C69)
+                ),
+                onClick = {
+                    navController.navigate("ingredients")
+                }
+            ) {
+                Text("Ингредиенты")
+            }
+
 
             Spacer(modifier = Modifier.padding(top = 16.dp))
 
@@ -130,6 +203,12 @@ fun AddEditRecipeScreen(
             StepsWithDinamicList(viewModel)
 
             Button(
+                modifier = Modifier.fillMaxWidth()
+                    .background(Color(0xFFEFEFEF)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF8E4253),
+                    contentColor = Color(0xFFEDE3E5)
+                ),
                 onClick = {
                     if (isEdit) viewModel.updateRecipe(onSuccess = {
                         // После успешного редактирования

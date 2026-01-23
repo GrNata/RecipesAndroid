@@ -17,6 +17,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType.Companion.Text
 import com.grig.recipesandroid.domain.model.Recipe
 import com.grig.recipesandroid.ui.auth.AuthViewModel
@@ -36,7 +37,10 @@ fun AppTopBar(
 ) {
 
     TopAppBar(
-        title = { Text(title) },
+        title = { Text(
+            title,
+            color = Color(0xFF8E4253)
+        ) },
         navigationIcon = {
             onBack?.let {
                 IconButton(onClick = it) {

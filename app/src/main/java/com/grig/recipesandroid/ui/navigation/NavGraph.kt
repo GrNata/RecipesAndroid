@@ -33,6 +33,7 @@ import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModelFactory
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeScreen
 import com.grig.recipesandroid.ui.my_recipes.CategoryRow
 import com.grig.recipesandroid.ui.my_recipes.ImageScreen
+import com.grig.recipesandroid.ui.my_recipes.IngredientsScreen
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesScreen
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModelFactory
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModel
@@ -186,9 +187,9 @@ fun AppNavGraph(
                         navController.getBackStackEntry("my_recipes")
                     }
                     AddEditRecipeScreen(
-                       recipeId = null,
+                        recipeId = null,
                         viewModel = addEditRecipeViewModel,
-                       navController = navController
+                        navController = navController
                    )
 
                 }
@@ -215,6 +216,13 @@ fun AppNavGraph(
 
                 composable("image") {
                     ImageScreen(
+                        viewModel = addEditRecipeViewModel,
+                        navController = navController
+                    )
+                }
+
+                composable("ingredients") {
+                    IngredientsScreen(
                         viewModel = addEditRecipeViewModel,
                         navController = navController
                     )
