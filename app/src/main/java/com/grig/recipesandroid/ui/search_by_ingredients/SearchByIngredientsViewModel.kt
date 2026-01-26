@@ -55,32 +55,14 @@ class SearchByIngredientsViewModel(
     fun searchRecipesByIngredients() {
         viewModelScope.launch {
             try {
-                Log.d("SEARCH INGREDIENT", "SearchByIngredientViewModel: START - searchRecipesByIngredients()")
                 val request = SearchByIngredientsRequest(
                     ingredientIds = selectedIngredientIds.toList()
                 )
-                Log.d("SEARCH INGREDIENT", "SearchByIngredientViewModel: selectedIngredientIds: ${selectedIngredientIds.toList()}")
-                Log.d("SEARCH INGREDIENT", "SearchByIngredientViewModel: request: ${request}")
                 val result = recipeRepository.searchRecipesByIngredients(request)
                 _searchRecipes.value = result.map { it.toDomain() }
-                Log.d("SEARCH INGREDIENT", "SearchByIngredientViewModel: _searchRecipes.value: ${_searchRecipes.value}")
             } catch (e: Exception) {
                 errorMessage = e.message
             }
         }
     }
-//    +++++++++++++++++++++++++++++++++++++++++
-
-////    Получение словаря ингредиентов
-//    fun getAllIngredients() {
-//        viewModelScope.launch {
-//            try {
-//                val request= ingredientRepository.getAllIngredients()
-//                Log.d("SEARCH INGREDIENT", "SearchByIngredientsViewModel: ingredients: ${request}")
-//                ingredientsDictionary = request
-//            } catch (e: Exception) {
-//                errorMessage = e.message
-//            }
-//        }
-//}
 }

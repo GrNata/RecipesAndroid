@@ -85,7 +85,6 @@ fun IngredientsForSearchScreen(
                     contentColor = Color(0xFFEDE3E5)
                 ),
                 onClick = {
-                    Log.d("SEARCH INGREDIENT", "IngredientsForSearchScreen: onClick()")
                     ingredientsViewModel.searchRecipesByIngredients()
                     navController.navigate("search_result")
                 }
@@ -95,10 +94,7 @@ fun IngredientsForSearchScreen(
 
             Spacer(modifier = Modifier.padding(top = 16.dp))
 
-//        val ingredients = ingredientsViewModel.getAllIngredients()
             var ingredients = recipesViewModel.ingredientsDictionary
-            Log.d("SEARCH INGREDIENT", "IngredientsForSearchScreen: ingredients: ${ingredients}")
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -107,9 +103,6 @@ fun IngredientsForSearchScreen(
 
                 items(ingredients) { ingredient ->
                     val isChecked = selectedIngredientIds.contains(ingredient.id)
-
-                    Log.d("SEARCH INGREDIENT", "IngredientsForSearchScreen: checkIngredient: ${selectedIngredientIds}")
-
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

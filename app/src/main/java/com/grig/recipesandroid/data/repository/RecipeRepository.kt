@@ -52,10 +52,8 @@ class RecipeRepository(
     }
 
     suspend fun createRecipe(request: RecipeCreateRequest) {
-        Log.d("ADD RECIPE", "RecipeRepository START, request: $request")
 //        api.createRecipe(request)
         val response = api.createRecipe(request)
-        Log.d("ADD RECIPE", "Response: $response")
     }
 
     suspend fun updateRecipe(
@@ -73,8 +71,6 @@ class RecipeRepository(
 //    Поиск рецептов по ингредиентам
     suspend fun searchRecipesByIngredients(request: SearchByIngredientsRequest) : List<RecipeDto> {
         val response = api.searchByIngredients(request)
-    Log.d("SEARCH INGREDIENT", "RecipeRepository: request: ${request}")
-    Log.d("SEARCH INGREDIENT", "RecipeRepository: response: ${response}")
     return response
 }
 

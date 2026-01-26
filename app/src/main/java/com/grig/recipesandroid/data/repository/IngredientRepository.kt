@@ -2,7 +2,6 @@ package com.grig.recipesandroid.data.repository
 
 import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.model.dto.IngredientDto
-import com.grig.recipesandroid.domain.model.Ingredient
 
 class IngredientRepository(private val api: RecipeApi) {
 
@@ -22,6 +21,6 @@ class IngredientRepository(private val api: RecipeApi) {
 //    }
 
     suspend fun getIngredientById(id: Long): IngredientDto {
-        return api.getingredientById(id)
+        return api.getIngredientById(id)
     }
 }

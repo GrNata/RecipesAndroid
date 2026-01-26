@@ -84,9 +84,6 @@ fun RecipeListScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
 
         topBar = {
-            Log.d("СЕРДЦЕ RecipeListScreen", "RecipeListScreen isAuthenticated = $isAuthenticated")
-            Log.d("CATEGORY-ch", "RecipeListScreen: recipes = $recipes.itemSnapshotList.items")
-
             val authRestored by authViewModel.authStateRestored.collectAsState()
 
             AppTopBar(
@@ -98,7 +95,6 @@ fun RecipeListScreen(
                     authViewModel.logout()
                 },
                 onMyRecipesClick = {
-                    Log.d("CATEGORY-ch", "RecipeListScreen: Navigating to MyRecipesScreen")
                     navController.navigate("my_recipes") {
                         launchSingleTop = true
                     }
@@ -142,8 +138,6 @@ fun RecipeListScreen(
 
                         )
                     )
-
-                    //            Log.d("СЕРДЦЕ - 4", "FavoriteSet = $favoritesSet")
                 }
 
                 RecipeListContent(

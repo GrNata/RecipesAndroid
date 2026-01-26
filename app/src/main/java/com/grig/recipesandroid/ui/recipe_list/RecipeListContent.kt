@@ -113,10 +113,6 @@ fun RecipeListContent(
                 //            Группируем рецепты по первой категории (можно доработать для нескольких)
                 val grouped = filteredRecipes
                     .flatMap { recipe ->
-                        Log.d(
-                            "CATEGORY-ch", "RecipeListContent: category:" +
-                                    " ${recipe.categories}"
-                        )
                         recipe.categories
                             .filter { it.categoryTypeId == selectedCategoryTypeId }
 //                                .filter { it.categoryTypeId == 1L }
@@ -143,43 +139,11 @@ fun RecipeListContent(
                         "SEARCH INGREDIENT ",
                         "RecipeListContent: start filteredRecipes: ${filteredRecipes}"
                     )
-                    Log.d(
-                        "SEARCH INGREDIENT ", "RecipeListContent: start filteredRecipes:" +
-                                " ${
-                                    filteredRecipes.forEach {
-                                        it.categories.forEach { it.categoryValue }
-                                    }
-                                }"
-                    )
 
 
                     if (recipes.loadState.refresh is LoadState.Loading) {
                         items(5) { ShimmerRecipeItem() }
                     } else {
-
-//                    // Dropdown для выбора группировки
-//                    CategoryTypeDropDown(
-//                        categoryTypes = categoryTypesAll,
-//                        selectedId = selectedCategoryTypeId,
-//                        onSelected = { selectedCategoryTypeId = it }
-//                    )
-
-////            Группируем рецепты по первой категории (можно доработать для нескольких)
-//                    val grouped = filteredRecipes
-//                        .flatMap { recipe ->
-//                            Log.d(
-//                                "CATEGORY-ch", "RecipeListContent: category:" +
-//                                        " ${recipe.categories}"
-//                            )
-//                            recipe.categories
-//                                .filter { it.categoryTypeId == selectedCategoryTypeId }
-////                                .filter { it.categoryTypeId == 1L }
-//                                .map { it.categoryValue to recipe }       // создаём пары category -> recipe
-//                        }
-//                        .groupBy(
-//                            keySelector = { it.first },
-//                            valueTransform = { it.second }
-//                        )
 
                         grouped.forEach { (category, recipesInCategory) ->
 
@@ -203,34 +167,15 @@ fun RecipeListContent(
                             items(recipesInCategory) { recipe ->
                                 val fav = favorites
 
-//                            // Локальная реактивная переменная isFavorite для этого конкретного RecipeItem
-//                            val isFavotite by remember {
-//                                derivedStateOf { favorites.contains(recipe.id) }
-//                            }
-
-//                            Log.d("RecipeItem", "ListRecipe recipe: ${recipe.ingredients.size}")
-//                            Log.d("RecipeItem", "ListRecipe recipe: ${recipe.ingredients.forEach {
-//                                (it.unit?.label) ?: ""
-//                            }}")
-
                                 RecipeItem(
                                     viewModel = viewModel,
                                     recipe = recipe,
                                     query = query,
                                     isFavorite = favorites.contains(recipe.id),
                                     isOwner = false,
-//                                isFavorite = isFavotite,
                                     onFavoriteClick = { viewModel.toggleFavorite(recipe.id) },
                                     onClick = { onRecipeClick(recipe.id) }
                                 )
-
-                                Log.d(
-                                    "СЕРДЦЕ - RecipeListContent",
-                                    "Favorite size = ${favorites.size}"
-                                )
-//                            for (l in favorites) {
-//                                Log.d("СЕРДЦЕ - 2", "Favorite-ID = $l, recipeId = ${recipe.id}")
-//                            }
                             }
                         }
 
