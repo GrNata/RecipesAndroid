@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -26,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -84,6 +82,9 @@ fun RecipeListScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
 
         topBar = {
+            Log.d("СЕРДЦЕ RecipeListScreen", "RecipeListScreen isAuthenticated = $isAuthenticated")
+            Log.d("CATEGORY-ch", "RecipeListScreen: recipes = $recipes.itemSnapshotList.items")
+
             val authRestored by authViewModel.authStateRestored.collectAsState()
 
             AppTopBar(
@@ -95,11 +96,11 @@ fun RecipeListScreen(
                     authViewModel.logout()
                 },
                 onMyRecipesClick = {
+                    Log.d("CATEGORY-ch", "RecipeListScreen: Navigating to MyRecipesScreen")
                     navController.navigate("my_recipes") {
                         launchSingleTop = true
                     }
                 },
-                onSearchByIngredients = { navController.navigate("search_ingredients")}
             )
         }
     ) { paddingValues ->
@@ -130,14 +131,10 @@ fun RecipeListScreen(
                     FilterChip(
                         selected = showOnlyFavorites,
                         onClick = { showOnlyFavorites = !showOnlyFavorites },
-                        label = { Text("Избранное") },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = Color(0xFF8E4253),
-                            selectedLabelColor = Color(0xFFEDE3E5),
-                            labelColor = Color(0xFF123C69),
-
-                        )
+                        label = { Text("Избранное") }
                     )
+
+                    //            Log.d("СЕРДЦЕ - 4", "FavoriteSet = $favoritesSet")
                 }
 
                 RecipeListContent(
