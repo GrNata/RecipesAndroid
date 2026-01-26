@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -47,10 +48,8 @@ fun IngredientsForSearchScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-//    val selectedIngredientIds = remember { mutableStateListOf<Long>() }
     val selectedIngredientIds = ingredientsViewModel.selectedIngredientIds
     val searchRecipes by ingredientsViewModel.searchRecipes
-//    val errorMessage by ingredientsViewModel.errorMessage
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -99,6 +98,7 @@ fun IngredientsForSearchScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
+                .background(Color(0xFFF7EDE9))
             ) {
 
                 items(ingredients) { ingredient ->
@@ -141,7 +141,9 @@ fun IngredientsForSearchScreen(
                         )
                         Text(
                             text = ingredient.name,
-                            modifier = Modifier.padding(start = 8.dp)
+                            modifier = Modifier.padding(start = 8.dp),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color(0xFF123C69)
                         )
                     }
                 }

@@ -51,6 +51,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.grig.recipesandroid.ui.utilRecipe.CategoryTypeDropDown
+import com.grig.recipesandroid.ui.utilRecipe.GroupedByCategoryType
 import com.grig.recipesandroid.ui.utilRecipe.ShimmerRecipeItem
 
 
@@ -111,18 +112,8 @@ fun RecipeListContent(
                 )
 
                 //            Группируем рецепты по первой категории (можно доработать для нескольких)
-                val grouped = filteredRecipes
-                    .flatMap { recipe ->
-                        recipe.categories
-                            .filter { it.categoryTypeId == selectedCategoryTypeId }
-//                                .filter { it.categoryTypeId == 1L }
-                            .map { it.categoryValue to recipe }       // создаём пары category -> recipe
-                    }
-                    .groupBy(
-                        keySelector = { it.first },
-                        valueTransform = { it.second }
-                    )
-//            }
+                val grouped = GroupedByCategoryType(filteredRecipes, selectedCategoryTypeId)
+
 
                 // Основной список
                 LazyColumn(
@@ -130,16 +121,6 @@ fun RecipeListContent(
                         .fillMaxSize()
                         .background(Color(0xFFF7EDE9))
                 ) {
-
-                    Log.d(
-                        "SEARCH INGREDIENT ",
-                        "RecipeListContent: start recipes: ${recipes.itemSnapshotList.items}"
-                    )
-                    Log.d(
-                        "SEARCH INGREDIENT ",
-                        "RecipeListContent: start filteredRecipes: ${filteredRecipes}"
-                    )
-
 
                     if (recipes.loadState.refresh is LoadState.Loading) {
                         items(5) { ShimmerRecipeItem() }

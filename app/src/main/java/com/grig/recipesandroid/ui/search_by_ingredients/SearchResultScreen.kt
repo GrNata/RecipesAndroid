@@ -16,7 +16,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -25,6 +29,8 @@ import com.grig.recipesandroid.domain.model.Recipe
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.recipe_list.RecipeItem
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
+import com.grig.recipesandroid.ui.utilRecipe.CategoryTypeDropDown
+import com.grig.recipesandroid.ui.utilRecipe.GroupedByCategoryType
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -35,8 +41,14 @@ fun SearchResultScreen(
 //    recipes: List<Recipe>?
 ) {
 
+    val favoritesSet by recipesViewModel.favorites.collectAsState()
+    var isFavorite = false
+
     // Получаем данные из SavedStateHandle
     val recipes by ingredientsViewModel.searchRecipes
+
+    var selectedCategoryTypeId by remember { mutableStateOf(1L) }
+    val categoryTypesAll = recipesViewModel.categoryTypesAll
 
     Log.d("SEARCH INGREDIENT", "SearchResultScreen: recipes: ${recipes}")
 
@@ -55,26 +67,20 @@ fun SearchResultScreen(
         Column(
             modifier = Modifier.fillMaxWidth().padding(paddingValues)
         ) {
+            // Dropdown для выбора группировки
+            CategoryTypeDropDown(
+                categoryTypes = categoryTypesAll,
+                selectedId = selectedCategoryTypeId,
+                onSelected = { selectedCategoryTypeId = it }
+            )
 
-            val grouped = recipes
-                .flatMap { recipe ->
-                    recipe.categories
-//                        .filter { it.categoryTypeId == selectedCategoryTypeId }
-//                                .filter { it.categoryTypeId == 1L }
-                        .map { it.categoryValue to recipe }       // создаём пары category -> recipe
-                }
-                .groupBy(
-                    keySelector = { it.first },
-                    valueTransform = { it.second }
-                )
-
+//            Группируем рецепты по категории
+            val grouped = GroupedByCategoryType(recipes, selectedCategoryTypeId)
 
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
-//                modifier = Modifier.fillMaxWidth().padding(paddingValues)
             ) {
                 if (!recipes.isEmpty()) {
-//                        items(recipes) { recipe ->
                         grouped.forEach { (category, recipesInCategory) ->
                             stickyHeader {
                                 Box(
@@ -85,7 +91,6 @@ fun SearchResultScreen(
                                 ) {
                                     Text(
                                         text = category,
-    //                                    text = category.name,
                                         style = MaterialTheme.typography.titleMedium,
                                         color = Color(0xFF123C69)
                                     )
@@ -93,11 +98,17 @@ fun SearchResultScreen(
                             }
 
                             items(recipesInCategory) { recipe ->
+                                if (favoritesSet.contains(recipe.id)) {
+                                    isFavorite = true
+                                } else {
+                                    isFavorite = false
+                                }
+
                                 RecipeItem(
                                     viewModel = recipesViewModel,
                                     recipe = recipe,
                                     query = "",
-                                    isFavorite = false,
+                                    isFavorite = isFavorite,
                                     isOwner = false,
                                     onFavoriteClick = {},
                                     onClick = {
