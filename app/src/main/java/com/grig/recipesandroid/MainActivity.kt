@@ -28,6 +28,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.OkHttpClient
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModelFactory
+import com.grig.recipesandroid.ui.search_by_ingredients.SearchByIngredientViewModelFactory
+import com.grig.recipesandroid.ui.search_by_ingredients.SearchByIngredientsViewModel
 
 class MainActivity : ComponentActivity() {
     private lateinit var recipeApi: RecipeApi
@@ -144,6 +146,7 @@ class MainActivity : ComponentActivity() {
                         repository = recipeRepository,
                         favoritesRepository = favoritesRepository,
                         categoryRepository = categoryRepository,
+                        ingredientRepository = ingredientRepository,
                         userIdFlow = authViewModel.userId
                     )
                 )
@@ -151,6 +154,10 @@ class MainActivity : ComponentActivity() {
                 val myRecipesViewModel: MyRecipesViewModel = viewModel(
 //                    parentEntry,
                     factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
+                )
+
+                val searchByIngredientsViewModel: SearchByIngredientsViewModel = viewModel(
+                    factory = SearchByIngredientViewModelFactory(recipeRepository, ingredientRepository)
                 )
 
                 val addEditRecipeViewModel: AddEditRecipeViewModel = viewModel(
@@ -178,7 +185,8 @@ class MainActivity : ComponentActivity() {
                     applicationContext = applicationContext,
                     recipeViewModel = recipesViewModel,
                     addEditRecipeViewModel = addEditRecipeViewModel,
-                    myRecipesViewModel
+                    myRecipesViewModel = myRecipesViewModel,
+                    searchByIngredientsViewModel = searchByIngredientsViewModel
                 )
             }
         }

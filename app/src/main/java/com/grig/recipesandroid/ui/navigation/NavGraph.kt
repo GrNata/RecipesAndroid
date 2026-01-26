@@ -41,6 +41,9 @@ import com.grig.recipesandroid.ui.my_recipes.SelectCategoriesScreen
 import com.grig.recipesandroid.ui.my_recipes.StepScreen
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModel
 import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModelFactory
+import com.grig.recipesandroid.ui.search_by_ingredients.IngredientsForSearchScreen
+import com.grig.recipesandroid.ui.search_by_ingredients.SearchByIngredientsViewModel
+import com.grig.recipesandroid.ui.search_by_ingredients.SearchResultScreen
 
 
 @Composable
@@ -56,7 +59,8 @@ fun AppNavGraph(
     applicationContext: Context,
     recipeViewModel: RecipesViewModel,
     addEditRecipeViewModel: AddEditRecipeViewModel,
-    myRecipesViewModel: MyRecipesViewModel
+    myRecipesViewModel: MyRecipesViewModel,
+    searchByIngredientsViewModel: SearchByIngredientsViewModel
     ) {
 
             NavHost(
@@ -238,5 +242,18 @@ fun AppNavGraph(
                     )
                 }
 
+                composable("search_ingredients") {
+                    IngredientsForSearchScreen(
+                        ingredientsViewModel = searchByIngredientsViewModel,
+                        recipesViewModel = recipeViewModel,
+                        navController = navController
+                    )
+                }
+
+                composable("search_result") {
+                    SearchResultScreen(
+                        searchByIngredientsViewModel, recipeViewModel, navController
+                    )
+                }
             }       //  NavHost
 }

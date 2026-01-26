@@ -136,15 +136,15 @@ fun RecipeListContent(
                 ) {
 
                     Log.d(
-                        "CATEGORY-ch",
+                        "SEARCH INGREDIENT ",
                         "RecipeListContent: start recipes: ${recipes.itemSnapshotList.items}"
                     )
                     Log.d(
-                        "CATEGORY-ch",
+                        "SEARCH INGREDIENT ",
                         "RecipeListContent: start filteredRecipes: ${filteredRecipes}"
                     )
                     Log.d(
-                        "CATEGORY-ch", "RecipeListContent: start filteredRecipes:" +
+                        "SEARCH INGREDIENT ", "RecipeListContent: start filteredRecipes:" +
                                 " ${
                                     filteredRecipes.forEach {
                                         it.categories.forEach { it.categoryValue }

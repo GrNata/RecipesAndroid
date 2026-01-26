@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,6 +34,7 @@ fun AppTopBar(
     onLogoutClick: () -> Unit,
     onShareClick: (() -> Unit)? = null,      //  nullable — показываем только для залогиненных
     onMyRecipesClick: (() -> Unit)? = null,      //  nullable — показываем только для залогиненных
+    onSearchByIngredients: (() -> Unit)? = null
 //    authViewModel: AuthViewModel
 ) {
 
@@ -49,21 +51,30 @@ fun AppTopBar(
             }
         },
         actions = {
-            // 1 Кнопка Share (если есть рецепт и пользователь залогинен)
+            // 1 Кнопка поиск рецептов по ингредиентам
+            if (onSearchByIngredients != null) {
+                IconButton(onClick = onSearchByIngredients) {
+                    Icon(Icons.Default.Search, contentDescription = "Поиск рецептов по ингредиентам")
+                }
+            }
+
+//        actions = {
+            // 2 Кнопка Share (если есть рецепт и пользователь залогинен)
             if (isAuthenticated && onShareClick != null) {
+                Log.d("SEARCH INGREDIENT", "AppTopBar: onShareClick: ${onShareClick}")
                 IconButton(onClick = onShareClick) {
                     Icon(Icons.Default.Share, contentDescription = "Поделиться рецептом")
                 }
             }
 
-//            // 2 Кнопка "Мои рецепты" (только для залогиненных и если передан обработчик)
+//            // 3 Кнопка "Мои рецепты" (только для залогиненных и если передан обработчик)
             if (showMyRecipes && onMyRecipesClick != null) {
                 IconButton(onClick = onMyRecipesClick) {
                     Icon(Icons.Default.List, contentDescription = "Мои рецепты")
                 }
             }
 
-            // 3 Кнопка Войти / Выйти
+            // 4 Кнопка Войти / Выйти
             if (isAuthenticated) {
                 IconButton(onClick = onLogoutClick) {
 //                    Icon(Icons.Default.Logout, contentDescription = "Выйти")

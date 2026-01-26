@@ -2,18 +2,25 @@ package com.grig.recipesandroid.ui.recipe_list
 
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.State
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.grig.recipesandroid.data.mapper.toDomain
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
+import com.grig.recipesandroid.data.model.dto.IngredientDto
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.model.dto.RecipeDto
+import com.grig.recipesandroid.data.model.request.SearchByIngredientsRequest
 import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.FavoritesRepository
+import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.domain.model.Recipe
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -31,12 +38,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import java.util.Collections
+import kotlin.collections.emptyList
 
 //  ViewModel отвечает за данные (Flow<PagingData>) и их загрузку из репозитория
 open class RecipesViewModel(
     private val repository: RecipeRepository,
     private val favoritesRepository: FavoritesRepository,
     private val categoryRepository: CategoryRepository,
+    private val ingredientRepository: IngredientRepository,
     private val userIdFlow: StateFlow<String?>      // сюда передаем текущий userId / email
 ) : ViewModel() {
 
@@ -71,9 +80,9 @@ open class RecipesViewModel(
     private val _query = MutableStateFlow("")       // _query — хранит текущий текст поиска
     val query: StateFlow<String> = _query               // setQuery() — вызывается при вводе в текстовое поле
 
-    //    +++  справочник типов категорий
+    //    +++  справочник типов категорий, ингредиентов
     var categoryTypesAll by mutableStateOf<List<CategoryTypeDto>>(emptyList())
-
+    var ingredientsDictionary by mutableStateOf<List<IngredientDto>>(emptyList())
 
     fun setQuery(newQuery: String) {
         _query.value = newQuery
@@ -119,11 +128,13 @@ open class RecipesViewModel(
     private var favoritesSyncedForUser: String? = null
 
     init {
-        Log.d("CICLE RecipeViewModel", "RecipeViewModel - init ")
+        Log.d("SEARCH INGREDIENT", "RecipeViewModel - init ")
         viewModelScope.launch {
-//            загрузка справочника CategotyType
+//            загрузка справочника CategotyType и Ingredientdto
             categoryTypesAll = categoryRepository.getCategoryTypes()
-            Log.d("CATEGORY-ch-load", "RecipeViewModel - init categoryTypesAll: ${categoryTypesAll}")
+            Log.d("SEARCH INGREDIENT", "RecipeViewModel - init categoryTypesAll: ${categoryTypesAll}")
+            ingredientsDictionary = ingredientRepository.getAllIngredients()
+            Log.d("SEARCH INGREDIENT", "RecipesViewModel: init ingredients: ${ingredientsDictionary}")
 
             userIdFlow
                 .collect { userId ->
@@ -136,10 +147,13 @@ open class RecipesViewModel(
                         favoritesSyncedForUser != userId -> {
                             favoritesSyncedForUser = userId
                             syncFavoritesIfLoggedIn(userId)
-                            Log.d("CICLE RecipeViewModel", "RecipeViewModel - init favoritesSyncedForUser: ${favoritesSyncedForUser}")
+                            Log.d("SEARCH INGREDIENT", "RecipeViewModel - init favoritesSyncedForUser: ${favoritesSyncedForUser}")
                         }
                     }
                 }
+
+//            ingredientsDictionary = ingredientRepository.getAllIngredients()
+//            Log.d("SEARCH INGREDIENT", "RecipesViewModel: init ingredients: ${ingredientsDictionary}")
         }
     }
 
@@ -191,4 +205,49 @@ open class RecipesViewModel(
             }
         }
     }
+
+    ////  ++++++++++++++++++++++++++++++++++++++++++++++++
+////    +++++++      Поиск рецептов по ингредиентам
+////  ++++++++++++++++++++++++++++++++++++++++++++++++
+//    private val selectedIngredientIds = mutableStateListOf<Long>()
+//
+//    private val _searchResult = mutableStateOf<List<Recipe>>(emptyList())
+//    val searchResult: State<List<Recipe>> = _searchResult
+//
+//    var errorMessage by mutableStateOf<String?>(null)
+//        private set
+//
+//
+//    //    Методы управления ингредиентами
+//    fun toggleIngredient(ingredientId: Long) {
+//        if (selectedIngredientIds.contains(ingredientId)) {
+//            selectedIngredientIds.remove(ingredientId)
+//        } else {
+//            if (selectedIngredientIds.size >= 10) {
+//                errorMessage = "Можно выбрать максимум 10 ингредиентов"
+//                return
+//            }
+//            selectedIngredientIds.add(ingredientId)
+//        }
+//    }
+//
+//    fun clearingredientsSelection() {
+//        selectedIngredientIds.clear()
+//    }
+//
+////    Поиск рецептов по ингредиентам
+//    fun searchRecipesByIngredients() {
+//        viewModelScope.launch {
+//            try {
+//                val request = SearchByIngredientsRequest(
+//                    ingredientIds = selectedIngredientIds.toList()
+//                )
+//                val result = repository.searchRecipesByIngredients(request)
+//                _searchResult.value = result.map { it.toDomain() }
+//            } catch (e: Exception) {
+//                errorMessage = e.message
+//            }
+//        }
+//    }
+////    +++++++++++++++++++++++++++++++++++++++++
 }

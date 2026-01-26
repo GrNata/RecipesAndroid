@@ -10,6 +10,7 @@ import com.grig.recipesandroid.data.mapper.toDomain
 import com.grig.recipesandroid.data.model.dto.RecipeDto
 import com.grig.recipesandroid.data.model.request.RecipeCreateRequest
 import com.grig.recipesandroid.data.model.request.RecipeUpdateRequest
+import com.grig.recipesandroid.data.model.request.SearchByIngredientsRequest
 import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
 import com.grig.recipesandroid.data.paging.RecipePagingSource
 import com.grig.recipesandroid.domain.model.Recipe
@@ -69,24 +70,12 @@ class RecipeRepository(
     }
 
 
-    // Временный метод для отладки
-    suspend fun getRecipesRaw(): String {
-        // Создаем простой OkHttp запрос
-        val request = okhttp3.Request.Builder()
-            .url("http://10.0.2.2:9090/api/recipes")
-            .build()
-        val client = okhttp3.OkHttpClient()
-        val response = client.newCall(request).execute()
-        return response.body?.string() ?: ""
-    }
-
-    fun getRecipesRawBlocking(): String {
-        val client = okhttp3.OkHttpClient()
-        val request = okhttp3.Request.Builder()
-            .url("http://10.0.2.2:9090/api/recipes")
-            .build()
-        val response = client.newCall(request).execute() // блокирующий вызов
-        return response.body?.string() ?: ""
-    }
+//    Поиск рецептов по ингредиентам
+    suspend fun searchRecipesByIngredients(request: SearchByIngredientsRequest) : List<RecipeDto> {
+        val response = api.searchByIngredients(request)
+    Log.d("SEARCH INGREDIENT", "RecipeRepository: request: ${request}")
+    Log.d("SEARCH INGREDIENT", "RecipeRepository: response: ${response}")
+    return response
+}
 
 }

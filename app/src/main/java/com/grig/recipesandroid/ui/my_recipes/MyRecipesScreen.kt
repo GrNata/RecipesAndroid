@@ -142,6 +142,7 @@ fun MyRecipesScreen(
                         launchSingleTop = true
                     }
                 },
+                onSearchByIngredients = {}
 //                onShareClick = {
 //                    // поделиться только в RecipeItem
 //                    Log.d("MY_RECIPES", "Share clicked for my recipes")

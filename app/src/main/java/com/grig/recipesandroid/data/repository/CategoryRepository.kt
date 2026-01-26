@@ -34,11 +34,12 @@ class CategoryRepository(private val api: RecipeApi) {
 //    +++++++   CategoryType
     suspend fun getCategoryTypes(): List<CategoryTypeDto> {
         return try {
+//            Log.d("SEARCH INGREDIENT", "CategoryRepository: START loaded category type")
             val response = api.getCategoryTypes()
-            Log.d("CATEGORY-ch", "CategoryRepository loaded ${response.size} category type")
+//            Log.d("SEARCH INGREDIENT", "CategoryRepository loaded ${response} category type")
             response
         } catch (e: Exception) {
-            Log.e("CATEGORY-ch", "CategoryRepository: Error loading category type", e)
+            Log.e("SEARCH INGREDIENT", "CategoryRepository: Error loading category type", e)
             emptyList()
         }
     }

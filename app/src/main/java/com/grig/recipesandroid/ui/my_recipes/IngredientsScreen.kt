@@ -31,6 +31,7 @@ fun IngredientsScreen(
                          },
                 onLoginClick = {},
                 onLogoutClick = {},
+                onSearchByIngredients = {}
 //                authViewModel = viewModel.authViewModel
 //                authViewModel = addEditViewMode,.authViewModel
             )

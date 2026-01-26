@@ -8,6 +8,7 @@ import com.grig.recipesandroid.data.model.request.RecipeCreateRequest
 import com.grig.recipesandroid.data.model.dto.RecipeDto
 import com.grig.recipesandroid.data.model.request.RecipeUpdateRequest
 import com.grig.recipesandroid.data.model.dto.UnitDto
+import com.grig.recipesandroid.data.model.request.SearchByIngredientsRequest
 import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -52,6 +53,12 @@ interface RecipeApi {
         @Path("id") id: Long
     )
 
+//    //  Поиск рецептов по ингредиентам
+    @POST("api/recipes/search/by-ingredients")
+    suspend fun searchByIngredients(
+        @Body request: SearchByIngredientsRequest
+    ): List<RecipeDto>
+
 
 //  ++++++++++++++++++++++++
 //    Favorites recipes API
@@ -87,6 +94,7 @@ interface RecipeApi {
 //    INGREDIENT
 
     @GET("api/ingredients/all")
+//    @GET("api/ingredients")
     suspend fun getIngredients(): List<IngredientDto>
 
     @GET("api/ingredients/{ingredientId}")

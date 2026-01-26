@@ -107,6 +107,7 @@ fun RecipeDetailContent(
                 onMyRecipesClick = {
                     navController.navigate("my_recipes")
                 },
+                onSearchByIngredients = {}
 //                authViewModel = authViewModel
             )
         }       //  topBar

@@ -1,0 +1,175 @@
+package com.grig.recipesandroid.ui.search_by_ingredients
+
+import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
+import com.grig.recipesandroid.ui.recipe_list.RecipeItem
+import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun IngredientsForSearchScreen(
+    ingredientsViewModel: SearchByIngredientsViewModel,
+    recipesViewModel: RecipesViewModel,
+    navController: NavController
+) {
+
+
+    // Создаём scaffoldState для SnackBar
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+//    val selectedIngredientIds = remember { mutableStateListOf<Long>() }
+    val selectedIngredientIds = ingredientsViewModel.selectedIngredientIds
+    val searchRecipes by ingredientsViewModel.searchRecipes
+//    val errorMessage by ingredientsViewModel.errorMessage
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+
+        topBar = {
+            AppTopBar(
+                title = "Поиск по ингредиентам",
+                isAuthenticated = true,
+                showMyRecipes = true,
+                onBack = { navController.popBackStack() },
+                onLoginClick = {},
+                onLogoutClick = {}
+            )
+        }
+    ) { paddingValues ->
+
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFEFEFEF)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF8E4253),
+                    contentColor = Color(0xFFEDE3E5)
+                ),
+                onClick = {
+                    Log.d("SEARCH INGREDIENT", "IngredientsForSearchScreen: onClick()")
+                    ingredientsViewModel.searchRecipesByIngredients()
+                    navController.navigate("search_result")
+                }
+            ) {
+                Text("Подобрать рецепты")
+            }
+
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+
+//        val ingredients = ingredientsViewModel.getAllIngredients()
+            var ingredients = recipesViewModel.ingredientsDictionary
+            Log.d("SEARCH INGREDIENT", "IngredientsForSearchScreen: ingredients: ${ingredients}")
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+
+                items(ingredients) { ingredient ->
+                    val isChecked = selectedIngredientIds.contains(ingredient.id)
+
+                    Log.d("SEARCH INGREDIENT", "IngredientsForSearchScreen: checkIngredient: ${selectedIngredientIds}")
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .clickable {
+                                if (isChecked) {
+                                    selectedIngredientIds.remove(ingredient.id)
+                                } else {
+                                    if (selectedIngredientIds.size < 10) {
+//                                if (selectedIngredientIds.size < 3) {
+                                        selectedIngredientIds.add(ingredient.id)
+                                    } else {
+                                        scope.launch {   // <-- запускаем корутину
+                                            snackbarHostState.showSnackbar(
+                                                "Можно выбрать не более 10 ингредиентов"
+//                                            "Можно выбрать не более 3 ингредиентов"
+                                            )
+                                        }
+                                    }
+                                }
+                            },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = isChecked,
+                            onCheckedChange = { checked ->
+                                if (checked) {
+                                    if (selectedIngredientIds.size < 10) {
+//                                if (selectedIngredientIds.size < 3) {
+                                        selectedIngredientIds.add(ingredient.id)
+                                    }
+                                } else {
+                                    selectedIngredientIds.remove(ingredient.id)
+                                }
+                            }
+                        )
+                        Text(
+                            text = ingredient.name,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+//                // Список найденных рецептов
+//                searchRecipes?.forEach { recipe ->
+//                    item {
+//                        RecipeItem(
+//                            viewModel = recipesViewModel,
+//                            recipe = recipe,
+//                            query = "",
+//                            isFavorite = false,
+//                            isOwner = false,
+//                            onFavoriteClick = {},
+//                            onClick = { navController.navigate("recipe_detail/${recipe.id}") },
+//                            onEditClick = {},
+//                            onDeleteClick = {}
+//                        )
+//                    }
+//                }
+            }   //  LazyColumn
+        }
+
+    }
+}
