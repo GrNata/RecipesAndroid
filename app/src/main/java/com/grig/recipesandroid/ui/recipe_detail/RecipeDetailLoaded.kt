@@ -172,41 +172,33 @@ fun RecipeDetailLoaded(
                     modifier = Modifier.weight(1f).padding(start = 16.dp)
                 ) {
                     Text(
-                        text = "Категория: ${
-                            recipe.categories.joinToString { it.categoryValue.lowercase() }
-//                            recipe.categories.joinToString { it.name.lowercase() }
-                        }",
+                        text = "Категория:",
+                        color = Color(0xFF6C687B),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = recipe.categories.joinToString { it.categoryValue.lowercase() },
                         color = Color(0xFF7E889F),
                         style = MaterialTheme.typography.bodyLarge
                     )
 
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                    val ingredientsUi = recipe.ingredients.map { it.toIngredientUi() }
+//                    Количество порций
+                    NumberOfServings(recipeDetailViewModel)
 
-//                    Log.d("INGREDIENT-UI", "RecipeDetailLoaded: IngredientUi: ${recipe.ingredients}")
+                    //            Ингредиенты
 
-                    RecipeIngredientsBlock(recipeDetailViewModel)
-
-//                    Text(
-//                        text = "Ингредиенты:",
-//                        style = MaterialTheme.typography.bodyLarge,
-//                        color = Color(0xFF656A77)
-//                    )
-//
-//                    val ingredientsUi = recipe.ingredients.map { it.toUi() }
-////                    recipe.ingredients.forEach {
-//                    ingredientsUi.forEach {
-//                        Text(
-////                            text = "• ${it.ingredient.name}: ${it.amount ?: ""} ${it.unit}",
-//                            text = "• ${it.ingredient.name}: ${it.amount ?: ""} ${it.unit ?: ""}",
-//                            color = Color(0xFF656A77),
-//                            style = MaterialTheme.typography.bodyMedium
-//                        )
-//                    }
-                }
+                }   //  Column
             }   // Row
+
+//            +++++++++++++++++
+//            Ингредиенты
+            Spacer(Modifier.height(16.dp))
+            val ingredientsUi = recipe.ingredients.map { it.toIngredientUi() }
+            RecipeIngredientsBlock(recipeDetailViewModel)
         }
+//        ++++++++++++++++++++++
 
         // --- ШАГИ ---
         item {

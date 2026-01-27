@@ -29,11 +29,18 @@ class RecipeDetailViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+//    +++++++++++++++++++++++++
 //    для пересчета количества ингредиентов в деталях рецепта
-//    private val _ingredientsUi = MutableStateFlow<MutableList<IngredientUi>>(mutableListOf())
-//    val ingredientsUi: StateFlow<MutableList<IngredientUi>> = _ingredientsUi
     private val _ingredientsUi = MutableStateFlow<List<IngredientUi>>(emptyList())
     val ingredientsUi: StateFlow<List<IngredientUi>> = _ingredientsUi
+
+    //      Режим «на N порций» (очень крутая фича)
+    private var baseIngredients: List<IngredientUi> = emptyList()
+
+    private val _currentServings = MutableStateFlow(1)
+    val currentServings: StateFlow<Int> = _currentServings
+
+//  +++++++++++++++++++++++++++++++++++++
 
     init {
         loadRecipe()
@@ -45,16 +52,22 @@ class RecipeDetailViewModel(
             _loading.value = true
             _error.value = null
             try {
-//                Log.d("2-ИЩУ:", "RecipeDetailViewModel: recipeId = ${recipeId}")
                 val response = api.getRecipeById(requireNotNull(recipeId))
+
                 val ingredientResponse =
                     response.ingredients?.map { it.toDomain() }?.map { it.toIngredientUi() }
                         ?.toMutableList()
-                Log.d("INGREDIENT-UI", "RecipeDetailViewModel: ingredientResponse = ${ingredientResponse}")
+                        ?: emptyList()
+
                 _recipe.value = response.toDomain()
-                if (ingredientResponse != null) {
-                    _ingredientsUi.value = ingredientResponse
-                }
+
+                baseIngredients = ingredientResponse
+
+                if (ingredientResponse != null) _ingredientsUi.value = ingredientResponse
+
+                if (response.baseServings != null) _currentServings.value = response.baseServings
+
+
             } catch (e: Exception) {
                 _error.value = e.message ?: "RecipeDetailViewModel: Ошибка загрузки рецепта"
             } finally {
@@ -69,41 +82,62 @@ class RecipeDetailViewModel(
 
 //   ++++++++++++++++++
 //  +++++++   для пересчета количества ингредиентов в деталях рецепта
-//    fun setIngredientsUi(list: List<IngredientUi>) {
-//        _ingredientsUi.clear()
-//        _ingredientsUi.addAll(list)
-//    }
+//    Подсветка базового ингредиента
+    private val _baseIngredientId = MutableStateFlow<Long?>(null)
+    val baseIngredientId: StateFlow<Long?> = _baseIngredientId
 
+    private val _baseServings = MutableStateFlow(1)
+    val baseServings: StateFlow<Int> = _baseServings
     fun recalculateFrom(
         ingredientId: Long,
         newAmount: Double
     )  {
-        Log.d("INGREDIENT-UI", "RcipeDetailViewmodel: recalculateFrom:  ingredientsUi-1: ${ingredientsUi}")
-        Log.d("INGREDIENT-UI", "RcipeDetailViewmodel: recalculateFrom:  _ingredientsUi-1.value: ${_ingredientsUi.value}")
-//        Log.d("INGREDIENT-UI", "RcipeDetailViewmodel: recalculateFrom:  ingredientsUi2-1: ${ingredientsUi2}")
-        Log.d("INGREDIENT-UI", "RcipeDetailViewmodel: recalculateFrom:  newAmount: ${newAmount}")
+        _baseIngredientId.value = ingredientId
+
         val base = _ingredientsUi.value.firstOrNull { it.id == ingredientId }
-//        val base = ingredientsUi2.firstOrNull { it.id == ingredientId }
             ?: return
         val oldAmount = base.amount ?: return
         if (oldAmount == 0.0) return
 
         val factor = newAmount / oldAmount
-        Log.d("INGREDIENT-UI", "RcipeDetailViewmodel: recalculateFrom:  factor: ${factor}")
 
-//        _ingredientsUi.value.replaceAll { ingredient ->
-////            ingredientsUi2.replaceAll {  ingredient ->
-//            ingredient.copy(
-//                amount = ingredient.amount?.let { it * factor }
-//            )
         _ingredientsUi.value = _ingredientsUi.value.map { ingredient ->
             ingredient.copy(
                 amount = ingredient.amount?.let { it * factor }
             )
         }
-//                Log.d("INGREDIENT-UI", "RcipeDetailViewmodel: recalculateFrom:  ingredient.amount: ${ingredient.amount}")
-//        }
-//        Log.d("INGREDIENT-UI", "RcipeDetailViewmodel: recalculateFrom:  ingredientsUi2-2: ${ingredientsUi}")
+    }
 
+//    Прибавление / убавление количества ингредиента (пересчет кол-ва всех ингредиентов) - стрелками + или -
+    fun recalculateForServings(newServings: Int) {
+        if (newServings <= 0) return
+
+//        val factor = newServings.toDouble() / _baseServings.value
+//        _baseServings.value = newServings         //  всегда пересчёт от эталона
+//        val factor = newServings.toDouble() / _currentServings.value
+        val factor = newServings.toDouble() / (_recipe.value?.baseServings ?: 1)
+//    val factor = newServings.toDouble() / recipeBaseServings
+        _currentServings.value = newServings
+
+//        _ingredientsUi.value = _ingredientsUi.value.map {
+            _ingredientsUi.value = baseIngredients.map {         //  всегда пересчёт от эталона
+            it.copy(amount = it.amount?.times(factor))
+//            it.copy(amount = it.amount?.let { amt -> amt * factor })
+        }
+    }
+
+//      Режим «на N порций» (очень крутая фича)
+//    private var baseIngredients: List<IngredientUi> = emptyList()
+
+    fun setBaseIngredients(list: List<IngredientUi>) {
+        baseIngredients = list
+    }
+
+    fun recalculateForNumberOfServings(servings: Int) {
+        if (servings <= 0) return
+
+        _ingredientsUi.value = baseIngredients.map {
+            it.copy(amount = it.amount?.times(servings))
+        }
     }
 }

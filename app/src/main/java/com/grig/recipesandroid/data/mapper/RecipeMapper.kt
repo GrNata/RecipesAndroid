@@ -24,6 +24,7 @@ fun RecipeDto.toDomain() : Recipe =
         name = name,
         description = description,
         image = image,
+        baseServings = baseServings,
         categories = categories
             ?.values
             ?.map { it.toDomain() }

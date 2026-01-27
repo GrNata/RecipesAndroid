@@ -20,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType.Companion.Text
+import androidx.compose.ui.text.style.TextOverflow
 import com.grig.recipesandroid.domain.model.Recipe
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 
@@ -41,7 +42,9 @@ fun AppTopBar(
     TopAppBar(
         title = { Text(
             title,
-            color = Color(0xFF8E4253)
+            color = Color(0xFF8E4253),
+            maxLines = 1, // Заголовок в одну строку
+            overflow = TextOverflow.Ellipsis // Если не влезет — будет троеточие
         ) },
         navigationIcon = {
             onBack?.let {

@@ -28,7 +28,7 @@ fun AmountInputDialog(
         onDismissRequest = onDismiss,
 
         title = {
-            Text("Кол-во для ${ingredient.name}")
+            Text("Количество для ${ingredient.name}")
         },
 
         text = {

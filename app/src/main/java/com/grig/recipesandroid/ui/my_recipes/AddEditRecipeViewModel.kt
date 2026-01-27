@@ -52,6 +52,9 @@ class AddEditRecipeViewModel(
 
     var image by mutableStateOf<String?> (null)
         private set
+
+    var baseServings by mutableStateOf<Int?>(1)
+        private set
 //    ++++++++++++
 
     // +++++++++ Категории
@@ -221,6 +224,7 @@ class AddEditRecipeViewModel(
                         name = name,
                         description = description,
                         image = image,
+                        baseServings = baseServings,
 //                        categoryIds = categoriesAll.map { it.id },
                         categoryValueIds = categoryIds,
                         ingredients = ingredients.toList(),
@@ -256,6 +260,7 @@ class AddEditRecipeViewModel(
                         name = name,
                         description = description,
                         image = image,
+                        baseServings = baseServings,
                         categoryIds = categoryIds,
 //                        categoryIds = categoryValuesAll.map { it.id },
                         ingredients = ingredients.toList(),

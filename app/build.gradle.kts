@@ -57,6 +57,13 @@ dependencies {
 //    implementation(libs.androidx.compose.foundation.layout)
     debugImplementation("androidx.compose.ui:ui-tooling:1.7.4")
 
+////    для иконок
+//    // Основные иконки Material Design
+//    implementation("androidx.compose.material:material-icons-extended:1.6.10")
+//    // Дополнительно: если нужны Outlined, Rounded, Sharp версии
+//    implementation("androidx.compose.material:material-icons-outlined:1.6.10")
+//    implementation("androidx.compose.material:material-icons-rounded:1.6.10")
+//    implementation("androidx.compose.material:material-icons-sharp:1.6.10")
 
 
     // Lifecycle
