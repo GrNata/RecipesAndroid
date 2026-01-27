@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.recipe_detail
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -47,7 +48,7 @@ import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import kotlinx.coroutines.delay
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.rememberCoroutineScope
-import com.grig.recipesandroid.domain.model.toUi
+import com.grig.recipesandroid.data.mapper.toIngredientUi
 import kotlinx.coroutines.launch
 
 
@@ -55,6 +56,7 @@ import kotlinx.coroutines.launch
 //private fun RecipeDetailLoaded(
 fun RecipeDetailLoaded(
     recipeViewModel: RecipesViewModel,
+    recipeDetailViewModel: RecipeDetailViewModel,
     recipe: Recipe,
     onBack: () -> Unit,
     recipeId: Long,
@@ -180,22 +182,28 @@ fun RecipeDetailLoaded(
 
                     Spacer(Modifier.height(8.dp))
 
-                    Text(
-                        text = "Ингредиенты:",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color(0xFF656A77)
-                    )
+                    val ingredientsUi = recipe.ingredients.map { it.toIngredientUi() }
 
-                    val ingredientsUi = recipe.ingredients.map { it.toUi() }
-//                    recipe.ingredients.forEach {
-                    ingredientsUi.forEach {
-                        Text(
-//                            text = "• ${it.ingredient.name}: ${it.amount ?: ""} ${it.unit}",
-                            text = "• ${it.ingredient.name}: ${it.amount ?: ""} ${it.unit ?: ""}",
-                            color = Color(0xFF656A77),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
+//                    Log.d("INGREDIENT-UI", "RecipeDetailLoaded: IngredientUi: ${recipe.ingredients}")
+
+                    RecipeIngredientsBlock(recipeDetailViewModel)
+
+//                    Text(
+//                        text = "Ингредиенты:",
+//                        style = MaterialTheme.typography.bodyLarge,
+//                        color = Color(0xFF656A77)
+//                    )
+//
+//                    val ingredientsUi = recipe.ingredients.map { it.toUi() }
+////                    recipe.ingredients.forEach {
+//                    ingredientsUi.forEach {
+//                        Text(
+////                            text = "• ${it.ingredient.name}: ${it.amount ?: ""} ${it.unit}",
+//                            text = "• ${it.ingredient.name}: ${it.amount ?: ""} ${it.unit ?: ""}",
+//                            color = Color(0xFF656A77),
+//                            style = MaterialTheme.typography.bodyMedium
+//                        )
+//                    }
                 }
             }   // Row
         }

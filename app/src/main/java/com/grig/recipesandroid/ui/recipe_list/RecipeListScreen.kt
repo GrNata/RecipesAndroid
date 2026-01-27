@@ -149,9 +149,10 @@ fun RecipeListScreen(
                         showOnlyFavorites = !showOnlyFavorites
                     },
                     onRecipeClick = { id ->
-                        Log.e("ИЩУ:", "RecipeListScreen: id = ${id} navigate to recipe_detail/$id")
+                        Log.d("11-ИЩУ:", "RecipeListScreen: id = ${id} navigate to recipe_detail/$id")
                         navController.navigate("recipe_detail/$id")
-                    }
+                    },
+                    navController
                 )
 
             }

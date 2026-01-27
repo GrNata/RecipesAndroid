@@ -61,6 +61,7 @@ fun AppNavGraph(
     addEditRecipeViewModel: AddEditRecipeViewModel,
     myRecipesViewModel: MyRecipesViewModel,
     searchByIngredientsViewModel: SearchByIngredientsViewModel
+//    recipeDetailViewModel: RecipeDetailViewModel
     ) {
 
             NavHost(
@@ -98,9 +99,9 @@ fun AppNavGraph(
                         navController = navController,
                         onRecipeClick = { recipeId ->
                             navController.navigate("recipe_detail/${recipeId}")
-                            Log.e(
-                                "CICLE NAV_TRACE",
-                                "NavGraph навигация к детализации рецепта id = $recipeId"
+                            Log.d(
+                                "3-ИЩУ:",
+                                "NavGraph: recipe_list  навигация к детализации рецепта id = $recipeId"
                             )
                         },
                         authViewModel = authViewModel
@@ -140,12 +141,13 @@ fun AppNavGraph(
                         factory = RecipeDetailViewModelFactory(api = api, recipeId = recipeId)
                     )
 
-                    Log.e("CICLE NAV_TRACE", "NavGraph (recipe_detail) navigate to login from RecipeDetailScreen")
+                    Log.d("1-ИЩУ:", "NavGraph (recipe_detail) navigate to RecipeDetailScreen, recipeId=$recipeId")
                     RecipeDetailScreen(
                         recipeId = recipeId,
                         recipeViewModel = recipeViewModel,
                         viewModelDetailRecipe = detailViewModel,
                         authViewModel = authViewModel,
+//                        recipeDetailViewModel = recipeDetailViewModel,
                         navController = navController,
                         onBack = { navController.popBackStack() }
                     )

@@ -171,6 +171,9 @@ fun RecipeItem(
             Row {
                 val ingredientsUi = recipe.ingredients.map { it.toUi() }
 //                recipe.ingredients.forEach { ing ->
+//                Log.d("INGREDIENT-UI", "RecipeItem: IngredientUi: ${ingredientsUi}")
+
+
                 ingredientsUi.forEach { ing ->
                     Text(
 //                        text = "${ing.ingredient.name}: ${ing.amount} ${ing.unit ?: ""}".trim(),

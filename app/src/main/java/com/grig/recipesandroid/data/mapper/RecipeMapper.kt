@@ -3,6 +3,7 @@ package com.grig.recipesandroid.data.mapper
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
 import com.grig.recipesandroid.data.model.dto.IngredientWithAmountDto
 import com.grig.recipesandroid.data.model.dto.RecipeDto
+import com.grig.recipesandroid.data.model.ui.IngredientUi
 import com.grig.recipesandroid.domain.model.CategoryValue
 import com.grig.recipesandroid.domain.model.Ingredient
 import com.grig.recipesandroid.domain.model.Recipe
@@ -37,6 +38,14 @@ fun CategoryValueDto.toDomain(): CategoryValue =
         categoryTypeId = typeId,
         categoryTypeName = typeName,
         categoryValue = categoryValue
+    )
+
+fun RecipeIngredient.toIngredientUi() : IngredientUi =
+    IngredientUi(
+        id = ingredient.id,
+        name = ingredient.name,
+        amount = amount?.toDoubleOrNull(),
+        unit = unit?.label
     )
 
 

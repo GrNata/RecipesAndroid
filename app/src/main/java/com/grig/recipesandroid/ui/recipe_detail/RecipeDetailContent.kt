@@ -45,6 +45,7 @@ fun RecipeDetailContent(
     navController: NavController,
     authViewModel: AuthViewModel,
     recipeViewModel: RecipesViewModel,
+    recipeDetailViewModel: RecipeDetailViewModel,
     recipeId: Long,
     snackbarHostState: SnackbarHostState
 ) {
@@ -67,7 +68,8 @@ fun RecipeDetailContent(
         topBar = {
             val authRestored by authViewModel.authStateRestored.collectAsState()
 
-            Log.d("CICLE NAV_TRACE", "RecipeDetailContent before AppTopBar")
+            Log.d("ИЩУ:", "RecipeDetailContent: before AppTopBar recipeId=$recipeId")
+            Log.d("ИЩУ:", "RecipeDetailContent: before AppTopBar recipe: $recipe")
 
             AppTopBar(
                 title = recipe?.name ?: "Детали рецепта",
@@ -177,6 +179,7 @@ fun RecipeDetailContent(
                     Log.d("CICLE NAV_TRACE", "RecipeDetailContent before RecipeDetailLoaded")
                     RecipeDetailLoaded(
                         recipeViewModel,
+                        recipeDetailViewModel,
                         recipe,
                         onBack,
                         recipeId,

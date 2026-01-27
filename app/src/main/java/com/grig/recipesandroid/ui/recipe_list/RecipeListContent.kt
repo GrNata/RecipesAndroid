@@ -50,6 +50,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavController
 import com.grig.recipesandroid.ui.utilRecipe.CategoryTypeDropDown
 import com.grig.recipesandroid.ui.utilRecipe.GroupedByCategoryType
 import com.grig.recipesandroid.ui.utilRecipe.ShimmerRecipeItem
@@ -68,7 +69,8 @@ fun RecipeListContent(
     onFavoriteClick: (Long) -> Unit,
     showOnlyFavorites: Boolean,
     onToggleFavoritesFilter: () -> Unit,
-    onRecipeClick: (Long) -> Unit
+    onRecipeClick: (Long) -> Unit,
+    navController: NavController
 
 ) {
     //    логика отображения индикатора сверху
@@ -155,7 +157,9 @@ fun RecipeListContent(
                                     isFavorite = favorites.contains(recipe.id),
                                     isOwner = false,
                                     onFavoriteClick = { viewModel.toggleFavorite(recipe.id) },
-                                    onClick = { onRecipeClick(recipe.id) }
+                                    onClick =
+//                                        { navController.navigate("recipe_detail/${recipe.id}") }
+                                        { onRecipeClick(recipe.id) }
                                 )
                             }
                         }

@@ -22,6 +22,8 @@ import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModelFactory
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModel
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModelFactory
 import com.grig.recipesandroid.ui.navigation.AppNavGraph
+import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModel
+import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModelFactory
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import com.grig.recipesandroid.ui.theme.RecipesAndroidTheme
 import retrofit2.Retrofit
@@ -160,6 +162,10 @@ class MainActivity : ComponentActivity() {
                     factory = SearchByIngredientViewModelFactory(recipeRepository, ingredientRepository)
                 )
 
+//                val recipeDetailViewModel: RecipeDetailViewModel = viewModel(
+//                    factory = RecipeDetailViewModelFactory(recipeApi)
+//                )
+
                 val addEditRecipeViewModel: AddEditRecipeViewModel = viewModel(
                     factory = AddEditRecipeViewModelFactory(
                         recipeRepository = recipeRepository,
@@ -187,6 +193,7 @@ class MainActivity : ComponentActivity() {
                     addEditRecipeViewModel = addEditRecipeViewModel,
                     myRecipesViewModel = myRecipesViewModel,
                     searchByIngredientsViewModel = searchByIngredientsViewModel
+//                    recipeDetailViewModel = recipeDetailViewModel
                 )
             }
         }

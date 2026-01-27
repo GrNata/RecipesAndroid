@@ -13,6 +13,7 @@ class RecipeDetailViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RecipeDetailViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
+//            return RecipeDetailViewModel(api) as T
             return RecipeDetailViewModel(api, recipeId) as T
         }
         throw IllegalArgumentException("Unknow ViewModel class")
