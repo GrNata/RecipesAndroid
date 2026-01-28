@@ -183,6 +183,50 @@ fun RecipeDetailLoaded(
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
+//                    Калории
+//                    Row() {
+
+                    val servings = recipe.baseServings ?: 1
+                    val calories = recipe.totalCalories?.let {  it }
+                    Row() {
+                        Text(
+                            text = "Калории:",
+                            color = Color(0xFF6C687B),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+
+//                        recipe.totalCalories?.let {  calories ->
+                        if (calories != null) {
+                            Text(
+                                text = "${calories} кКал",
+                                color = Color(0xFF6C687B),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(start = 6.dp)
+                            )
+                        } else {
+                            Text(
+                                text = "Калории не указаны",
+                                color = Color(0xFF6C687B),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(start = 6.dp)
+                            )
+                        }
+                    }
+                           if (calories != null) {
+                               Text(
+                                   text = "(≈ ${calories?.let { it / servings }} кКал на 1 порцию)",
+                                   color = Color(0xFF6C687B),
+                                   style = MaterialTheme.typography.bodySmall,
+                                   modifier = Modifier.padding(start = 6.dp)
+                               )
+                           }
+
+
+//                    }
+
+
+
+                    Spacer(modifier = Modifier.height(24.dp))
 
 //                    Количество порций
                     NumberOfServings(recipeDetailViewModel)

@@ -11,7 +11,12 @@ import com.grig.recipesandroid.domain.model.RecipeIngredient
 
 fun IngredientWithAmountDto.toDomain() : RecipeIngredient =
     RecipeIngredient(
-        ingredient = Ingredient(id = id, name = name),
+        ingredient = Ingredient(
+            id = id,
+            name = name,
+            nameEng = nameEng,
+            energyKcal100g = energyKcal100g
+        ),
         amount = amount,
 //        unit = unit?.label ?: ""
         unit = unit
@@ -30,7 +35,9 @@ fun RecipeDto.toDomain() : Recipe =
             ?.map { it.toDomain() }
             ?: emptyList(),
         ingredients = ingredients?.map { it.toDomain() } ?: emptyList(),
-        steps = (steps ?: emptyList())
+        steps = (steps ?: emptyList()),
+
+        totalCalories = totalCalories
     )
 
 fun CategoryValueDto.toDomain(): CategoryValue =
@@ -45,8 +52,10 @@ fun RecipeIngredient.toIngredientUi() : IngredientUi =
     IngredientUi(
         id = ingredient.id,
         name = ingredient.name,
+        nameEng = ingredient.nameEng,
         amount = amount?.toDoubleOrNull(),
-        unit = unit?.label
+        unit = unit?.label,
+        energyKcal100g = ingredient.energyKcal100g
     )
 
 

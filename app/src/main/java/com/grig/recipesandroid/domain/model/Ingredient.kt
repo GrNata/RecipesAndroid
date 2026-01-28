@@ -3,5 +3,7 @@ package com.grig.recipesandroid.domain.model
 // Ingredient — справочник
 data class Ingredient(
     val id: Long,
-    val name: String
+    val name: String,
+    val nameEng: String?,
+    val energyKcal100g: Int?
 )

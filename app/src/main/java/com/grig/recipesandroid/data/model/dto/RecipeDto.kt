@@ -11,5 +11,7 @@ data class RecipeDto(
     @SerializedName("categoryValues") val categories: Map<String, CategoryValueDto>?,
     @SerializedName("ingredients") val ingredients: List<IngredientWithAmountDto>?,
     @SerializedName("steps") val steps: List<String>?,
+
+    @SerializedName("totalCalories") val totalCalories: Int?
 )
 

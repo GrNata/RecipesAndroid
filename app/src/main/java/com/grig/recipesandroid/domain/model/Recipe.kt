@@ -8,5 +8,7 @@ data class Recipe(
     val baseServings: Int?,
     val categories: List<CategoryValue>,
     val ingredients: List<RecipeIngredient>,
-    val steps: List<String>
+    val steps: List<String>,
+
+    val totalCalories: Int?
 )

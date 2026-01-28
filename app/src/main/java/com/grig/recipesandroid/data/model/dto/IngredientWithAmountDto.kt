@@ -4,6 +4,8 @@ data class IngredientWithAmountDto(
 //    val id: Long?,
     val id: Long,
     val name: String,
+    val nameEng: String?,
     val amount: String?,
-    val unit: UnitDto
+    val unit: UnitDto,
+    val energyKcal100g: Int?
 )
