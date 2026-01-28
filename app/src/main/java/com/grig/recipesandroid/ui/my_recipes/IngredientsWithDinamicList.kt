@@ -43,6 +43,9 @@ import androidx.compose.ui.unit.dp
 fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
 
     Column(modifier = Modifier.padding(top = 16.dp)) {
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -79,12 +82,8 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
             "IngredientWithDinamicList: ingredients: ${viewModel.ingredients}"
         )
 
-//        val ingredients = viewModel.ingredients
-
-//        if (!ingredients.isEmpty()) {
-
         viewModel.ingredients.forEachIndexed { index, ingredient ->
-//            ingredients.forEachIndexed { index, ingredient ->
+//        viewModel.ingredientsAll.forEachIndexed { index, ingredient ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -103,8 +102,6 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
                             value = viewModel.getIngredientName(index),
                             onValueChange = {},
                             readOnly = true,
-//                        label = { Text("Ингредиент") },
-//                        label = { Text("Ингр-нт") },
                             trailingIcon = { TrailingIcon(ingExpanded) },
                             colors = ExposedDropdownMenuDefaults.textFieldColors(),
                             modifier = Modifier.menuAnchor(),
@@ -133,8 +130,6 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
                     TextField(
                         value = ingredient.amount ?: "",
                         onValueChange = { viewModel.onIngredientAmountChange(index, it) },
-//                    label = { Text("Кол-во") },
-//                    modifier = Modifier.width(80.dp)
                         modifier = Modifier.weight(1.1f),
                         textStyle = MaterialTheme.typography.bodyMedium
                     )
@@ -151,25 +146,10 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
                             value = viewModel.getUnitName(index),
                             onValueChange = {},
                             readOnly = true,
-//                        label = { Text("Ед.") },
                             trailingIcon = { TrailingIcon(unitExpanded) },
                             colors = ExposedDropdownMenuDefaults.textFieldColors(),
                             modifier = Modifier.menuAnchor(),
                             textStyle = MaterialTheme.typography.bodyMedium,
-//                            colors = TextFieldDefaults.colors(
-//                                // Фон поля
-//                                focusedContainerColor = Color( 0xFFF7EDE9),
-//                                unfocusedContainerColor = Color(0xFFEEE2DC),
-//                                disabledContainerColor = Color(0xBFFF6A00).copy(alpha = 0.5f), // полупрозрачный при отключении
-//
-//                                // Цвет текста
-//                                focusedTextColor = Color(0xFF062444),
-//                                unfocusedTextColor = Color(0xFF1E364F),
-//                                disabledTextColor = Color.Gray,
-//
-//                                // Дополнительные цвета (настройка по желанию)
-//                                cursorColor = Color(0xFF123C69),
-//                                errorTextColor = Color.Red
                         )
 
                         ExposedDropdownMenu(

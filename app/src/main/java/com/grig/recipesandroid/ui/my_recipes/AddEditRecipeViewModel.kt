@@ -1,6 +1,7 @@
 package com.grig.recipesandroid.ui.my_recipes
 
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -9,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.grig.recipesandroid.data.model.IngredientWithCaloriesAndAmount
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
 import com.grig.recipesandroid.data.model.dto.IngredientDto
@@ -20,11 +22,14 @@ import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.UnitRepository
+import com.grig.recipesandroid.domain.model.Ingredient
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
+import com.grig.recipesandroid.ui.utilRecipe.UnitConvertor
 import kotlinx.coroutines.launch
 import java.util.Collections.emptyList
 import kotlin.collections.forEach
+import kotlin.math.roundToInt
 
 class AddEditRecipeViewModel(
     private val recipeRepository: RecipeRepository,
@@ -427,6 +432,55 @@ class AddEditRecipeViewModel(
         errorMessage = null
 
 //        isFormInitialized = false
+    }
+
+//    ++++++++++++++++++
+//    Калории
+
+    var totalCalories by mutableStateOf(0)
+        private set
+    private val unitConvertor: UnitConvertor = UnitConvertor()
+    fun calculationCalories() {
+
+        try {
+
+            var ingredientWithCalories: List<IngredientWithCaloriesAndAmount> = ingredients.map { ing ->
+//            if (ing.ingredientId == null) return
+
+                val ingredient = ingredientsAll.filter { it.id.equals(ing.ingredientId)}.first()
+                val amountDouble = ing.amount?.toDouble() ?: 0.0
+                val unitDto = unitsAll.filter { it.id.equals(ing.unitId) }.first()
+                val gram = unitConvertor.toGram(amountDouble,  unitDto, ingredient.name)
+                IngredientWithCaloriesAndAmount(
+                    id = ingredient.id,
+                    name = ingredient.name,
+                    energyKcal100g = ingredient.energyKcal100g,
+                    amount = gram,
+                    unitCode = "G"
+//                unitCode = unitsAll.filter { it.id.equals(ing.unitId) }.first().code
+                )
+            }
+            Log.d("Calories", "AddEditRecipeViewModel: ingredientWithCalories: ${ingredientWithCalories}")
+            val totalCalor = ingredientWithCalories.sumOf { item ->
+                // Берем калории (если null, то 0) и умножаем на количество, деленное на 100
+                val energy = item.energyKcal100g?.toDouble() ?: 0.0
+                val am = item.amount ?: 0.0
+                (energy * ( am / 100.0 )).also { result ->
+                    Log.d("Calories", "AddEditRecipeViewModel: energy: ${energy}, am: $am, energy: ${result}")
+                }
+
+            }
+
+            Log.d("Calories", "AddEditRecipeViewModel: totalCalories: ${totalCalor}")
+            totalCalories = totalCalor.roundToInt()
+            Log.d("Calories", "AddEditRecipeViewModel: totalCalories: ${totalCalories}")
+
+        } catch (e: NoSuchElementException) {
+            Log.e("Calories", "AddEditRecipeViewModel: NoSuchElementException error: $e")
+        } catch (e: Exception) {
+            Log.e("Calories", "AddEditRecipeViewModel: Exception error: $e")
+        }
+
     }
 
 }

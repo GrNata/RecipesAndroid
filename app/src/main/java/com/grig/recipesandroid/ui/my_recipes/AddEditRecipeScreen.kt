@@ -55,13 +55,6 @@ fun AddEditRecipeScreen(
 
     val isEdit = recipeId != null
 
-//    LaunchedEffect(recipeId) {
-//        if (isEdit) {
-//            viewModel.loadRecipe(requireNotNull(recipeId))
-//        }
-//    }
-
-//    LaunchedEffect(Unit) {
     LaunchedEffect(recipeId) {
         viewModel.loadCategoryValues()  // сначала загружаем все категории
         viewModel.loadIngredientAndUnitDictionaries()
@@ -72,23 +65,6 @@ fun AddEditRecipeScreen(
             viewModel.loadRecipe(recipeId)
         }
     }
-//    LaunchedEffect(recipeId) {
-//        Log.d("AddEdit-category", "LaunchedEffect recipeId = $recipeId")
-//
-//        if (!viewModel.isFormInitialized) {
-//
-//            viewModel.loadCategoryValues()  // сначала загружаем все категории
-//            viewModel.loadIngredientAndUnitDictionaries()
-//            viewModel.loadCategoryTypes()
-////        viewModel.loadCategories()  // сначала загружаем все категории
-//            if (isEdit && recipeId != null) {
-//                viewModel.loadRecipe(recipeId)  // потом загружаем рецепт
-//            } else {
-//                viewModel.resetForm()
-//            }
-//            viewModel.isFormInitialized = true
-//        }
-//    }
 
     Scaffold(
         topBar = {
@@ -100,8 +76,6 @@ fun AddEditRecipeScreen(
                 onLoginClick = {},
                 onLogoutClick = {},
                 onSearchByIngredients = {}
-//                authViewModel = viewModel.authViewModel
-//                authViewModel = addEditViewMode,.authViewModel
             )
         }
     ) { paddingValues ->

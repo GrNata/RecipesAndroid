@@ -17,6 +17,9 @@ fun CaloriesBlock(
 
     val servings = recipe.baseServings ?: 1
     val calories = recipe.totalCalories?.let {  it }
+
+
+
     Row() {
         Text(
             text = "Калории:",
