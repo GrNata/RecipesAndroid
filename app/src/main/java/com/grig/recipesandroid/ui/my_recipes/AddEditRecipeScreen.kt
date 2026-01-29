@@ -66,6 +66,9 @@ fun AddEditRecipeScreen(
         }
     }
 
+    Log.d("Calories", "AddEditRecipeScreen: ingredientsAll (словарь): ${viewModel.ingredientsAll}")
+    Log.d("Calories", "AddEditRecipeScreen: ingredientsAll size: ${viewModel.ingredientsAll.size}")
+
     Scaffold(
         topBar = {
             AppTopBar(

@@ -24,7 +24,7 @@ fun IngredientsScreen(
 
         topBar = {
             AppTopBar(
-                title = "Картинка",
+                title = "Выбор ингредиентов",
                 isAuthenticated = true,
                 showMyRecipes = true,
                 onBack = {
@@ -55,12 +55,18 @@ fun IngredientsScreen(
             viewModel.calculationCalories()
 
             Row() {
+                Column() {
+                    Text(
+                        text = "Сумма калориЙ"
+                    )
+                    Text(
+                        text = "выбранных ингредиентов:"
+                    )
+                }
+
                 Text(
-                    text = " Калории:"
-                )
-                Text(
-                    text = viewModel.totalCalories.toString(),
-                    modifier = Modifier.padding(start = 10.dp)
+                    text = "≈ ${viewModel.totalCalories.toString()} кКал",
+                    modifier = Modifier.padding(start = 30.dp)
                 )
             }
 

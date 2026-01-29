@@ -30,7 +30,7 @@ fun CaloriesBlock(
 //                        recipe.totalCalories?.let {  calories ->
         if (calories != null) {
             Text(
-                text = "${calories} кКал",
+                text = "≈ ${calories} кКал",
                 color = Color(0xFF6C687B),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(start = 6.dp)
