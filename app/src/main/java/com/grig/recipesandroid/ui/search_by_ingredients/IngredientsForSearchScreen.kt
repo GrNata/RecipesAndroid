@@ -33,6 +33,8 @@ import androidx.navigation.NavController
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.recipe_list.RecipeItem
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
+import com.grig.recipesandroid.ui.utilRecipe.SearchIngredientChexBox
+import com.grig.recipesandroid.ui.utilRecipe.SearchIngredientTextField
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -48,8 +50,8 @@ fun IngredientsForSearchScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    val selectedIngredientIds = ingredientsViewModel.selectedIngredientIds
-    val searchRecipes by ingredientsViewModel.searchRecipes
+//    val selectedIngredientIds = ingredientsViewModel.selectedIngredientIds
+//    val searchRecipes by ingredientsViewModel.searchRecipes
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -71,6 +73,8 @@ fun IngredientsForSearchScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(Color(0xFFF7EDE9)),
+
         ) {
 
             Spacer(modifier = Modifier.padding(top = 16.dp))
@@ -93,77 +97,13 @@ fun IngredientsForSearchScreen(
 
             Spacer(modifier = Modifier.padding(top = 16.dp))
 
-            var ingredients = recipesViewModel.ingredientsDictionary
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                .background(Color(0xFFF7EDE9))
-            ) {
+            val ingredients = recipesViewModel.ingredientsDictionary
 
-                items(ingredients) { ingredient ->
-                    val isChecked = selectedIngredientIds.contains(ingredient.id)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                            .clickable {
-                                if (isChecked) {
-                                    selectedIngredientIds.remove(ingredient.id)
-                                } else {
-                                    if (selectedIngredientIds.size < 10) {
-//                                if (selectedIngredientIds.size < 3) {
-                                        selectedIngredientIds.add(ingredient.id)
-                                    } else {
-                                        scope.launch {   // <-- запускаем корутину
-                                            snackbarHostState.showSnackbar(
-                                                "Можно выбрать не более 10 ингредиентов"
-//                                            "Можно выбрать не более 3 ингредиентов"
-                                            )
-                                        }
-                                    }
-                                }
-                            },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(
-                            checked = isChecked,
-                            onCheckedChange = { checked ->
-                                if (checked) {
-                                    if (selectedIngredientIds.size < 10) {
-//                                if (selectedIngredientIds.size < 3) {
-                                        selectedIngredientIds.add(ingredient.id)
-                                    }
-                                } else {
-                                    selectedIngredientIds.remove(ingredient.id)
-                                }
-                            }
-                        )
-                        Text(
-                            text = ingredient.name,
-                            modifier = Modifier.padding(start = 8.dp),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color(0xFF123C69)
-                        )
-                    }
-                }
-//                // Список найденных рецептов
-//                searchRecipes?.forEach { recipe ->
-//                    item {
-//                        RecipeItem(
-//                            viewModel = recipesViewModel,
-//                            recipe = recipe,
-//                            query = "",
-//                            isFavorite = false,
-//                            isOwner = false,
-//                            onFavoriteClick = {},
-//                            onClick = { navController.navigate("recipe_detail/${recipe.id}") },
-//                            onEditClick = {},
-//                            onDeleteClick = {}
-//                        )
-//                    }
-//                }
-            }   //  LazyColumn
+//            Поиск ингредиентов через CheckBox
+//            SearchIngredientChexBox(ingredients, ingredientsViewModel)
+
+            SearchIngredientTextField(ingredients, ingredientsViewModel)
+
         }
 
     }

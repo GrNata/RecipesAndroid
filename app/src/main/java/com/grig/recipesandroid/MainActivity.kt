@@ -159,7 +159,7 @@ class MainActivity : ComponentActivity() {
                 )
 
                 val searchByIngredientsViewModel: SearchByIngredientsViewModel = viewModel(
-                    factory = SearchByIngredientViewModelFactory(recipeRepository, ingredientRepository)
+                    factory = SearchByIngredientViewModelFactory(recipeRepository, ingredientRepository, recipesViewModel)
                 )
 
 //                val recipeDetailViewModel: RecipeDetailViewModel = viewModel(

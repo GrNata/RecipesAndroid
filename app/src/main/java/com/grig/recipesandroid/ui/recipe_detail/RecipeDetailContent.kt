@@ -109,7 +109,7 @@ fun RecipeDetailContent(
                 onMyRecipesClick = {
                     navController.navigate("my_recipes")
                 },
-                onSearchByIngredients = {}
+//                onSearchByIngredients = {}
 //                authViewModel = authViewModel
             )
         }       //  topBar
