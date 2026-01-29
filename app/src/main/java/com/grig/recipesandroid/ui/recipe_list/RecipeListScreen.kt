@@ -101,7 +101,7 @@ fun RecipeListScreen(
                         launchSingleTop = true
                     }
                 },
-                onSearchByIngredients = { navController.navigate("search_ingredients")}
+                onSearchByIngredients = { navController.navigate("search_ingredients") }
             )
         }
     ) { paddingValues ->

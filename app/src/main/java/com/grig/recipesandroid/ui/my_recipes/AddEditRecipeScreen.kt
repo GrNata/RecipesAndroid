@@ -78,7 +78,7 @@ fun AddEditRecipeScreen(
                 onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},
-                onSearchByIngredients = {}
+                onSearchByIngredients = {  }
             )
         }
     ) { paddingValues ->
