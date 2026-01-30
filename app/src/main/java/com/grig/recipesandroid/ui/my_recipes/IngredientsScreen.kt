@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -57,17 +59,19 @@ fun IngredientsScreen(
             Row() {
                 Column() {
                     Text(
-                        text = "Сумма калориЙ"
+                        text = "Сумма калорий"
                     )
                     Text(
                         text = "выбранных ингредиентов:"
                     )
                 }
-
-                Text(
-                    text = "≈ ${viewModel.totalCalories.toString()} кКал",
-                    modifier = Modifier.padding(start = 30.dp)
-                )
+                Column() {
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Text(
+                        text = "≈ ${viewModel.totalCalories.toString()} кКал",
+                        modifier = Modifier.padding(start = 30.dp)
+                    )
+                }
             }
 
 

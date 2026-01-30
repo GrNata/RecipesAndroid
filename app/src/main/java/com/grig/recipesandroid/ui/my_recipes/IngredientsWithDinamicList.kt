@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
@@ -100,7 +102,7 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
                     ExposedDropdownMenuBox(
                         expanded = ingExpanded,
                         onExpandedChange = { ingExpanded = it },
-                        modifier = Modifier.weight(2.2f),
+                        modifier = Modifier.weight(2f),
                     ) {
                         TextField(
                             value = viewModel.getIngredientName(index),
@@ -111,8 +113,12 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
                                 Text("")
                             },
                             colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                            modifier = Modifier.menuAnchor(),
-                            textStyle = MaterialTheme.typography.bodyMedium
+                            modifier = Modifier
+                                .menuAnchor()
+                                .verticalScroll(rememberScrollState()), //  Если текст может быть очень длинным
+                            textStyle = MaterialTheme.typography.bodyMedium,
+                            singleLine = false,       // отключаем одно строковое ограничение
+                            maxLines = 5,              // максимум 5 строк, можно убрать для неограниченного
                         )
 
                         ExposedDropdownMenu(
@@ -158,7 +164,7 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
                     ExposedDropdownMenuBox(
                         expanded = unitExpanded,
                         onExpandedChange = { unitExpanded = it },
-                        modifier = Modifier.weight(1.2f)
+                        modifier = Modifier.weight(1f)
                     ) {
                         TextField(
                             value = viewModel.getUnitName(index),
@@ -173,7 +179,7 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
                             },
                             colors = ExposedDropdownMenuDefaults.textFieldColors(),
                             modifier = Modifier.menuAnchor(),
-                            textStyle = MaterialTheme.typography.bodyMedium,
+                            textStyle = MaterialTheme.typography.bodyLarge
                         )
 
                         ExposedDropdownMenu(
@@ -184,7 +190,8 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            unit.label
+                                            unit.label,
+                                            style = MaterialTheme.typography.bodyLarge
                                         )
                                     },
                                     onClick = {
@@ -201,7 +208,7 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
 
                     // 4. Кнопка удалить
                     IconButton(
-                        modifier = Modifier.weight(0.2f),
+                        modifier = Modifier.weight(0.4f),
                         onClick = { viewModel.removeIngredient(index) }) {
                         Icon(Icons.Default.Delete, contentDescription = "Удалить")
                     }

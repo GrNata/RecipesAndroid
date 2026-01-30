@@ -185,7 +185,7 @@ fun AddEditRecipeScreen(
                     navController.navigate("image")
                 }
             ) {
-                Text("Картинка рецепта")
+                Text("Добавить картинку рецепта")
             }
 //      ++++++++++++++++++++++++++
 
@@ -223,7 +223,7 @@ fun AddEditRecipeScreen(
                     navController.navigate("ingredients")
                 }
             ) {
-                Text("Ингредиенты")
+                Text("Добавить ингредиенты")
             }
 
             Spacer(modifier = Modifier.padding(top = 16.dp))
@@ -240,7 +240,7 @@ fun AddEditRecipeScreen(
                     navController.navigate("steps")
                 }
             ) {
-                Text("Шаги приготовления")
+                Text("Добавить шаги приготовления")
             }
 //            StepsWithDinamicList(viewModel)
 
