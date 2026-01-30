@@ -3,6 +3,7 @@ package com.grig.recipesandroid.ui.my_recipes
 import android.R
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -84,11 +85,14 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
 
         viewModel.ingredients.forEachIndexed { index, ingredient ->
 //        viewModel.ingredientsAll.forEachIndexed { index, ingredient ->
+
+            Column() {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 2.dp)
-                        .height(50.dp),
+                        .padding(top = 12.dp)
+                        .height(70.dp),
+//                        .height(50.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // 1. Dropdown для выбора ингредиента
@@ -103,6 +107,9 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
                             onValueChange = {},
                             readOnly = true,
                             trailingIcon = { TrailingIcon(ingExpanded) },
+                            supportingText = {
+                                Text("")
+                            },
                             colors = ExposedDropdownMenuDefaults.textFieldColors(),
                             modifier = Modifier.menuAnchor(),
                             textStyle = MaterialTheme.typography.bodyMedium
@@ -126,10 +133,21 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
 
                     Spacer(modifier = Modifier.width(8.dp))
 
+                    val errorState = viewModel.ingredientErrors.getOrNull(index)
+
                     // 2. Поле для количества
                     TextField(
                         value = ingredient.amount ?: "",
-                        onValueChange = { viewModel.onIngredientAmountChange(index, it) },
+                        onValueChange = {
+                            viewModel.onIngredientAmountChange(index, it)
+                            viewModel.validateIngredient(index)
+                        },
+                        isError = errorState?.amountError == true,
+                        supportingText = {
+                            if (errorState?.amountError == true) {
+                                Text("Введите")
+                            }
+                        },
                         modifier = Modifier.weight(1.1f),
                         textStyle = MaterialTheme.typography.bodyMedium
                     )
@@ -147,6 +165,12 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
                             onValueChange = {},
                             readOnly = true,
                             trailingIcon = { TrailingIcon(unitExpanded) },
+                            isError = errorState?.unitError == true,
+                            supportingText = {
+                                if (errorState?.unitError == true) {
+                                    Text("Выберите")
+                                }
+                            },
                             colors = ExposedDropdownMenuDefaults.textFieldColors(),
                             modifier = Modifier.menuAnchor(),
                             textStyle = MaterialTheme.typography.bodyMedium,
@@ -158,15 +182,21 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
                         ) {
                             viewModel.unitsAll.forEach { unit ->
                                 DropdownMenuItem(
-                                    text = { Text(unit.label) },
+                                    text = {
+                                        Text(
+                                            unit.label
+                                        )
+                                    },
                                     onClick = {
                                         viewModel.onUnitSelected(index, unit)
+                                        viewModel.validateIngredient(index)
                                         unitExpanded = false
-                                    }
+                                    },
                                 )
                             }
                         }
                     }
+
                     Spacer(modifier = Modifier.width(8.dp))
 
                     // 4. Кнопка удалить
@@ -176,7 +206,22 @@ fun IngredientsWithDinamicList(viewModel: AddEditRecipeViewModel) {
                         Icon(Icons.Default.Delete, contentDescription = "Удалить")
                     }
                 }
-            }
+                Row(
+                    modifier = Modifier.height(16.dp).fillMaxWidth().padding(start = 180.dp)
+                ) {
+                    val kcal = viewModel.getIngredientCalories(index)
+                    if (kcal != null) {
+                        Text(
+                            text = "≈ $kcal кКал",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(0xFF6C687B)
+                        )
+                    }
+                }
+            }   //  Column
+
+        }
+
 
             // Кнопка добавить новый ингредиент
             Button(modifier = Modifier.fillMaxWidth()

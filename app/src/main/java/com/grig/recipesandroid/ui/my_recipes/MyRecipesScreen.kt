@@ -76,6 +76,22 @@ fun MyRecipesScreen(
         )
     }
 
+//    Для добавления вновь созданного рецепта (обновление списка)
+    val refresh = navController
+        .currentBackStackEntry
+        ?.savedStateHandle
+        ?.getLiveData<Boolean>("REFRESH_RECIPES")
+//        ?.observeAsState()
+
+    LaunchedEffect(refresh?.value) {
+        if (refresh?.value == true) {
+            myViewModul.refresh()
+            navController.currentBackStackEntry
+                ?.savedStateHandle
+                ?.remove<Boolean>("REFRESH_RECIPES")
+        }
+    }
+
 //    // Optional: фильтр по избранным
 //    var showOnlyFavorites by remember { mutableStateOf(false) }
 
@@ -143,11 +159,6 @@ fun MyRecipesScreen(
                     }
                 },
                 onSearchByIngredients = { navController.navigate("search_ingredients") }
-//                onShareClick = {
-//                    // поделиться только в RecipeItem
-//                    Log.d("MY_RECIPES", "Share clicked for my recipes")
-//                },
-//                authViewModel = authViewModel
             )
         }
     ) { paddingValues ->
@@ -230,8 +241,8 @@ fun MyRecipesScreen(
                                         navController.navigate("recipe_edit/${recipe.id}")
                                     },
                                     onDeleteClick = {
-//                                    addEditRecipeViewModel.deleteRecipe()
-                                    addEditRecipeViewModel.deleteRecipe(recipe.id)
+                                    recipeViewModel.deleteRecipe(recipe.id)
+                                        myRecipes.refresh()
                                     }
                                 )
                             }

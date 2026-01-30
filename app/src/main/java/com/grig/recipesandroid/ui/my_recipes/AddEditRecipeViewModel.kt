@@ -1,7 +1,6 @@
 package com.grig.recipesandroid.ui.my_recipes
 
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -10,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import coil.network.HttpException
 import com.grig.recipesandroid.data.model.IngredientWithCaloriesAndAmount
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
@@ -22,12 +22,13 @@ import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.UnitRepository
-import com.grig.recipesandroid.domain.model.Ingredient
+import com.grig.recipesandroid.domain.model.IngredientErrorState
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import com.grig.recipesandroid.ui.utilRecipe.UnitConvertor
 import kotlinx.coroutines.launch
 import java.util.Collections.emptyList
+import kotlin.collections.any
 import kotlin.collections.forEach
 import kotlin.math.roundToInt
 
@@ -97,7 +98,8 @@ class AddEditRecipeViewModel(
 
     private var currentRecipeId: Long? = null
 
-//    var selectedCategory by mutableStateOf<Category?>(null)
+//  Ошибка при выборе ингредиента
+    val ingredientErrors = mutableStateListOf<IngredientErrorState>()
 
 
 //     ++++++++++++++++++++
@@ -214,17 +216,18 @@ class AddEditRecipeViewModel(
 //    ++++++++++++
 // ===== Создание рецепта =====
     fun createRecipe(onSuccess: () -> Unit) {
+    Log.d("ADD RECIPE-createRecipe", "AddEditRecipeViewModel: START")
         viewModelScope.launch {
             try {
                 isLoading = true
 
-                Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: createRecipe, name: ${name}, desc: $description" +
+                Log.d("ADD RECIPE-createRecipe", "AddEditRecipeViewModel: createRecipe, name: ${name}, desc: $description" +
                         ", selectedCategoryValues:${selectedCategoryValues}, ing size: ${ingredients.size}, step size: ${steps.size}")
 
                 val categoryIds = selectedCategoryValues.values.map { it.id }
                 if (categoryIds.isEmpty()) throw IllegalArgumentException("Должна быть выбрана хотя бы одна категория")
 
-                recipeRepository.createRecipe(
+                val response = recipeRepository.createRecipe(
                     RecipeCreateRequest(
                         name = name,
                         description = description,
@@ -236,11 +239,16 @@ class AddEditRecipeViewModel(
                         steps = steps.toList()
                     )
                 )
-                onRecipeSave()
+                Log.d("ADD RECIPE-createRecipe", "AddEditRecipeViewModel: response: ${response}")
+
                 onSuccess()
 
             } catch (e: Exception) {
                 errorMessage = e.message
+                Log.e("ADD RECIPE-createRecipe", "AddEditRecipeViewModel: Error-1: ${e.message}")
+            } catch (e: HttpException) {
+                errorMessage = "Ошибка создания рецепта (${e.message}"
+                Log.e("ADD RECIPE-createRecipe", "AddEditRecipeViewModel: Error-2: ${e.message}")
             } finally {
                 isLoading = false
             }
@@ -267,7 +275,6 @@ class AddEditRecipeViewModel(
                         image = image,
                         baseServings = baseServings,
                         categoryIds = categoryIds,
-//                        categoryIds = categoryValuesAll.map { it.id },
                         ingredients = ingredients.toList(),
                         steps = steps.toList()
                     )
@@ -286,31 +293,93 @@ class AddEditRecipeViewModel(
 //    DELETE
 //    ++++++++++++
 // ===== Удаление рецепта =====
-    fun deleteRecipe(recipeId: Long) {
-    Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: deleteRecipe, START")
-//        val recipeId = currentRecipeId ?: return
-    Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: deleteRecipe, recipeID=$recipeId")
-        viewModelScope.launch {
-            try {
-                recipeRepository.deleteRecipe(recipeId)
-                onRecipeSave()
-            } catch (e: Exception) {
-                errorMessage = e.message
-            }
+//    перенесла в RecipeViewModel
+
+//    val recipes = recipesViewModel.recipesPagingFlow
+//    fun deleteRecipe(recipeId: Long) {
+//    Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: deleteRecipe, START")
+////        val recipeId = currentRecipeId ?: return
+//    Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: deleteRecipe, recipeID=$recipeId")
+//        viewModelScope.launch {
+//            try {
+//                recipeRepository.deleteRecipe(recipeId)
+////                onRecipeSave()
+//
+//            } catch (e: Exception) {
+//                errorMessage = e.message
+//            }
+//        }
+//    }
+
+    fun onRecipeSave(
+        isEdit: Boolean,
+        onSuccess: () -> Unit
+    ) {
+        Log.d("ADD RECIPE-onRecipeSave", "AddEditRecipeViewModel: isEdit=$isEdit")
+        if (!validateRecipe()) {
+            Log.d("ADD RECIPE-onRecipeSave", "AddEditRecipeViewModel: - не прошла валидация!!!")
+            return  // Если не прошла валидация, показываем Snackbar с errorMessage
+        }
+
+        if (isEdit) {
+            updateRecipe(onSuccess)
+        } else {
+            Log.d("ADD RECIPE-onRecipeSave", "AddEditRecipeViewModel: BEFORE CREATE")
+            createRecipe(onSuccess)
         }
     }
 
-    fun onRecipeSave() {
-        recipesViewModel.refresh()
-        myRecipesViewModel.refresh()
-        navController.navigate("my_recipes") {
-            popUpTo("recipe_add") { inclusive = true }
+    fun validateRecipe(): Boolean {
+        var isValid = true
+
+//        1. Название
+        if (name.isBlank()) {
+            errorMessage = "Название рецепта обязательно!"
+            isValid = false
         }
-//        navController.popBackStack()
+//        2. Категория
+        if (!selectedCategoryValues.containsKey(TIP_BLYDA_ID)) {
+            errorMessage = "Выберите хотя бы одну категорию. \n Категория \"Тип блюда\" обязательна!"
+            isValid = false
+        }
+//        ОБЯЗАТЕЛЬНО - категория (id = 1) - Тип блюда
+        val hasRequiredCategory = selectedCategoryValues.values.any { it.id == 1L }
+        if (!hasRequiredCategory) {
+            errorMessage = "Обязательная категория - «Тип блюда»"
+            return false
+        }
+//        3. Ингредиенты
+        if (ingredients.isEmpty()) {
+            errorMessage = "Ингредиенты обязательны!"
+            isValid = false
+        } else {
+//            Валидация каждого ингредиента
+            ingredients.indices.forEach { validateIngredient(it) }
+
+            if (ingredients.indices.any { index ->
+                    ingredientErrors[index].amountError ||
+                            ingredientErrors[index].unitError ||
+                            ingredients[index].ingredientId == 0L
+                }) {
+                errorMessage = "Заполните все обязательные поля ингредиентов!"
+                isValid = false
+            }
+        }
+//        4. Шаги приготовления (можно минимум 1 шаг)
+        if (steps.isEmpty()) {
+            errorMessage = "Добавте хотя бы один шаг приготовления."
+            isValid = false
+        }
+//        5. Количество порций по умолчанию одна
+        if (baseServings == null || requireNotNull(baseServings) <= 0) {
+            baseServings = 1
+            errorMessage = "Количество порций по умолчанию будет одна."
+        }
+        return isValid
     }
 
     fun onRecipeUpdate(recipeId: Long) {
-        recipesViewModel.refresh()
+        recipesViewModel.refreshRecipe()
         myRecipesViewModel.refresh()
         navController.navigate("my_recipes") {
             popUpTo("recipe_edit/${recipeId}") { inclusive = true }
@@ -327,6 +396,11 @@ class AddEditRecipeViewModel(
     }
     fun onDescriptionChange(value: String) { description = value }
     fun onImageChange(value: String?) { image = value }
+
+//    Количество порций
+    fun onBaseServings(value: String) {
+        baseServings = value.toIntOrNull()
+    }
 
 
 //    ++++++++++++
@@ -364,10 +438,14 @@ class AddEditRecipeViewModel(
 //    ++++++++++++
     fun addIngredient() {
         ingredients.add(IngredientRequest(0L, "", null))
+        ingredientErrors.add(IngredientErrorState(amountError = true, unitError = true))
     }
 
     fun removeIngredient(index: Int) {
-        if (index in ingredients.indices) ingredients.removeAt(index)
+        if (index in ingredients.indices) {
+            ingredients.removeAt(index)
+            ingredientErrors.removeAt(index)
+        }
     }
 
     fun onIngredientSelected(index: Int, ingredient: IngredientDto) {
@@ -380,10 +458,38 @@ class AddEditRecipeViewModel(
 
     fun onUnitSelected(index: Int, unit: UnitDto) {
         if (index in ingredients.indices) ingredients[index] = ingredients[index].copy(unitId = unit.id)
+//        ingredients[index] = ingredients[index].copy(
+//            unitId = unit.id
+//        )
     }
 
     fun cleanEmptyIngredients() {
         ingredients.removeAll { it.ingredientId == 0L && (it.amount?.isBlank() ?: true) && it.unitId == null }
+    }
+
+//    Валидация - подсветка если amount и unit не заполнены
+    fun validateIngredient(index: Int) {
+        val ing = ingredients.getOrNull(index) ?: return
+
+        // Если список ошибок короче, добавляем пустые элементы
+        while (ingredientErrors.size <= index) {
+            ingredientErrors.add(IngredientErrorState(false, false))
+        }
+
+        ingredientErrors[index] = IngredientErrorState(
+                amountError = ing.amount.isNullOrBlank() || ing.amount.toDoubleOrNull() == null,
+                unitError = ing.unitId == null
+            )
+    }
+
+//    Общая проверка перед сохранением
+    fun validateAll() : Boolean {
+        ingredients.indices.forEach { validateIngredient(it) }
+        return ingredientErrors.none { it.amountError || it.unitError }
+    }
+
+    fun clearError() {
+        errorMessage = null
     }
 
     // ===== Шаги =====
@@ -441,46 +547,45 @@ class AddEditRecipeViewModel(
         private set
     private val unitConvertor: UnitConvertor = UnitConvertor()
     fun calculationCalories() {
+        val ingredientWithCalories = ingredients.mapNotNull { ing ->
+            val ingredient = ingredientsAll.firstOrNull { it.id == ing.ingredientId } ?: return@mapNotNull null
+            val unitDto = unitsAll.firstOrNull { it.id == ing.unitId } ?: return@mapNotNull null
+            val amountDouble = ing.amount?.toDoubleOrNull() ?: return@mapNotNull null
 
-        try {
+            val gram = unitConvertor.toGram(amountDouble, unitDto, ingredient.name)
+                ?: return@mapNotNull null
 
-            var ingredientWithCalories: List<IngredientWithCaloriesAndAmount> = ingredients.map { ing ->
-//            if (ing.ingredientId == null) return
-
-                val ingredient = ingredientsAll.filter { it.id.equals(ing.ingredientId)}.first()
-                val amountDouble = ing.amount?.toDouble() ?: 0.0
-                val unitDto = unitsAll.filter { it.id.equals(ing.unitId) }.first()
-                val gram = unitConvertor.toGram(amountDouble,  unitDto, ingredient.name)
-                IngredientWithCaloriesAndAmount(
-                    id = ingredient.id,
-                    name = ingredient.name,
-                    energyKcal100g = ingredient.energyKcal100g,
-                    amount = gram,
-                    unitCode = "G"
-//                unitCode = unitsAll.filter { it.id.equals(ing.unitId) }.first().code
+            IngredientWithCaloriesAndAmount(
+                id = ingredient.id,
+                name = ingredient.name,
+                energyKcal100g = ingredient.energyKcal100g,
+                amount = gram,
+                unitCode = "G"
+            )
+        }
+        val totalCalor = ingredientWithCalories.sumOf { item ->
+            // Берем калории (если null, то 0) и умножаем на количество, деленное на 100
+            val energy = item.energyKcal100g?.toDouble() ?: 0.0
+            val am = item.amount ?: 0.0
+            (energy * (am / 100.0)).also { result ->
+                Log.d(
+                    "Calories",
+                    "AddEditRecipeViewModel: energy: ${energy}, am: $am, energy: ${result}"
                 )
             }
-            Log.d("Calories", "AddEditRecipeViewModel: ingredientWithCalories: ${ingredientWithCalories}")
-            val totalCalor = ingredientWithCalories.sumOf { item ->
-                // Берем калории (если null, то 0) и умножаем на количество, деленное на 100
-                val energy = item.energyKcal100g?.toDouble() ?: 0.0
-                val am = item.amount ?: 0.0
-                (energy * ( am / 100.0 )).also { result ->
-                    Log.d("Calories", "AddEditRecipeViewModel: energy: ${energy}, am: $am, energy: ${result}")
-                }
-
-            }
-
-            Log.d("Calories", "AddEditRecipeViewModel: totalCalories: ${totalCalor}")
-            totalCalories = totalCalor.roundToInt()
-            Log.d("Calories", "AddEditRecipeViewModel: totalCalories: ${totalCalories}")
-
-        } catch (e: NoSuchElementException) {
-            Log.e("Calories", "AddEditRecipeViewModel: NoSuchElementException error: $e")
-        } catch (e: Exception) {
-            Log.e("Calories", "AddEditRecipeViewModel: Exception error: $e")
         }
-
+        totalCalories = totalCalor.roundToInt()
     }
 
+    fun getIngredientCalories(index: Int): Int? {
+        val ing = ingredients.getOrNull(index) ?: return null
+        val ingredient = ingredientsAll.firstOrNull { it.id == ing.ingredientId } ?: return null
+        val unit = unitsAll.firstOrNull { it.id == ing.unitId } ?: return null
+        val amaunt = ing.amount?.toDoubleOrNull() ?: return null
+
+        val grams = unitConvertor.toGram(amaunt, unit, ingredient.name) ?: return null
+        val kcal100 = ingredient.energyKcal100g ?: return null
+
+        return ((kcal100 * grams) / 100).roundToInt()
+    }
 }

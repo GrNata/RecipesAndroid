@@ -2,22 +2,16 @@ package com.grig.recipesandroid.ui.recipe_list
 
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.State
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.grig.recipesandroid.data.mapper.toDomain
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
 import com.grig.recipesandroid.data.model.dto.IngredientDto
 import com.grig.recipesandroid.data.repository.RecipeRepository
-import com.grig.recipesandroid.data.model.dto.RecipeDto
-import com.grig.recipesandroid.data.model.request.SearchByIngredientsRequest
 import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.FavoritesRepository
 import com.grig.recipesandroid.data.repository.IngredientRepository
@@ -36,8 +30,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import java.util.Collections
 import kotlin.collections.emptyList
 
 //  ViewModel отвечает за данные (Flow<PagingData>) и их загрузку из репозитория
@@ -51,12 +43,10 @@ open class RecipesViewModel(
 
 //    Любое изменение данных → invalidate()
     private val refreshTrigger = MutableStateFlow(0)
-//    val recipes = refreshTrigger.flatMapLatest {
-//        repository.getRecipesPaper().flow
-//    }.cachedIn(viewModelScope)
 
-    fun refresh() {
+    fun refreshRecipe() {
         refreshTrigger.update { it + 1 }
+//        refreshTrigger.tryEmit(Unit)
     }
 
     val selectedCategoryValues = mutableMapOf<Long, CategoryValueDto>()
@@ -91,6 +81,9 @@ open class RecipesViewModel(
     private val _messageFlow = MutableStateFlow<String>("")
     val messageFlow: SharedFlow<String> = _messageFlow
 
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
+
 ////    Теперь добавим объект Pager с Retry. Paging уже умеет повторять загрузку через метод retry() у PagingData. Нам нужно просто сохранить Flow, чтобы в UI можно было вызвать повтор
 //    lateinit var lastRecipesPagingFlow: PagingData<RecipeDto>
 
@@ -111,19 +104,6 @@ open class RecipesViewModel(
                     }
             }
             .cachedIn(viewModelScope)
-//    val recipesPagingFlow = _query
-//        .debounce(300)          // чтобы не фильтровать на каждый символ - ждем 300ms после последнего ввода
-//        .distinctUntilChanged()             // пропускаем повторные значения
-//        .flatMapLatest { q ->
-//            repository.getRecipesPaper(query = q)       // передаем query в Pager/PagingSource
-//                .flow
-//                .catch { e ->
-//                    // Отлавливаем ошибки Paging
-//                    _messageFlow.emit("Ошибка загрузки рецептов: ${e.localizedMessage}")
-//                    }
-//                }
-//                .cachedIn(viewModelScope)
-
 
     private var favoritesSyncedForUser: String? = null
 
@@ -206,48 +186,21 @@ open class RecipesViewModel(
         }
     }
 
-    ////  ++++++++++++++++++++++++++++++++++++++++++++++++
-////    +++++++      Поиск рецептов по ингредиентам
-////  ++++++++++++++++++++++++++++++++++++++++++++++++
-//    private val selectedIngredientIds = mutableStateListOf<Long>()
-//
-//    private val _searchResult = mutableStateOf<List<Recipe>>(emptyList())
-//    val searchResult: State<List<Recipe>> = _searchResult
-//
-//    var errorMessage by mutableStateOf<String?>(null)
-//        private set
-//
-//
-//    //    Методы управления ингредиентами
-//    fun toggleIngredient(ingredientId: Long) {
-//        if (selectedIngredientIds.contains(ingredientId)) {
-//            selectedIngredientIds.remove(ingredientId)
-//        } else {
-//            if (selectedIngredientIds.size >= 10) {
-//                errorMessage = "Можно выбрать максимум 10 ингредиентов"
-//                return
-//            }
-//            selectedIngredientIds.add(ingredientId)
-//        }
-//    }
-//
-//    fun clearingredientsSelection() {
-//        selectedIngredientIds.clear()
-//    }
-//
-////    Поиск рецептов по ингредиентам
-//    fun searchRecipesByIngredients() {
-//        viewModelScope.launch {
-//            try {
-//                val request = SearchByIngredientsRequest(
-//                    ingredientIds = selectedIngredientIds.toList()
-//                )
-//                val result = repository.searchRecipesByIngredients(request)
-//                _searchResult.value = result.map { it.toDomain() }
-//            } catch (e: Exception) {
-//                errorMessage = e.message
-//            }
-//        }
-//    }
-////    +++++++++++++++++++++++++++++++++++++++++
+//    Удаление рецепта
+    fun deleteRecipe(recipeId: Long) {
+        Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: deleteRecipe, START")
+//        val recipeId = currentRecipeId ?: return
+        Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: deleteRecipe, recipeID=$recipeId")
+        viewModelScope.launch {
+            try {
+                repository.deleteRecipe(recipeId)
+
+                refreshRecipe()
+
+            } catch (e: Exception) {
+                errorMessage = e.message
+            }
+        }
+    }
+
 }

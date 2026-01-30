@@ -10,6 +10,7 @@ import com.grig.recipesandroid.data.model.request.RecipeUpdateRequest
 import com.grig.recipesandroid.data.model.dto.UnitDto
 import com.grig.recipesandroid.data.model.request.SearchByIngredientsRequest
 import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
+import okhttp3.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -40,7 +41,7 @@ interface RecipeApi {
     @POST("/api/recipes")
     suspend fun createRecipe(
         @Body request: RecipeCreateRequest
-    )
+    ) : RecipeDto
 
     @PUT("/api/recipes/{id}")
     suspend fun updateRecipe(

@@ -88,7 +88,8 @@ fun RecipeDetailLoaded(
     ) {
         item {
             Row(
-                modifier = Modifier.fillMaxWidth().height(20.dp),
+                modifier = Modifier.fillMaxWidth().height(30.dp),
+//                modifier = Modifier.fillMaxWidth().height(20.dp),
                 horizontalArrangement = Arrangement.End
             ) {
                 val scale by animateFloatAsState(targetValue = if (isFavorite) 1.3f else 1f)
@@ -140,7 +141,10 @@ fun RecipeDetailLoaded(
                 recipe.image?.let {
                     val scrollState = rememberLazyListState()
                     val imageHeight by animateDpAsState(
-                        targetValue = max(8.dp, 120.dp - scrollState.firstVisibleItemScrollOffset.dp)
+                        targetValue = max(
+                            8.dp,
+                            120.dp - scrollState.firstVisibleItemScrollOffset.dp
+                        )
 //                        targetValue = (120.dp - scrollState.firstVisibleItemScrollOffset.dp)
 //                            .coerceAtLeast(8.dp),
 //                        animationSpec = tween(300)
@@ -149,7 +153,10 @@ fun RecipeDetailLoaded(
                     AnimatedVisibility(
                         visible = imageVisible.value,
 //                                        enter = fadeIn() + slideInVertically { it / 2 },
-                        enter = fadeIn(animationSpec = tween(1000)) + scaleIn(initialScale = 0.85f, animationSpec = tween(1000)),
+                        enter = fadeIn(animationSpec = tween(1000)) + scaleIn(
+                            initialScale = 0.85f,
+                            animationSpec = tween(1000)
+                        ),
                         exit = fadeOut()
                     ) {
                         AsyncImage(
@@ -194,13 +201,19 @@ fun RecipeDetailLoaded(
 
                 }   //  Column
             }   // Row
+        }   //  item
 
 //            +++++++++++++++++
+            item {
 //            Ингредиенты
-            Spacer(Modifier.height(16.dp))
-            val ingredientsUi = recipe.ingredients.map { it.toIngredientUi() }
-            RecipeIngredientsBlock(recipeDetailViewModel)
-        }
+                Spacer(Modifier.height(16.dp))
+                val ingredientsUi = recipe.ingredients.map { it.toIngredientUi() }
+                RecipeIngredientsBlock(recipeDetailViewModel)
+
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+//        }
 //        ++++++++++++++++++++++
 
         // --- ШАГИ ---

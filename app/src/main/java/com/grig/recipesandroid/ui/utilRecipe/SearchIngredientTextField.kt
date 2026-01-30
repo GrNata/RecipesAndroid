@@ -39,14 +39,7 @@ fun SearchIngredientTextField(
     ingredientsAll: List<IngredientDto>,
     ingredientsViewModel: SearchByIngredientsViewModel
 ) {
-
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
-    val selectedIngredientIds = ingredientsViewModel.selectedIngredientIds
     val selectedIngredients = ingredientsViewModel.selectedIngredients
-    val searchRecipes by ingredientsViewModel.searchRecipes
-
     val searchQuery by ingredientsViewModel.searchQuery.collectAsState()
     val filteredList = remember { ingredientsViewModel.filteredIngredients }
 

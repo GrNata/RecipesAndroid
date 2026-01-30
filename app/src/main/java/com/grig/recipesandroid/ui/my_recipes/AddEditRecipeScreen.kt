@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -22,6 +23,8 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ExposedDropdownMenuDefaults.TrailingIcon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
@@ -37,11 +40,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
+import com.grig.recipesandroid.ui.utilRecipe.LabledTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +55,18 @@ fun AddEditRecipeScreen(
     viewModel: AddEditRecipeViewModel,
     navController: NavController
 ) {
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val errorMessage = viewModel.errorMessage
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            Log.d("errorMessage", "START")
+            snackbarHostState.showSnackbar(it)
+            Log.d("errorMessage", "END SHOW")
+            viewModel.clearError()
+        }
+    }
 
     val scrollState = rememberScrollState()
 
@@ -70,6 +87,10 @@ fun AddEditRecipeScreen(
     Log.d("Calories", "AddEditRecipeScreen: ingredientsAll size: ${viewModel.ingredientsAll.size}")
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        },
+
         topBar = {
             AppTopBar(
                 title = if (isEdit) "Редактировать рецепт" else "Добавить рецепт",
@@ -89,29 +110,12 @@ fun AddEditRecipeScreen(
                 .verticalScroll(scrollState)
                 .background(Color(0xFFEFEFEF))
         ) {
-            Log.d("ADD RECIPE-newEdit", "AddEditRecipeScreen: name: ${viewModel.name}")
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
+
+            LabledTextField(
+                label = "Название",
                 value = viewModel.name,
                 onValueChange = viewModel::onNameChange,
-                label = { Text("Название") },
-                colors = TextFieldDefaults.colors(
-                    // Фон поля
-                    focusedContainerColor = Color( 0xFFF7EDE9),
-                    unfocusedContainerColor = Color(0xFFEEE2DC),
-                    disabledContainerColor = Color(0xBFFF6A00).copy(alpha = 0.5f), // полупрозрачный при отключении
-
-                    // Цвет текста
-                    focusedTextColor = Color(0xFF062444),
-                    unfocusedTextColor = Color(0xFF1E364F),
-                    disabledTextColor = Color.Gray,
-
-                    // Дополнительные цвета (настройка по желанию)
-                    cursorColor = Color(0xFF123C69),
-                    errorTextColor = Color.Red
-                ),
-                textStyle = MaterialTheme.typography.bodyMedium
+                isError = viewModel.name.isBlank()
             )
 
             Spacer(modifier = Modifier.padding(top = 16.dp))
@@ -121,6 +125,33 @@ fun AddEditRecipeScreen(
                 value = viewModel.description,
                 onValueChange = viewModel::onDescriptionChange,
                 label = { Text("Описание")},
+                colors = TextFieldDefaults.colors(
+                    // Фон поля
+                    focusedContainerColor = Color(0xFFF7EDE9),
+                    unfocusedContainerColor = Color(0xFFEEE2DC),
+                    disabledContainerColor = Color(0xBFFF6A00).copy(alpha = 0.5f), // полупрозрачный при отключении
+
+                    // Цвет текста
+                    focusedTextColor = Color(0xFF062444),
+                    unfocusedTextColor = Color(0xFF123C69),
+                    disabledTextColor = Color.Gray,
+
+                    // Дополнительные цвета (настройка по желанию)
+                    cursorColor = Color(0xFF123C69),
+                    errorTextColor = Color.Red
+                ),
+                textStyle = MaterialTheme.typography.bodySmall
+            )
+
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = viewModel.baseServings?.toString() ?: "1",
+                onValueChange = viewModel::onBaseServings,
+                label = { Text("Количество порций * ")},
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+//                isError = viewModel.baseServings == null,
                 colors = TextFieldDefaults.colors(
                     // Фон поля
                     focusedContainerColor = Color(0xFFF7EDE9),
@@ -223,22 +254,20 @@ fun AddEditRecipeScreen(
                     contentColor = Color(0xFFEDE3E5)
                 ),
                 onClick = {
-                    if (isEdit) viewModel.updateRecipe(onSuccess = {
-                        // После успешного редактирования
-                        // Можно уведомить предыдущий экран, что данные изменились
-                        navController.previousBackStackEntry
-                            ?.savedStateHandle
-                            ?.set("REFRESH_RECIPES", true)
+                    viewModel.onRecipeSave(
+                        isEdit = isEdit,
+                        onSuccess = {
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("REFRESH_RECIPES", true)
+//                            navController.popBackStack()
 
-                        // И вернуться назад
-                        navController.popBackStack()
-                    })
-                    else viewModel.createRecipe {
-                        navController.previousBackStackEntry
-                            ?.savedStateHandle
-                            ?.set("REFRESH_RECIPES", true)
-                        navController.popBackStack()
-                    }
+                            navController.navigate("my_recipes") {
+                                popUpTo("recipe_add") { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
                 }
             ) {
                 Text(if (isEdit) "Сохранить" else "Создать")

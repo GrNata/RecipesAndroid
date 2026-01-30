@@ -4,16 +4,20 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
@@ -26,6 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.core.graphics.component1
@@ -52,85 +58,78 @@ fun IngredientRow(
     )
 
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth().height(40.dp)
     ) {
-        IconButton(
-            modifier = Modifier.size(16.dp),
-            onClick = {
-            ingredient.amount?.let {
+        Column() {
+            Row() {
+                IconButton(
+                    modifier = Modifier.size(16.dp),
+                    onClick = {
+                        ingredient.amount?.let {
 //                чтоб не уйти в ноль
-                val newValue = max(it * 0.9, 0.1)
+                            val newValue = max(it * 0.9, 0.1)
 
-                viewModel.recalculateFrom(ingredient.id, newValue)
-//                viewModel.recalculateFrom(ingredient.id, it * 0.9)
-            }
-        }) {
-            Icon(
-                Icons.Default.KeyboardArrowDown,
-                contentDescription = "-",
-                tint = Color(0xFF628AB4)
-                )
-        }
-
-        IconButton(
-            modifier = Modifier.height(16.dp).size(16.dp),
-            onClick = {
-                ingredient.amount?.let {
-                    viewModel.recalculateFrom(ingredient.id, it * 1.1)
+                            viewModel.recalculateFrom(ingredient.id, newValue)
+                        }
+                    }) {
+                    Icon(
+                        Icons.Default.KeyboardArrowDown,
+                        contentDescription = "-",
+                        tint = Color(0xFF628AB4)
+                    )
                 }
-            }) {
-            Icon(
-                Icons.Default.KeyboardArrowUp,
-                contentDescription = "+",
-                tint = Color(0xFF628AB4)
-            )
-        }
 
+                IconButton(
+                    modifier = Modifier.height(16.dp).size(16.dp),
+                    onClick = {
+                        ingredient.amount?.let {
+                            viewModel.recalculateFrom(ingredient.id, it * 1.1)
+                        }
+                    }) {
+                    Icon(
+                        Icons.Default.KeyboardArrowUp,
+                        contentDescription = "+",
+                        tint = Color(0xFF628AB4)
+                    )
+                }
 
-        Text(
-//        text = "• ${ingredient.name}: ${ingredient.amount?.let { "$.1f".format(it) } ?: ""} ${ingredient.unit ?: ""}",
-            text = "• ${ingredient.name}: ${
-                ingredient.amount?.let {
-                    formatAmount(animatedAmount.toDouble(), ingredient.unit)
-//                    formatAmount(it, ingredient.unit)
-                } ?: ""
-//                    if (it % 1.0 == 0.0) it.toInt().toString()
-//                    else "%.1f".format(it)
-//                } ?: ""
-//            } ${ingredient.unit ?: ""
-            }",
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onClick() }
-                .padding(vertical = 4.dp)
-                .padding(start = 10.dp),
-//            color = Color(0xFF123C69),
-            color = if (ingredient.id == baseId)
-                Color(0xFF447DD4)
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = ingredient.name,
+                    modifier = Modifier
+                        .weight(2f)
+                        .clickable { onClick() },
+                    color = if (ingredient.id == baseId)
+                        Color(0xFF447DD4)
 //                Color(0xFF447BB4)
-                        else
-                            Color(0xFF628AB4),
+                    else
+                        Color(0xFF628AB4),
 //                            Color(0xFF123D69),
-            style = MaterialTheme.typography.bodyMedium
-        )
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
 
-//        IconButton(onClick = {
-//            ingredient.amount?.let {
-//                viewModel.recalculateFrom(ingredient.id, it * 0.9)
-//            }
-//        }) {
-//            Icon(Icons.Default.KeyboardArrowDown, contentDescription = "-")
-//        }
+                Text(
+                    text = ingredient.amount?.let {
+                        formatAmount(animatedAmount.toDouble(), ingredient.unit)
+                    } ?: "",
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+//            textAlign = TextAlign.End,
+                    color = Color(0xFF628AB4),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }   //  Row
 
-//        IconButton(
-//            modifier = Modifier.height(16.dp),
-//            onClick = {
-//            ingredient.amount?.let {
-//                viewModel.recalculateFrom(ingredient.id, it * 1.1)
-//            }
-//        }) {
-//            Icon(Icons.Default.KeyboardArrowUp, contentDescription = "+")
-//        }
+            // Черта под Row
+            Divider(
+                color = Color(0xFF628AB4),           // цвет линии
+                thickness = 0.3.dp             // толщина линии
+            )   //  Column
+        }
     }   //  Row
 }
 
@@ -142,7 +141,7 @@ fun IngredientRow(
             "мл" ->  if (amoumt >= 1000) "${"%.2f".format(amoumt / 1000)} л"
             else "${amoumt.toInt()} мл"
 
-            "шт" ->  amoumt.toInt().toString()
-            else -> "%.1f".format(amoumt)
+            "шт" ->  amoumt.toInt().toString() + " шт"
+            else -> "%.1f".format(amoumt) + " шт"
         }
     }

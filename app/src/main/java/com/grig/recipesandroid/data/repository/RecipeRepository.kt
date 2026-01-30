@@ -51,10 +51,11 @@ class RecipeRepository(
         return dto.toDomain()
     }
 
-    suspend fun createRecipe(request: RecipeCreateRequest) {
+    suspend fun createRecipe(request: RecipeCreateRequest): RecipeDto {
 //        api.createRecipe(request)
-        val response = api.createRecipe(request)
+        return api.createRecipe(request)
     }
+
 
     suspend fun updateRecipe(
         recipeId: Long,
