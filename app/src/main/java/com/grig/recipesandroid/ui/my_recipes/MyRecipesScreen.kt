@@ -5,18 +5,24 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -62,6 +68,8 @@ fun MyRecipesScreen(
     var selectedCategoryTypeId by remember { mutableStateOf(1L) }
     val categoryTypesAll = recipeViewModel.categoryTypesAll
 
+    val query by recipeViewModel.query.collectAsState()
+
 
 //    Для проверки
     LaunchedEffect(myRecipes.loadState) {
@@ -100,15 +108,6 @@ fun MyRecipesScreen(
     Log.d("MY Recipes SIZE", "filteredRecipes size: ${filteredRecipes.size}")
     Log.d("MY Recipes SIZE", "myRecipes size: ${myRecipes.itemSnapshotList.size}")
 
-////    ОБЯЗАТЕЛЬНО добавить защиту в MyRecipesScreen
-//    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
-//    LaunchedEffect(isAuthenticated) {
-//        if (!isAuthenticated) {
-//            navController.navigate("recipe_list") {
-//                popUpTo("my_recipes") { inclusive = true }
-//            }
-//        }
-//    }
 
 //    группировка по категориям
     val grouped = filteredRecipes
@@ -162,94 +161,126 @@ fun MyRecipesScreen(
             )
         }
     ) { paddingValues ->
+
         Box(Modifier.padding(paddingValues)) {
             if (myRecipes.loadState.refresh is LoadState.Loading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
 
-                Column(
-                    modifier = Modifier.padding(start = 10.dp)
-                ) {
-                    // Dropdown для выбора группировки
-                    CategoryTypeDropDown(
-                        categoryTypes = categoryTypesAll,
-                        selectedId = selectedCategoryTypeId,
-                        onSelected = { selectedCategoryTypeId = it }
-                    )
+                Column() {
 
-                    //            Группируем рецепты по первой категории (можно доработать для нескольких)
-                    val grouped = filteredRecipes
-                        .flatMap { recipe ->
-                            Log.d(
-                                "CATEGORY-ch", "RecipeListContent: category:" +
-                                        " ${recipe.categories}"
-                            )
-                            recipe.categories
-                                .filter { it.categoryTypeId == selectedCategoryTypeId }
-//                                .filter { it.categoryTypeId == 1L }
-                                .map { it.categoryValue to recipe }       // создаём пары category -> recipe
-                        }
-                        .groupBy(
-                            keySelector = { it.first },
-                            valueTransform = { it.second }
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        //        поиск / фильтрация
+//                        OutlinedTextField(
+//                            value = query,
+//                            onValueChange = { newText ->
+//                                recipeViewModel.setQuery(newText)
+//                            },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(4.dp),
+//                            placeholder = {
+//                                Text("Поиск рецептов…")
+//                            },
+//                            singleLine = true
+//                        )
+//                        Spacer(modifier = Modifier.width(8.dp))
+////                    //      кнопка фильтрации избранного
+////                    FilterChip(
+////                        selected = showOnlyFavorites,
+//////                        selected = showOnlyFavorites,
+////                        onClick = { showOnlyFavorites = !showOnlyFavorites },
+////                        label = { Text("Избранное") }
+////                    )
+//                    }
+
+                    Column(
+                        modifier = Modifier.padding(start = 10.dp)
+                    ) {
+                        // Dropdown для выбора группировки
+                        CategoryTypeDropDown(
+                            categoryTypes = categoryTypesAll,
+                            selectedId = selectedCategoryTypeId,
+                            onSelected = { selectedCategoryTypeId = it }
                         )
+
+                        //            Группируем рецепты по первой категории (можно доработать для нескольких)
+                        val grouped = filteredRecipes
+                            .flatMap { recipe ->
+                                Log.d(
+                                    "CATEGORY-ch", "RecipeListContent: category:" +
+                                            " ${recipe.categories}"
+                                )
+                                recipe.categories
+                                    .filter { it.categoryTypeId == selectedCategoryTypeId }
+//                                .filter { it.categoryTypeId == 1L }
+                                    .map { it.categoryValue to recipe }       // создаём пары category -> recipe
+                            }
+                            .groupBy(
+                                keySelector = { it.first },
+                                valueTransform = { it.second }
+                            )
 //            }
 
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        grouped.forEach { (category, recipesInCategory) ->
-                            stickyHeader {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(Color(0xFFEFEFEF))
-                                        .padding(8.dp)
-                                ) {
-                                    Text(
-                                        text = category,
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            grouped.forEach { (category, recipesInCategory) ->
+                                stickyHeader {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(Color(0xFFEFEFEF))
+                                            .padding(8.dp)
+                                    ) {
+                                        Text(
+                                            text = category,
 //                                        text = category.categoryValue,
 //                                    text = category.name,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = Color(0xFF123C69)
-                                    )
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = Color(0xFF123C69)
+                                        )
+                                    }
                                 }
-                            }
 //                            }
-                            Log.d(
-                                "СЕРДЦЕ MyRecipeScreen",
-                                "recipesInCategory size ${recipesInCategory.size}"
-                            )
+                                Log.d(
+                                    "СЕРДЦЕ MyRecipeScreen",
+                                    "recipesInCategory size ${recipesInCategory.size}"
+                                )
 
-                            items(recipesInCategory) { recipe ->
+                                items(recipesInCategory) { recipe ->
 //                            Log.d("MyRecipeItem", "MyRecipe recipe: ${recipe.ingredients.forEach {
 //                                (it.unit?.label) ?: ""
 //                            }}")
-                                Log.d(
-                                    "ADD RECIPE-newEdit",
-                                    "MyRecipeScreen: для списка recipe: ${recipe}"
-                                )
-                                RecipeItem(
-                                    viewModel = recipeViewModel,
-                                    recipe = recipe,
-                                    query = "",
-                                    isFavorite = favorites.contains(recipe.id),         //  по желанию
-                                    isOwner = true,
-                                    onFavoriteClick = { recipeViewModel.toggleFavorite(recipe.id) },
-                                    onClick = { navController.navigate("recipe_detail/${recipe.id}") },
-                                    onEditClick = {
-                                        navController.navigate("recipe_edit/${recipe.id}")
-                                    },
-                                    onDeleteClick = {
-                                    recipeViewModel.deleteRecipe(recipe.id)
-                                        myRecipes.refresh()
-                                    }
-                                )
+                                    Log.d(
+                                        "ADD RECIPE-newEdit",
+                                        "MyRecipeScreen: для списка recipe: ${recipe}"
+                                    )
+                                    RecipeItem(
+                                        viewModel = recipeViewModel,
+                                        recipe = recipe,
+                                        query = "",
+                                        isFavorite = favorites.contains(recipe.id),         //  по желанию
+                                        isOwner = true,
+                                        onFavoriteClick = { recipeViewModel.toggleFavorite(recipe.id) },
+                                        onClick = { navController.navigate("recipe_detail/${recipe.id}") },
+                                        onEditClick = {
+                                            navController.navigate("recipe_edit/${recipe.id}")
+                                        },
+                                        onDeleteClick = {
+                                            recipeViewModel.deleteRecipe(recipe.id)
+                                            myRecipes.refresh()
+                                        }
+                                    )
+                                }
                             }
-                        }
-                    }           // LazyColumn
-                }
-            }
+                        }           // LazyColumn
+                    }
+                }   //  Column
+            }   //  else
         }
     }
 }

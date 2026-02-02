@@ -29,6 +29,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -107,11 +108,13 @@ fun RecipeListContent(
                 modifier = Modifier.padding(start = 10.dp)
             ) {
                 // Dropdown для выбора группировки
-                CategoryTypeDropDown(
-                    categoryTypes = categoryTypesAll,
-                    selectedId = selectedCategoryTypeId,
-                    onSelected = { selectedCategoryTypeId = it }
-                )
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    CategoryTypeDropDown(
+                        categoryTypes = categoryTypesAll,
+                        selectedId = selectedCategoryTypeId,
+                        onSelected = { selectedCategoryTypeId = it }
+                    )
+                }
 
                 //            Группируем рецепты по первой категории (можно доработать для нескольких)
                 val grouped = GroupedByCategoryType(filteredRecipes, selectedCategoryTypeId)

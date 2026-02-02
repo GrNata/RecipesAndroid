@@ -517,10 +517,7 @@ class AddEditRecipeViewModel(
     }
 
     fun getUnitName(index: Int): String {
-//        Log.d("INGREDIENTS_CHOUSE", "AddEditViewModel: unitId: ${ingredients.getOrNull(index)?.unitId ?: return ""}")
-
         val unitId = ingredients.getOrNull(index)?.unitId ?: return ""
-//        Log.d("INGREDIENTS_CHOUSE", "AddEditViewModel: unitName: ${unitsAll.find { it.id == unitId }?.label ?: ""}")
         return unitsAll.find { it.id == unitId }?.label ?: ""
     }
 

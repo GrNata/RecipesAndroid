@@ -134,8 +134,6 @@ fun RecipeListScreen(
                         onClick = { showOnlyFavorites = !showOnlyFavorites },
                         label = { Text("Избранное") }
                     )
-
-                    //            Log.d("СЕРДЦЕ - 4", "FavoriteSet = $favoritesSet")
                 }
 
                 RecipeListContent(
@@ -154,8 +152,7 @@ fun RecipeListScreen(
                     },
                     navController
                 )
-
-            }
+            }   //  Column
 //        }           // else
     }
 
