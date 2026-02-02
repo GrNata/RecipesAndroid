@@ -18,15 +18,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
+import com.grig.recipesandroid.ui.auth.AuthViewModel
 
 @Composable
 fun AdminScreen(
     adminViewModel: AdminViewModel,
+    authViewModel: AuthViewModel,
     navController: NavController
 ) {
     val usersAll by adminViewModel.usersAll.collectAsState()
     val loading by adminViewModel.loading.collectAsState()
     val error by adminViewModel.error.collectAsState()
+
+    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
 
     LaunchedEffect(Unit) {
         adminViewModel.loadUsers()
@@ -36,7 +40,7 @@ fun AdminScreen(
         topBar = {
             AppTopBar(
                 title = "АДМИН",
-                isAuthenticated = true,
+                isAuthenticated = isAuthenticated,
                 onBack = { navController.popBackStack() },
                 showMyRecipes = false,
                 onLoginClick = {},

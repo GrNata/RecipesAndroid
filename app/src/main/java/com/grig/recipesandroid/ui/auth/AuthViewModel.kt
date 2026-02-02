@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.grig.recipesandroid.data.local.TokenRepository
 import com.grig.recipesandroid.data.model.auth.AuthTokens
+import com.grig.recipesandroid.data.model.auth.AuthTokensWithRole
 import com.grig.recipesandroid.data.model.auth.LoginRequest
 import com.grig.recipesandroid.data.model.auth.RegisterRequest
 import com.grig.recipesandroid.data.repository.AuthRepository
@@ -49,8 +50,10 @@ class AuthViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    private val _tokens = MutableStateFlow<AuthTokens?>(null)
-    val tokens: StateFlow<AuthTokens?> = _tokens
+//    private val _tokens = MutableStateFlow<AuthTokens?>(null)
+//    val tokens: StateFlow<AuthTokens?> = _tokens
+    private val _tokens = MutableStateFlow<AuthTokensWithRole?>(null)
+    val tokens: StateFlow<AuthTokensWithRole?> = _tokens
 
 
     // ✅ Новый флаг
@@ -61,6 +64,9 @@ class AuthViewModel(
     private val _pandingRoute = MutableStateFlow<String?>(null)
     val pendingRoute: StateFlow<String?> = _pandingRoute
 
+    // StateFlow для наблюдения
+    private val _isAdmin = MutableStateFlow(false)
+    val isAdmin: StateFlow<Boolean> = _isAdmin
 
     init {
         restoreSession()
@@ -77,6 +83,9 @@ class AuthViewModel(
 //                authRepository.login(request)
                 val result = authRepository.login(request)
                 _tokens.value = result
+
+                _isAdmin.value = result.roles.contains("ADMIN")
+
             } catch (e: Exception) {
                 _error.value = e.message
             } finally {

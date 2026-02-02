@@ -2,6 +2,7 @@ package com.grig.recipesandroid.data.api
 
 import com.google.gson.GsonBuilder
 import com.grig.recipesandroid.data.model.auth.AuthResponse
+import com.grig.recipesandroid.data.model.auth.AuthResponseWithRole
 import com.grig.recipesandroid.data.model.auth.BlockUserRequest
 import com.grig.recipesandroid.data.model.auth.LoginRequest
 import com.grig.recipesandroid.data.model.auth.RefreshTokenRequest
@@ -22,7 +23,8 @@ import java.time.LocalDateTime
 interface AuthApi {
 
     @POST("api/auth/register")
-    suspend fun register(@Body request: RegisterRequest) : AuthResponse
+    suspend fun register(@Body request: RegisterRequest) : AuthResponseWithRole
+//    suspend fun register(@Body request: RegisterRequest) : AuthResponse
 
     @POST("api/auth/login")
     suspend fun login(@Body request: LoginRequest) : TokenResponse
@@ -33,6 +35,7 @@ interface AuthApi {
 
     @POST("api/auth/logout")
     suspend fun logout(@Body refreshToken: String)
+
 
 //    +++++++++++++++
 //      ADMIN

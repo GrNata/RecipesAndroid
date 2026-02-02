@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.grig.recipesandroid.data.model.auth.UserInfoResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -13,6 +14,8 @@ private val Context.dataStore by preferencesDataStore(name = "auth_token")
 object TokenStorage {
     val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
     val REFRESH_TOKEN_KEY = stringPreferencesKey("refresh_token")
+
+    val ROLES_TOKEN_KEY = stringPreferencesKey("roles")
 }
 
 class TokenRepository(
@@ -24,11 +27,12 @@ class TokenRepository(
     val refreshToken: Flow<String?> = context.dataStore.data
         .map { it[TokenStorage.REFRESH_TOKEN_KEY] }
 
-    suspend fun saveTokens(access: String, refresh: String) {
-        Log.d("СЕРДЦЕ - TokenRepository", "SAVE_TOKEN access=${access.take(20)}")
+    suspend fun saveTokens(access: String, refresh: String, roles: UserInfoResponse) {
+        Log.d("ADMIN", "SAVE_TOKEN access=${access.take(20)}")
         context.dataStore.edit { pefs ->
             pefs[TokenStorage.ACCESS_TOKEN_KEY] = access
             pefs[TokenStorage.REFRESH_TOKEN_KEY] = refresh
+            pefs[TokenStorage.ROLES_TOKEN_KEY] = roles.roles.joinToString(",")
         }
     }
 
@@ -36,7 +40,7 @@ class TokenRepository(
         context.dataStore.edit { prefs ->
             prefs.remove(TokenStorage.ACCESS_TOKEN_KEY)
             prefs.remove(TokenStorage.REFRESH_TOKEN_KEY)
-//            prefs[TokenStorage.REFRESH_TOKEN_KEY]
+            prefs[TokenStorage.REFRESH_TOKEN_KEY]
         }
     }
 }

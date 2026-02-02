@@ -64,6 +64,8 @@ fun RecipeListScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val message by viewModel.messageFlow.collectAsState("")
+    
+    val isAdmin by authViewModel.isAdmin.collectAsState()
 
     LaunchedEffect(message) {
         if (message.isNotEmpty()) {
@@ -82,14 +84,16 @@ fun RecipeListScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
 
         topBar = {
-            Log.d("СЕРДЦЕ RecipeListScreen", "RecipeListScreen isAuthenticated = $isAuthenticated")
-            Log.d("CATEGORY-ch", "RecipeListScreen: recipes = $recipes.itemSnapshotList.items")
+            Log.d("ADMIN", "RecipeListScreen isAuthenticated = $isAuthenticated")
+//            Log.d("CATEGORY-ch", "RecipeListScreen: recipes = $recipes.itemSnapshotList.items")
+            Log.d("ADMIN", "RecipeListScreen: isAdmin = $isAdmin")
 
             val authRestored by authViewModel.authStateRestored.collectAsState()
 
             AppTopBar(
                 title = "Рецепты",
                 isAuthenticated = isAuthenticated,
+                isAdmin = isAdmin,
                 showMyRecipes = isAuthenticated && authRestored,
                 onLoginClick = { navController.navigate("login") },
                 onLogoutClick = {

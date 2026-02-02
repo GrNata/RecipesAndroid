@@ -263,7 +263,7 @@ fun AppNavGraph(
 
                 composable("admin") {
                     AdminScreen(
-                        adminViewModel, navController
+                        adminViewModel, authViewModel, navController
                     )
                 }
             }       //  NavHost

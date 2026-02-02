@@ -30,6 +30,7 @@ import com.grig.recipesandroid.ui.auth.AuthViewModel
 fun AppTopBar(
     title: String,
     isAuthenticated: Boolean,
+    isAdmin: Boolean = false,
     showMyRecipes: Boolean,
     onBack: (() -> Unit)? = null,
     onLoginClick: () -> Unit,
@@ -58,7 +59,7 @@ fun AppTopBar(
         },
         actions = {
             // 1 Кнопка для ADMIN
-            if (onAdmin != null) {
+            if (onAdmin != null && isAdmin) {
                 IconButton(onClick = onAdmin) {
                     Icon(Icons.Default.Face, contentDescription = "Admin")
                 }
