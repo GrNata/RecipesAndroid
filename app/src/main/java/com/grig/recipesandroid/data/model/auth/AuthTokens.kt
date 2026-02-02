@@ -6,3 +6,10 @@ data class AuthTokens(
 )
 
 //  Пример ключей: ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY
+
+data class AuthTokensWithRole(
+    val accessToken: String,
+    val refreshToken: String,
+    val roles: Set<String>
+)
+

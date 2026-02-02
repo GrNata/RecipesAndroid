@@ -25,6 +25,8 @@ import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.UnitRepository
+import com.grig.recipesandroid.ui.admin.AdminScreen
+import com.grig.recipesandroid.ui.admin.AdminViewModel
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
@@ -60,7 +62,8 @@ fun AppNavGraph(
     recipeViewModel: RecipesViewModel,
     addEditRecipeViewModel: AddEditRecipeViewModel,
     myRecipesViewModel: MyRecipesViewModel,
-    searchByIngredientsViewModel: SearchByIngredientsViewModel
+    searchByIngredientsViewModel: SearchByIngredientsViewModel,
+    adminViewModel: AdminViewModel
 //    recipeDetailViewModel: RecipeDetailViewModel
     ) {
 
@@ -255,6 +258,12 @@ fun AppNavGraph(
                 composable("search_result") {
                     SearchResultScreen(
                         searchByIngredientsViewModel, recipeViewModel, navController
+                    )
+                }
+
+                composable("admin") {
+                    AdminScreen(
+                        adminViewModel, navController
                     )
                 }
             }       //  NavHost

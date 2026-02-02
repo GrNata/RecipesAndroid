@@ -108,7 +108,7 @@ fun RecipeDetailContent(
                 } else null,
                 onMyRecipesClick = {
                     navController.navigate("my_recipes")
-                },
+                }
 //                onSearchByIngredients = {}
 //                authViewModel = authViewModel
             )

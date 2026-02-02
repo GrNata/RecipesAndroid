@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.google.gson.GsonBuilder
 import com.grig.recipesandroid.data.api.AuthApi
 import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.local.FavoritesDataStore
@@ -16,6 +17,8 @@ import com.grig.recipesandroid.data.repository.FavoritesRepository
 import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.UnitRepository
+import com.grig.recipesandroid.ui.admin.AdminViewModel
+import com.grig.recipesandroid.ui.admin.AdminViewModelFactory
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModel
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModelFactory
@@ -32,6 +35,8 @@ import okhttp3.OkHttpClient
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModelFactory
 import com.grig.recipesandroid.ui.search_by_ingredients.SearchByIngredientViewModelFactory
 import com.grig.recipesandroid.ui.search_by_ingredients.SearchByIngredientsViewModel
+import com.grig.recipesandroid.utils.LocalDateTimeAdapter
+import java.time.LocalDateTime
 
 class MainActivity : ComponentActivity() {
     private lateinit var recipeApi: RecipeApi
@@ -108,11 +113,16 @@ class MainActivity : ComponentActivity() {
 //        val recipeRepository = RecipeRepository(recipeApi)
 //        val favoritesRepository = FavoritesRepository(recipeApi, tokenRepository, local = favoritesLocalDataSource)
 
+//        для LocalDateTime
+        val gson = GsonBuilder()
+            .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeAdapter())
+            .create()
+
         // 3️⃣ ЕДИНСТВЕННЫЙ Retrofit
         val retrofit = Retrofit.Builder()
             .baseUrl("http://10.0.2.2:9090/")
             .client(okHttpClient)                     // 🔥 ВАЖНО
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
         // 4️⃣ API из одного Retrofit
@@ -179,6 +189,10 @@ class MainActivity : ComponentActivity() {
                     )
                 )
 
+                val adminViewModel: AdminViewModel = viewModel(
+                    factory = AdminViewModelFactory(authRepository)
+                )
+
                 AppNavGraph(
                     navController = navController,
                     api = recipeApi,
@@ -192,7 +206,8 @@ class MainActivity : ComponentActivity() {
                     recipeViewModel = recipesViewModel,
                     addEditRecipeViewModel = addEditRecipeViewModel,
                     myRecipesViewModel = myRecipesViewModel,
-                    searchByIngredientsViewModel = searchByIngredientsViewModel
+                    searchByIngredientsViewModel = searchByIngredientsViewModel,
+                    adminViewModel = adminViewModel
 //                    recipeDetailViewModel = recipeDetailViewModel
                 )
             }

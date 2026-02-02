@@ -24,7 +24,6 @@ class AuthViewModel(
     private val tokenRepository: TokenRepository
 ) : ViewModel() {
 
-
     val isAuthenticated: StateFlow<Boolean> = tokenRepository.refreshToken
         .map { !it.isNullOrBlank() }
         .stateIn(
@@ -34,14 +33,6 @@ class AuthViewModel(
         )
 
     val accessToken = tokenRepository.accessToken
-
-//    private val _isAuthenticated = MutableStateFlow(false)
-//    val isAuthenticated: StateFlow<Boolean> = _isAuthenticated
-//
-//    private val _accessToken = MutableStateFlow<String?>(null)
-//    val accessToken: StateFlow<String?> = _accessToken
-
-
 
 //    // email текущего пользователя или null если не залогинен
     val userId: StateFlow<String?> = accessToken

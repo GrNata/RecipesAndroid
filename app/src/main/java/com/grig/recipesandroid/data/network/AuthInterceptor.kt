@@ -1,12 +1,17 @@
 package com.grig.recipesandroid.data.network
 
 import android.util.Log
+import com.google.gson.GsonBuilder
 import com.grig.recipesandroid.data.local.TokenRepository
 import com.grig.recipesandroid.data.repository.AuthRepository
+import com.grig.recipesandroid.utils.LocalDateTimeAdapter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.time.LocalDateTime
 
 //Цель: автоматически добавлять Authorization: Bearer <accessToken> к защищённым запросам, обновлять accessToken при 401.
 //Этот Interceptor подключается при создании Retrofit:
@@ -15,6 +20,7 @@ class AuthInterceptor(
     private val tokenRepository: TokenRepository,
     private val authRepository: AuthRepository
 ) : Interceptor {
+
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()

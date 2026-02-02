@@ -1,11 +1,17 @@
 package com.grig.recipesandroid.data.repository
 
+import android.util.Log
+import androidx.compose.ui.semantics.Role
 import com.grig.recipesandroid.data.api.AuthApi
 import com.grig.recipesandroid.data.local.TokenRepository
 import com.grig.recipesandroid.data.model.auth.AuthTokens
+import com.grig.recipesandroid.data.model.auth.BlockUserRequest
 import com.grig.recipesandroid.data.model.auth.LoginRequest
 import com.grig.recipesandroid.data.model.auth.RefreshTokenRequest
 import com.grig.recipesandroid.data.model.auth.RegisterRequest
+import com.grig.recipesandroid.data.model.auth.UpdateUserRoleRequest
+import com.grig.recipesandroid.data.model.auth.UpdateUserRoleResponse
+import com.grig.recipesandroid.data.model.auth.UserRequest
 import kotlinx.coroutines.flow.first
 
 class AuthRepository(
@@ -38,5 +44,21 @@ class AuthRepository(
         api.logout(refresh)
         tokenRepository.clearTokens()
     }
+
+    //    +++++++++++++++
+//      ADMIN
+
+    suspend fun getAllUsers(): List<UserRequest> {
+        val response = api.getUsers()
+        Log.d("ADMIN", "AuthRepository: users: ${response}")
+        return response
+    }
+
+//    suspend fun updateRoleUser(id: Long, role: UpdateUserRoleRequest) =
+    suspend fun updateRoleUser(id: Long, role: UpdateUserRoleResponse) =
+        api.updateRoleUser(id, role)
+
+    suspend fun updateBlockedUser(id: Long, blocked: BlockUserRequest) =
+        api.updateBlockedUser(id, blocked)
 
 }

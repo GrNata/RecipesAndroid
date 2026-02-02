@@ -40,14 +40,6 @@ fun LoginScreen(
                         popUpTo("login") { inclusive = true  }
                     }
                 }
-//        if (tokens != null) {
-//            val redirect = authViewModel.loginRedirectRoute
-//            if (redirect != null) {
-//                navController.navigate(redirect) {
-//                    popUpTo("login") { inclusive = true }
-//                }
-//                authViewModel.clearRedirect()
-//            }
                 else {
                     navController.navigate("recipe_list") {
                         popUpTo("login") { inclusive = true  }

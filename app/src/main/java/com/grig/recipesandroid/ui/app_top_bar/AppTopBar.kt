@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
@@ -35,7 +36,9 @@ fun AppTopBar(
     onLogoutClick: () -> Unit,
     onShareClick: (() -> Unit)? = null,      //  nullable — показываем только для залогиненных
     onMyRecipesClick: (() -> Unit)? = null,      //  nullable — показываем только для залогиненных
-    onSearchByIngredients: (() -> Unit)? = null
+    onSearchByIngredients: (() -> Unit)? = null,
+    onAdmin:(() -> Unit)? = null,
+//    isAdmin: Boolean
 //    authViewModel: AuthViewModel
 ) {
 
@@ -54,6 +57,13 @@ fun AppTopBar(
             }
         },
         actions = {
+            // 1 Кнопка для ADMIN
+            if (onAdmin != null) {
+                IconButton(onClick = onAdmin) {
+                    Icon(Icons.Default.Face, contentDescription = "Admin")
+                }
+            }
+
             // 1 Кнопка поиск рецептов по ингредиентам
             if (onSearchByIngredients != null) {
                 IconButton(onClick = onSearchByIngredients) {
