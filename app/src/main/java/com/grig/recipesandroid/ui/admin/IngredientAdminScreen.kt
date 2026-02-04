@@ -69,7 +69,7 @@ fun IngredientAdminScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
 
-        //        Кнопка добавить рецепт
+        //        Кнопка добавить ингредиент
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {

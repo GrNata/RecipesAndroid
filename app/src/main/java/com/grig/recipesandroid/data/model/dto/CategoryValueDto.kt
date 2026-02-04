@@ -7,7 +7,7 @@ data class CategoryValueDto(
     val categoryValue: String
 )
 
-data class CategoryValueCreate(
+data class CategoryValueRequest(
     val typeId: Long,
     val typeName: String,
     val categoryValue: String

@@ -10,8 +10,7 @@ import androidx.navigation.NavController
 import com.grig.recipesandroid.data.model.auth.BlockUserRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleResponse
 import com.grig.recipesandroid.data.model.auth.UserRequest
-import com.grig.recipesandroid.data.model.dto.CategoryValueCreate
-import com.grig.recipesandroid.data.model.dto.CategoryValueUpdate
+import com.grig.recipesandroid.data.model.dto.CategoryValueRequest
 import com.grig.recipesandroid.data.model.dto.IngredientAddEdit
 import com.grig.recipesandroid.data.model.dto.IngredientRequest
 import com.grig.recipesandroid.data.repository.AuthRepository
@@ -88,6 +87,7 @@ class AdminViewModel(
 
     fun onNameCategoryValueChange(value: String) {
         nameCategoryValue = value
+        Log.d("ADMIN", "AdminScreenViewModel nameCategoryValue: value=$value, name=$nameCategoryValue")
     }
 
     fun onNameCategoryTypeByValueChange(value: String) {
@@ -260,7 +260,7 @@ class AdminViewModel(
                 }
                 onSuccess()
 
-            } catch (e: kotlin.Exception) {
+            } catch (e: Exception) {
                 _error.value = e.message
             } catch (e: HttpException) {
                 _error.value = e.message()
@@ -278,6 +278,13 @@ class AdminViewModel(
     }
 
 //    CATEGORY
+    fun onUpdateCategoryValue() {
+        recipesViewModel.refreshCategoryValues()
+        navController.navigate("admin_category")
+    //        {
+    //            popUpTo("recipe_edit/${recipeId}") { inclusive = true }
+    //        }
+    }
 
     fun loadCategoryValueById(id: Long) {
         if (id == null) {
@@ -326,19 +333,52 @@ class AdminViewModel(
         }
     }
 
-    fun createCategoryValue(categoryValue: CategoryValueCreate) {
-        viewModelScope.launch {
-            categoryRepository.createCategoryValues(categoryValue)
-            recipesViewModel.refreshCategoryValues()
+    fun saveCategoryValue(typeId: Long, nameType: String, isEdit: Boolean, onSuccess: () -> Unit) {
+        Log.d("ADMIN", "AdminViewModel: START saveCategoryValue")
+        Log.d("ADMIN", "AdminViewModel: START saveCategoryValue typeId: $typeId, nameType: $nameType")
+        _loading.value = true
+
+        Log.d("ADMIN", "AdminViewModel: save categoryValue typeId = $typeIdCategoryValue, typeName = $nameCategoryTypeByValue, categoryValue = $nameCategoryValue")
+
+        try {
+            viewModelScope.launch {
+                if (!isEdit) {
+                    Log.d("ADMIN", "AdminViewModel: save categoryValue id = $currentCategoryValueId")
+                    val categoryValueId = currentCategoryValueId ?: return@launch
+
+                    categoryRepository.updateCategoryValue(categoryValueId, CategoryValueRequest(
+                        typeId = typeId,
+                        typeName = nameType,
+                        categoryValue = nameCategoryValue
+                    ))
+//                    onUpdateCategoryValue()
+                } else {
+                    categoryRepository.createCategoryValues(CategoryValueRequest(
+                        typeId = typeId,
+                        typeName = nameType,
+                        categoryValue = nameCategoryValue
+                    ))
+//                    onUpdateCategoryValue()
+                }
+
+                onUpdateCategoryValue()
+            }
+        } catch (e: Exception) {
+            _error.value = e.message
+        } catch (e: HttpException) {
+            _error.value = e.message()
+        } finally {
+            _loading.value = false
         }
+
     }
 
-    fun updateCategoryValue(id: Long, categoryValue: CategoryValueUpdate) {
-        viewModelScope.launch {
-            categoryRepository.updateCategoryValue(id, categoryValue)
-            recipesViewModel.refreshCategoryValues()
-        }
-    }
+//    fun updateCategoryValue(id: Long, categoryValue: CategoryValueUpdate) {
+//        viewModelScope.launch {
+//            categoryRepository.updateCategoryValue(id, categoryValue)
+//            recipesViewModel.refreshCategoryValues()
+//        }
+//    }
 
     fun deleteCategoryValue(id: Long) {
         viewModelScope.launch {

@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -49,6 +52,22 @@ fun CategoryAdminScreen(
     var selectedCategoryTypeId by remember { mutableStateOf(1L) }
 
     Scaffold(
+
+        //        Кнопка добавить categoryValue
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    adminViewModel.resetFormIngredient()
+                    navController.navigate("admin_change_categoryvalue/{id}/{typeId}")
+                },
+                containerColor = Color.Red,
+                modifier = Modifier.size(35.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Добавить  categoryValue")
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End, // не обязательно, но правильно
+
         topBar = {
             AppTopBar(
                 title = "Категории АДМИН",

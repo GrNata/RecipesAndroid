@@ -11,9 +11,7 @@ import androidx.paging.cachedIn
 import com.grig.recipesandroid.data.model.dto.CategoryTypeCreate
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryTypeUpdate
-import com.grig.recipesandroid.data.model.dto.CategoryValueCreate
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
-import com.grig.recipesandroid.data.model.dto.CategoryValueUpdate
 import com.grig.recipesandroid.data.model.dto.IngredientDto
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.CategoryRepository

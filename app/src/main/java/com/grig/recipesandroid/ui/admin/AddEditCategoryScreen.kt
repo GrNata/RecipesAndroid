@@ -9,32 +9,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import com.grig.recipesandroid.ui.utilRecipe.CategoryTypeDropDown
-import okhttp3.internal.wait
 
 @Composable
 fun AddEditCategoryScreen(
@@ -53,6 +44,10 @@ fun AddEditCategoryScreen(
     val categoryValuesAll = recipesViewModel.categoryValuesAll
 
     var selectTypeId: Long by remember { mutableStateOf(typeId) }
+
+    adminViewModel.resetFormCategoryValue()
+
+    val isEdit = id == null
 
 
     Scaffold(
@@ -81,14 +76,19 @@ fun AddEditCategoryScreen(
 //                category = ""
 
             } else {
-                if (id == null) return@Box
+//                if (id == null) return@Box
 
-                adminViewModel.loadCategoryValueById(id)
+                if (id != null) {
+                    adminViewModel.loadCategoryValueById(id)
+                }
+//                else {
+//                    adminViewModel.resetFormCategoryValue()
+//                }
 
                 Column(
                     modifier = Modifier.fillMaxWidth().padding(16.dp)
                 ) {
-                    // Dropdown для выбора группировки
+                    // Dropdown для выбора типа категории
                     Row(modifier = Modifier.fillMaxWidth()) {
                         CategoryTypeDropDown(
                             categoryTypes = categoryTypesAll,
@@ -96,7 +96,10 @@ fun AddEditCategoryScreen(
                             onSelected = { newId ->
                                 Log.d("ADMIN", "AddEditCategoryScreen: newId: $newId")
                                 selectTypeId = newId
-                                Log.d("ADMIN", "AddEditCategoryScreen: newId selectTypeId: $selectTypeId")
+                                Log.d(
+                                    "ADMIN",
+                                    "AddEditCategoryScreen: newId selectTypeId: $selectTypeId"
+                                )
                                 // Если нужно обновить ViewModel:
 //                                adminViewModel.typeIdCategoryValue = newId
                             }
@@ -111,6 +114,7 @@ fun AddEditCategoryScreen(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
+                    Text("Выбран тип категорий:")
                     Row(
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -118,16 +122,52 @@ fun AddEditCategoryScreen(
                             text = adminViewModel.nameCategoryType
                         )
                     }
+                    val nameType = adminViewModel.nameCategoryType
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    adminViewModel.onNameCategoryTypeByValueChange(adminViewModel.nameCategoryTypeByValue)
+                    Log.d("ADMIN", "AddEditCategoryScreen: Выбран тип категорий: ${adminViewModel.nameCategoryType}")
 
+
+                    Spacer(modifier = Modifier.height(30.dp))
+
+                    Text("Наименование типа категории:")
+                    Spacer(modifier = Modifier.height(16.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         TextField(
                             value = adminViewModel.nameCategoryValue ?: "",
-                            onValueChange = adminViewModel::onNameCategoryValueChange,
+//                            onValueChange = { adminViewModel.onNameCategoryValueChange(it) },
+                            onValueChange = adminViewModel::onNameCategoryValueChange
+
                         )
+                    }
+
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        modifier = Modifier.padding(start = 100.dp),
+                        onClick = {
+                            adminViewModel.saveCategoryValue(
+                                typeId = selectTypeId,
+                                nameType = nameType,
+                                isEdit = isEdit,
+                                onSuccess = {
+                                    navController.previousBackStackEntry
+                                        ?.savedStateHandle
+                                        ?.set("REFRESH_CATEGORY_VALUE", true)
+//                            navController.popBackStack()
+
+                                    navController.navigate("admin_change_categoryvalue/{id}/{$selectTypeId}") {
+                                        popUpTo("admin_category") { inclusive = true }
+                                        launchSingleTop = true
+                                    }
+                                }
+                            )
+                        }
+                    ) {
+                        Text(if (isEdit) "Создать" else "Сохранить")
                     }
                 }
             }
