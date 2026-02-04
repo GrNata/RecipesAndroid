@@ -10,9 +10,12 @@ import androidx.navigation.NavController
 import com.grig.recipesandroid.data.model.auth.BlockUserRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleResponse
 import com.grig.recipesandroid.data.model.auth.UserRequest
+import com.grig.recipesandroid.data.model.dto.CategoryValueCreate
+import com.grig.recipesandroid.data.model.dto.CategoryValueUpdate
 import com.grig.recipesandroid.data.model.dto.IngredientAddEdit
 import com.grig.recipesandroid.data.model.dto.IngredientRequest
 import com.grig.recipesandroid.data.repository.AuthRepository
+import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +27,7 @@ import java.lang.Exception
 class AdminViewModel(
     private val authRepository: AuthRepository,
     private val ingredientRepository: IngredientRepository,
+    private val categoryRepository: CategoryRepository,
     private val recipesViewModel: RecipesViewModel,
     private val navController: NavController
 ) : ViewModel() {
@@ -52,6 +56,23 @@ class AdminViewModel(
 
     private var currentIngredientId: Long? = null
 
+    var nameCategoryValue by mutableStateOf<String>("")
+        private set
+
+    var nameCategoryTypeByValue by mutableStateOf<String>("")
+        private set
+
+    var typeIdCategoryValue by mutableStateOf<Long?>(1L)
+        private set
+
+    var nameCategoryType by mutableStateOf<String>("")
+        private set
+
+    private var currentCategoryValueId: Long? = null
+
+    private var currentCategoryTypeId: Long? = null
+
+
     fun onNameChange(value: String) {
         name = value
         Log.d("ADMIN", "AdminScreenViewModel onNameChange: value=$value, name=$name")
@@ -65,7 +86,23 @@ class AdminViewModel(
         energyKcal100g = value.toIntOrNull()
     }
 
-    fun resetForm() {
+    fun onNameCategoryValueChange(value: String) {
+        nameCategoryValue = value
+    }
+
+    fun onNameCategoryTypeByValueChange(value: String) {
+        nameCategoryTypeByValue = value
+    }
+
+    fun onTypeIdCategoryValueChange(value: String) {
+        typeIdCategoryValue = value.toLongOrNull()
+    }
+
+    fun onNameCategoryTypeChange(value: String) {
+        nameCategoryType = value
+    }
+
+    fun resetFormIngredient() {
             Log.d("ADMIN", "AddminViewModel: resetForm, name: ${name}")
             currentIngredientId = null
             name = ""
@@ -73,6 +110,18 @@ class AdminViewModel(
             energyKcal100g = 0
 
             _error.value = null
+    }
+
+    fun resetFormCategoryValue() {
+        nameCategoryValue = ""
+        nameCategoryTypeByValue = ""
+        typeIdCategoryValue = null
+        _error.value = null
+    }
+
+    fun resetFormCategoryType() {
+        nameCategoryType = ""
+        _error.value = null
     }
 
 
@@ -173,7 +222,7 @@ class AdminViewModel(
                 nameEng = ingredient.nameEng
                 energyKcal100g = ingredient.energyKcal100g
 
-            } catch (e: kotlin.Exception) {
+            } catch (e: Exception) {
                 _error.value = e.message
                 Log.e("ADMIN", "AdminViewModel: error: ${e.message}")
             } finally {
@@ -221,30 +270,80 @@ class AdminViewModel(
         }
     }
 
-////    fun updateIngredient(id: Long, ingredient: IngredientUpdate) {
-//    fun updateIngredient(onSuccess: () -> Unit) {
-//        val ingredientId = currentIngredientId ?: return
-//
-//        viewModelScope.launch {
-//            _loading.value = true
-//
-////            ingredientRepository.updateIngredient(id, ingredient)
-//            ingredientRepository.updateIngredient(ingredientId, IngredientUpdate(
-//                id = currentIngredientId,
-//                name = name,
-//                nameEng = nameEng,
-//                energyKcal100g = energyKcal100g
-//            ))
-//
-//            onSuccess()
-//            recipesViewModel.refreshIngredients()
-//        }
-//    }
-
     fun deleteIngredient(id: Long) {
         viewModelScope.launch {
             ingredientRepository.deleteIngredient(id)
             recipesViewModel.refreshIngredients()
+        }
+    }
+
+//    CATEGORY
+
+    fun loadCategoryValueById(id: Long) {
+        if (id == null) {
+            _error.value = "ID не указан"
+            return
+        }
+        if (currentCategoryValueId == id) return
+        currentCategoryValueId = id
+        _loading.value = true
+
+        viewModelScope.launch {
+            try {
+                val categoryValue = categoryRepository.getCategoryValueById(id)
+                nameCategoryValue = categoryValue?.categoryValue ?: ""
+                nameCategoryTypeByValue = categoryValue?.typeName ?: ""
+                typeIdCategoryValue = categoryValue?.typeId
+            } catch (e: Exception) {
+                _error.value = e.message
+                Log.e("ADMIN", "AdminViewModel: error: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    fun loadCategoryTypeById(id: Long) {
+        if (id == null) {
+            _error.value = "ID не указан"
+            return
+        }
+        if (currentCategoryTypeId == id) return
+        currentCategoryTypeId = id
+        _loading.value = true
+
+        viewModelScope.launch {
+            try {
+                val categoryType = categoryRepository.getCategoryTypeById(id)
+                nameCategoryType = categoryType?.nameType ?: ""
+
+            } catch (e: Exception) {
+                _error.value = e.message
+                Log.e("ADMIN", "AdminViewModel: error: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    fun createCategoryValue(categoryValue: CategoryValueCreate) {
+        viewModelScope.launch {
+            categoryRepository.createCategoryValues(categoryValue)
+            recipesViewModel.refreshCategoryValues()
+        }
+    }
+
+    fun updateCategoryValue(id: Long, categoryValue: CategoryValueUpdate) {
+        viewModelScope.launch {
+            categoryRepository.updateCategoryValue(id, categoryValue)
+            recipesViewModel.refreshCategoryValues()
+        }
+    }
+
+    fun deleteCategoryValue(id: Long) {
+        viewModelScope.launch {
+            categoryRepository.deleteCategoryValue(id)
+            recipesViewModel.refreshCategoryValues()
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.utilRecipe
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +27,8 @@ fun CategoryTypeDropDown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
+    Log.d("ADMIN", "CategoryTypeDropDown: 1 after присваивания categoryTypes: $categoryTypes")
+
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
@@ -33,7 +36,7 @@ fun CategoryTypeDropDown(
     ) {
         TextField(
             value = categoryTypes.find { it.id == selectedId }?.nameType ?: "",
-            onValueChange = {},
+            onValueChange = {  },
             readOnly = true,
             label = { Text("Группировка по категориям") },
             trailingIcon = { TrailingIcon(expanded = expanded) },
@@ -66,8 +69,12 @@ fun CategoryTypeDropDown(
                     onClick = {
                         onSelected(type.id)
                         expanded = false
+
+//                        selectedCategoryTypeId = type.id
                     }
                 )
+//                Log.d("ADMIN", "CategoryTypeDropDown: 2 after присваивания selectedCategoryTypeId: $selectedCategoryTypeId")
+//                Log.d("ADMIN", "CategoryTypeDropDown: 2 after присваивания type.id: ${type.id}")
             }
         }
     }

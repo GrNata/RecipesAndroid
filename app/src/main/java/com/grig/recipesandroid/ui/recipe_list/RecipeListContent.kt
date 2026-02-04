@@ -116,6 +116,8 @@ fun RecipeListContent(
                     )
                 }
 
+//                Log.d("ADMIN", "RecipeListContent: selectedCategoryTypeId: $selectedCategoryTypeId")
+
                 //            Группируем рецепты по первой категории (можно доработать для нескольких)
                 val grouped = GroupedByCategoryType(filteredRecipes, selectedCategoryTypeId)
 

@@ -244,27 +244,27 @@ open class RecipesViewModel(
             categoryValuesAll = categoryRepository.getCategoryValues()
         }
     }
-
-    fun createCategoryValue(categoryValue: CategoryValueCreate) {
-        viewModelScope.launch {
-            categoryRepository.createCategoryValues(categoryValue)
-            refreshCategoryValues()
-        }
-    }
-
-    fun updateCategoryValue(id: Long, categoryValue: CategoryValueUpdate) {
-        viewModelScope.launch {
-            categoryRepository.updateCategoryValue(id, categoryValue)
-            refreshCategoryValues()
-        }
-    }
-
-    fun deleteCategoryValue(id: Long) {
-        viewModelScope.launch {
-            categoryRepository.deleteCategoryValue(id)
-            refreshCategoryValues()
-        }
-    }
+//
+//    fun createCategoryValue(categoryValue: CategoryValueCreate) {
+//        viewModelScope.launch {
+//            categoryRepository.createCategoryValues(categoryValue)
+//            refreshCategoryValues()
+//        }
+//    }
+//
+//    fun updateCategoryValue(id: Long, categoryValue: CategoryValueUpdate) {
+//        viewModelScope.launch {
+//            categoryRepository.updateCategoryValue(id, categoryValue)
+//            refreshCategoryValues()
+//        }
+//    }
+//
+//    fun deleteCategoryValue(id: Long) {
+//        viewModelScope.launch {
+//            categoryRepository.deleteCategoryValue(id)
+//            refreshCategoryValues()
+//        }
+//    }
 //    ______________________
 
     fun refreshIngredients() {

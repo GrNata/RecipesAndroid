@@ -25,6 +25,7 @@ import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.UnitRepository
+import com.grig.recipesandroid.ui.admin.AddEditCategoryScreen
 import com.grig.recipesandroid.ui.admin.AddEditIngredientScreen
 import com.grig.recipesandroid.ui.admin.AdminScreen
 import com.grig.recipesandroid.ui.admin.AdminViewModel
@@ -273,7 +274,22 @@ fun AppNavGraph(
                 }
 
                 composable("admin_category") {
-                    CategoryAdminScreen(authViewModel, recipeViewModel, navController)
+                    CategoryAdminScreen(authViewModel, recipeViewModel, adminViewModel, navController)
+                }
+
+                composable("admin_change_categoryvalue/{id}/{typeId}") { backStackEntry ->
+                    val id = backStackEntry.arguments?.getString("id")?.toLongOrNull()
+                    var typeId = backStackEntry.arguments?.getString("typeId")?.toLongOrNull()
+                    if (typeId == null) typeId = 1L
+
+                    AddEditCategoryScreen(
+                        id,
+                        typeId,
+                        false,
+                        recipeViewModel,
+                        authViewModel,
+                        adminViewModel,
+                        navController)
                 }
 
                 composable("admin_add_ingredient") {

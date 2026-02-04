@@ -190,7 +190,7 @@ class MainActivity : ComponentActivity() {
                 )
 
                 val adminViewModel: AdminViewModel = viewModel(
-                    factory = AdminViewModelFactory(authRepository, ingredientRepository, recipesViewModel, navController)
+                    factory = AdminViewModelFactory(authRepository, ingredientRepository, categoryRepository, recipesViewModel, navController)
                 )
 
                 AppNavGraph(

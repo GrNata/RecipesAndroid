@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
@@ -70,6 +73,31 @@ fun AddEditIngredientScreen(
     ) {paddingValues ->
 
         Column (modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+
+//            //        поиск / фильтрация
+//            OutlinedTextField(
+//                value = query,
+//                onValueChange = { newText ->
+//                    viewModel.setQuery(newText)
+//                },
+//                modifier = Modifier
+////                        .fillMaxWidth()
+////                        .padding(8.dp),
+//                    .weight(1f),
+//                placeholder = {
+//                    Text("Поиск рецептов…")
+//                },
+//                singleLine = true
+//            )
+//            Spacer(modifier = Modifier.width(8.dp))
+//            //      кнопка фильтрации избранного
+//            FilterChip(
+//                selected = showOnlyFavorites,
+//                onClick = { showOnlyFavorites = !showOnlyFavorites },
+//                label = { Text("Избранное") }
+//            )
+//        }
+
             Row(
 //                modifier = Modifier.weight(1f)
             ) {
