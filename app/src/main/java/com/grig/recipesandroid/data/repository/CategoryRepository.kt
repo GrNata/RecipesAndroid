@@ -2,8 +2,13 @@ package com.grig.recipesandroid.data.repository
 
 import android.util.Log
 import com.grig.recipesandroid.data.api.RecipeApi
+import com.grig.recipesandroid.data.model.dto.CategoryTypeCreate
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
+import com.grig.recipesandroid.data.model.dto.CategoryTypeUpdate
+import com.grig.recipesandroid.data.model.dto.CategoryValueCreate
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
+import com.grig.recipesandroid.data.model.dto.CategoryValueUpdate
+
 //import com.grig.recipesandroid.domain.model.Category
 
 class CategoryRepository(private val api: RecipeApi) {
@@ -30,8 +35,17 @@ class CategoryRepository(private val api: RecipeApi) {
             null
         }
     }
+
+    suspend fun createCategoryValues(categoryValues: CategoryValueCreate) = api.createCategoryValue(categoryValues)
+
+
+    suspend fun updateCategoryValue(id: Long, categoryValue: CategoryValueUpdate) = api.updateCategoryValue(id, categoryValue)
+
+    suspend fun deleteCategoryValue(id: Long) = api.deleteCategoryValue(id)
+
 //    ++++++++++++++++++
 //    +++++++   CategoryType
+
     suspend fun getCategoryTypes(): List<CategoryTypeDto> {
         return try {
             Log.d("SEARCH INGREDIENT", "CategoryRepository: START loaded category type")
@@ -53,16 +67,12 @@ class CategoryRepository(private val api: RecipeApi) {
         }
     }
 
+    suspend fun createCategoryType(categoryType: CategoryTypeCreate) = api.createCategoryType(categoryType)
 
 
-//    suspend fun getCategories(): List<Category> {
-//        val categoriesDto = api.getCategories()     // API метод возвращает List<CategoryDto>
-//        return categoriesDto.map { dto ->
-//            Category(
-//                id = dto.id ?: 0L,
-//                name = dto.name,
-//                image = dto.image ?: ""
-//                )
-//        }
-//    }
+    suspend fun updateCategoryType(id: Long, categoryType: CategoryTypeUpdate) = api.updateCategoryType(id, categoryType)
+
+
+    suspend fun deleteCategoryType(id: Long) = api.deleteCategoryType(id)
+
 }

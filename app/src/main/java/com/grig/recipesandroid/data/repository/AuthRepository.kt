@@ -40,12 +40,14 @@ class AuthRepository(
 //        return AuthTokens(response.accessToken, response.refreshToken)
     }
 
-    suspend fun refreshToken(): String {
+//    suspend fun refreshToken(): String {
+    suspend fun refreshToken(): AuthTokensWithRole {
         val refresh = tokenRepository.refreshToken.first() ?: throw Exception("No refresh token")
         val response = api.refreshToken(RefreshTokenRequest(refresh))
 //        val response = api.refreshToken(refresh)
         tokenRepository.saveTokens(response.accessToken, response.refreshToken, response.userInfo)
-        return response.accessToken
+        return AuthTokensWithRole(response.accessToken, response.refreshToken, response.userInfo.roles)
+//        return response.accessToken
     }
 
     suspend fun logout() {

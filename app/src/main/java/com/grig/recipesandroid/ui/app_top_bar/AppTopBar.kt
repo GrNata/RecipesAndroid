@@ -1,6 +1,6 @@
 package com.grig.recipesandroid.ui.app_top_bar
 
-import android.graphics.drawable.Icon
+
 import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,13 +16,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
+import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType.Companion.Text
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.window.PopupPositionProvider
 import com.grig.recipesandroid.domain.model.Recipe
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 
@@ -39,9 +45,15 @@ fun AppTopBar(
     onMyRecipesClick: (() -> Unit)? = null,      //  nullable — показываем только для залогиненных
     onSearchByIngredients: (() -> Unit)? = null,
     onAdmin:(() -> Unit)? = null,
+    onIngredientAdmin:(() -> Unit)? = null,
+    onCategoryAdmin:(() -> Unit)? = null,
+    isCategory: Boolean? = false,
+    isIngredient: Boolean? = null
 //    isAdmin: Boolean
 //    authViewModel: AuthViewModel
 ) {
+
+    val tooltipState = remember { TooltipState() }
 
     TopAppBar(
         title = { Text(
@@ -59,10 +71,45 @@ fun AppTopBar(
         },
         actions = {
             // 1 Кнопка для ADMIN
-            if (onAdmin != null && isAdmin) {
-                IconButton(onClick = onAdmin) {
-                    Icon(Icons.Default.Face, contentDescription = "Admin")
+            Log.d("ADMIN", "AppTopBar: isCategory: $isCategory,  isAdmin = $isAdmin")
+            if (isAdmin) {
+                if (onAdmin != null) {
+//                    Кнопка экран Админа - толко на RecipeListScreen
+                    IconButton(onClick = onAdmin) {
+                        Icon(Icons.Default.Face, contentDescription = "Admin")
+                    }
                 }
+//                else {
+//                    Кнопка для Админа  - ингредиенты
+                    if (isIngredient == true && onCategoryAdmin != null) {
+                        TooltipBox(
+                            tooltip = { Text("Ингредиенты-Админ") },
+//                            focusable = true,
+//                            modifier = Modifier.clickable(onClick = onCategoryAdmin),
+                            positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
+                            state = tooltipState,
+//                            enableUserInput = false
+                        ) {
+                            IconButton(onClick = onCategoryAdmin) {
+                                Icon(Icons.Default.Menu, contentDescription = "Ингредиенты")
+                            }
+                        }
+
+                    }
+//                    Кнопка для Админа  - категории
+                    if (isCategory == true && onIngredientAdmin != null) {
+                        TooltipBox(
+                            tooltip = { Text("Категории") },
+//                            focusable = true,
+                            positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
+                            state = tooltipState
+                        ) {
+                            IconButton(onClick = onIngredientAdmin) {
+                                Icon(Icons.Default.Menu, contentDescription = "Категории-Админ")
+                            }
+                        }
+                    }
+//                }
             }
 
             // 1 Кнопка поиск рецептов по ингредиентам

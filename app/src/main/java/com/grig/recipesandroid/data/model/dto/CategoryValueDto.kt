@@ -6,3 +6,17 @@ data class CategoryValueDto(
     val typeName: String,
     val categoryValue: String
 )
+
+data class CategoryValueCreate(
+    val typeId: Long,
+    val typeName: String,
+    val categoryValue: String
+)
+
+data class CategoryValueUpdate(
+    val id: Long,
+    val typeId: Long,
+    val typeName: String,
+    val categoryValue: String
+)
+

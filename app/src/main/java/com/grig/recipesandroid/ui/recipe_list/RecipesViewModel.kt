@@ -8,8 +8,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.grig.recipesandroid.data.model.dto.CategoryTypeCreate
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
+import com.grig.recipesandroid.data.model.dto.CategoryTypeUpdate
+import com.grig.recipesandroid.data.model.dto.CategoryValueCreate
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
+import com.grig.recipesandroid.data.model.dto.CategoryValueUpdate
 import com.grig.recipesandroid.data.model.dto.IngredientDto
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.CategoryRepository
@@ -72,6 +76,7 @@ open class RecipesViewModel(
 
     //    +++  справочник типов категорий, ингредиентов
     var categoryTypesAll by mutableStateOf<List<CategoryTypeDto>>(emptyList())
+    var categoryValuesAll by mutableStateOf<List<CategoryValueDto>>(emptyList())
     var ingredientsDictionary by mutableStateOf<List<IngredientDto>>(emptyList())
 
     fun setQuery(newQuery: String) {
@@ -113,6 +118,7 @@ open class RecipesViewModel(
 //            загрузка справочника CategotyType и Ingredientdto
             categoryTypesAll = categoryRepository.getCategoryTypes()
             Log.d("SEARCH INGREDIENT", "RecipeViewModel - init categoryTypesAll: ${categoryTypesAll}")
+            categoryValuesAll = categoryRepository.getCategoryValues()
             ingredientsDictionary = ingredientRepository.getAllIngredients()
             Log.d("SEARCH INGREDIENT", "RecipesViewModel: init ingredients: ${ingredientsDictionary}")
 
@@ -202,5 +208,91 @@ open class RecipesViewModel(
             }
         }
     }
+
+//    +++++++++++++++++++
+//    СПРАВОЧНИКИ - категорий и ингредиентов
+//    ________________
+    fun refreshCategoryType() {
+        viewModelScope.launch {
+            categoryTypesAll = categoryRepository.getCategoryTypes()
+        }
+    }
+
+    fun createCategoryType(categoryType: CategoryTypeCreate) {
+        viewModelScope.launch {
+            categoryRepository.createCategoryType(categoryType)
+            refreshCategoryType()
+        }
+    }
+
+    fun updateCategoryType(id: Long, categoryType: CategoryTypeUpdate) {
+        viewModelScope.launch {
+            categoryRepository.updateCategoryType(id, categoryType)
+            refreshCategoryType()
+        }
+    }
+
+    fun deleteCategoryType(id: Long) {
+        viewModelScope.launch {
+            categoryRepository.deleteCategoryType(id)
+            refreshCategoryType()
+        }
+    }
+//    _______________________
+    fun refreshCategoryValues() {
+        viewModelScope.launch {
+            categoryValuesAll = categoryRepository.getCategoryValues()
+        }
+    }
+
+    fun createCategoryValue(categoryValue: CategoryValueCreate) {
+        viewModelScope.launch {
+            categoryRepository.createCategoryValues(categoryValue)
+            refreshCategoryValues()
+        }
+    }
+
+    fun updateCategoryValue(id: Long, categoryValue: CategoryValueUpdate) {
+        viewModelScope.launch {
+            categoryRepository.updateCategoryValue(id, categoryValue)
+            refreshCategoryValues()
+        }
+    }
+
+    fun deleteCategoryValue(id: Long) {
+        viewModelScope.launch {
+            categoryRepository.deleteCategoryValue(id)
+            refreshCategoryValues()
+        }
+    }
+//    ______________________
+
+    fun refreshIngredients() {
+        viewModelScope.launch {
+            ingredientsDictionary = ingredientRepository.getAllIngredients()
+        }
+    }
+
+//    fun createIngredient(ingredient: IngredientCreate) {
+//        viewModelScope.launch {
+//            ingredientRepository.createIngredient(ingredient)
+//            refreshIngredients()
+//        }
+//    }
+//
+//    fun updateIngredient(id: Long, ingredient: IngredientUpdate) {
+//        viewModelScope.launch {
+//            ingredientRepository.updateIngredient(id, ingredient)
+//            refreshIngredients()
+//        }
+//    }
+//
+//    fun deleteIngredient(id: Long) {
+//        viewModelScope.launch {
+//            ingredientRepository.deleteIngredient(id)
+//            refreshIngredients()
+//        }
+//    }
+//    +++++++++++++++++++++++++++++++++++++
 
 }

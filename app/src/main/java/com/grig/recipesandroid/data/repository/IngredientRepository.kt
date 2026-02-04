@@ -1,11 +1,16 @@
 package com.grig.recipesandroid.data.repository
 
+import android.util.Log
 import com.grig.recipesandroid.data.api.RecipeApi
+import com.grig.recipesandroid.data.model.dto.IngredientRequest
 import com.grig.recipesandroid.data.model.dto.IngredientDto
 
 class IngredientRepository(private val api: RecipeApi) {
 
-    suspend fun getAllIngredients(): List<IngredientDto>  = api.getIngredients()
+    suspend fun getAllIngredients(): List<IngredientDto>  {
+        val ingredientsAll = api.getIngredients()
+        return ingredientsAll.sortedBy { it.name }
+    }
 //    {
 //        val ingredientsDto = api.getIngredients()
 //        return ingredientsDto.map { dto ->
@@ -23,4 +28,17 @@ class IngredientRepository(private val api: RecipeApi) {
     suspend fun getIngredientById(id: Long): IngredientDto {
         return api.getIngredientById(id)
     }
+
+    suspend fun createIngredient(ingredient: IngredientRequest) = api.createIngredient(ingredient)
+
+
+//    suspend fun updateIngredient(id: Long, ingredient: IngredientUpdate) {
+    suspend fun updateIngredient(id: Long, ingredient: IngredientRequest) {
+        Log.d("ADMIN", "Ingredientrepository: update ingredient id = $id, ingredient: $ingredient")
+        api.updateIngredient(id, ingredient)
+    }
+
+
+    suspend fun deleteIngredient(id: Long) = api.deleteIngredient(id)
+
 }

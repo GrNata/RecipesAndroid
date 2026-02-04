@@ -138,8 +138,13 @@ class AuthViewModel(
 
             try {
                 // тихо обновляем accessToken
-                authRepository.refreshToken()
+                val refreshToken = authRepository.refreshToken()
                 // accessToken сохранён внутри TokenRepository
+
+
+
+                _isAdmin.value = refreshToken.roles.contains("ADMIN")
+
             } catch (e: java.lang.Exception) {
                 //  refreshToken протух → вычищаем сессию
                 tokenRepository.clearTokens()

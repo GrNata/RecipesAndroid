@@ -6,3 +6,12 @@ data class CategoryTypeDto(
     @SerializedName("id") val id: Long,
     @SerializedName("nameType") val nameType: String
 )
+
+data class CategoryTypeCreate(
+    val nameType: String
+)
+
+data class CategoryTypeUpdate(
+    val id: Long,
+    val nameType: String
+)

@@ -1,8 +1,13 @@
 package com.grig.recipesandroid.data.api
 
 //import com.grig.recipesandroid.data.model.dto.CategoryDto
+import com.grig.recipesandroid.data.model.dto.CategoryTypeCreate
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
+import com.grig.recipesandroid.data.model.dto.CategoryTypeUpdate
+import com.grig.recipesandroid.data.model.dto.CategoryValueCreate
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
+import com.grig.recipesandroid.data.model.dto.CategoryValueUpdate
+import com.grig.recipesandroid.data.model.dto.IngredientRequest
 import com.grig.recipesandroid.data.model.dto.IngredientDto
 import com.grig.recipesandroid.data.model.request.RecipeCreateRequest
 import com.grig.recipesandroid.data.model.dto.RecipeDto
@@ -10,7 +15,6 @@ import com.grig.recipesandroid.data.model.request.RecipeUpdateRequest
 import com.grig.recipesandroid.data.model.dto.UnitDto
 import com.grig.recipesandroid.data.model.request.SearchByIngredientsRequest
 import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
-import okhttp3.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -85,11 +89,31 @@ interface RecipeApi {
     @GET("/api/category-value/{id}")
     suspend fun getCategoryValuesById(@Path("id") id: Long) : CategoryValueDto
 
+    @POST("/api/admin/category-values")
+    suspend fun createCategoryValue(@Body categoryValue: CategoryValueCreate)
+
+    @PUT("/api/admin/category-values/{id}")
+    suspend fun updateCategoryValue(@Path("id") id: Long, @Body categoryValue: CategoryValueUpdate)
+
+    @DELETE("/api/admin/category-values/{id}")
+    suspend fun deleteCategoryValue(@Path("id") id: Long)
+
+//    _______________
+
     @GET("/api/category-type")
     suspend fun getCategoryTypes(): List<CategoryTypeDto>
 
     @GET("/api/category-type/{id}")
     suspend fun getCategoryTypeById(@Path("id") id: Long) : CategoryTypeDto
+
+    @POST("/api/admin/categories-types")
+    suspend fun createCategoryType(@Body request: CategoryTypeCreate)
+
+    @PUT("/api/admin/categories-types/{id}")
+    suspend fun updateCategoryType(@Path ("id") id: Long, @Body request: CategoryTypeUpdate)
+
+    @DELETE("/api/admin/categories-types/{id}")
+    suspend fun deleteCategoryType(@Path("id") id: Long)
 
 //    ++++++++++++++++
 //    INGREDIENT
@@ -98,8 +122,17 @@ interface RecipeApi {
 //    @GET("api/ingredients")
     suspend fun getIngredients(): List<IngredientDto>
 
-    @GET("/api/ingredients/{ingredientId}")
-    suspend fun getIngredientById(@Path("ingredientId") ingredientId: Long): IngredientDto
+    @GET("/api/ingredients/{id}")
+    suspend fun getIngredientById(@Path("id") ingredientId: Long): IngredientDto
+
+    @POST("/api/admin/ingredients")
+    suspend fun createIngredient(@Body ingredient: IngredientRequest)
+
+    @PUT("/api/admin/ingredients/{id}")
+    suspend fun updateIngredient(@Path("id") id: Long, @Body ingredient: IngredientRequest)
+
+    @DELETE("/api/admin/ingredients/{id}")
+    suspend fun deleteIngredient(@Path("id") id: Long)
 
 //    ++++++++++++++++
 //    UNIT

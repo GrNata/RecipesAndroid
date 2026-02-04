@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.admin
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,12 +14,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
+import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 
 @Composable
 fun AdminScreen(
@@ -31,6 +36,7 @@ fun AdminScreen(
     val error by adminViewModel.error.collectAsState()
 
     val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
+    val isAdmin by authViewModel.isAdmin.collectAsState()
 
     LaunchedEffect(Unit) {
         adminViewModel.loadUsers()
@@ -41,14 +47,22 @@ fun AdminScreen(
             AppTopBar(
                 title = "АДМИН",
                 isAuthenticated = isAuthenticated,
+                isAdmin = isAdmin,
                 onBack = { navController.popBackStack() },
                 showMyRecipes = false,
                 onLoginClick = {},
                 onLogoutClick = {},
+                onIngredientAdmin = { navController.navigate("admin_ingredient")},
+                onCategoryAdmin = { navController.navigate("admin_category")},
+                isCategory = true,
+                isIngredient = true
 //                onAdmin = { navController.navigate("admin")}
             )
         }
     ) { paddingValues ->
+
+        Log.d("ADMIN", "AdminScreen: isAdmin = $isAdmin")
+
         Column(
             modifier = Modifier
                 .fillMaxSize()

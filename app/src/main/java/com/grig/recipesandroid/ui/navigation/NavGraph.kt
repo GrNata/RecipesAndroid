@@ -25,19 +25,19 @@ import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.UnitRepository
+import com.grig.recipesandroid.ui.admin.AddEditIngredientScreen
 import com.grig.recipesandroid.ui.admin.AdminScreen
 import com.grig.recipesandroid.ui.admin.AdminViewModel
+import com.grig.recipesandroid.ui.admin.CategoryAdminScreen
+import com.grig.recipesandroid.ui.admin.IngredientAdminScreen
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModel
-import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModelFactory
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeScreen
-import com.grig.recipesandroid.ui.my_recipes.CategoryRow
 import com.grig.recipesandroid.ui.my_recipes.ImageScreen
 import com.grig.recipesandroid.ui.my_recipes.IngredientsScreen
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesScreen
-import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModelFactory
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModel
 import com.grig.recipesandroid.ui.my_recipes.SelectCategoriesScreen
 import com.grig.recipesandroid.ui.my_recipes.StepScreen
@@ -207,7 +207,8 @@ fun AppNavGraph(
                 }
 
                 composable("recipe_edit/{recipeId}") { backStackEntry ->
-                    val recipeId = backStackEntry.arguments?.getString("recipeId")?.let { it.toLongOrNull() }
+                    val recipeId = backStackEntry.arguments?.getString("recipeId")?.let { it.toLongOrNull()
+                    }
 
                     val parentEntry = remember(backStackEntry) {
                         navController.getBackStackEntry("my_recipes")
@@ -266,5 +267,42 @@ fun AppNavGraph(
                         adminViewModel, authViewModel, navController
                     )
                 }
+
+                composable("admin_ingredient") {
+                    IngredientAdminScreen(authViewModel, recipeViewModel, adminViewModel, navController)
+                }
+
+                composable("admin_category") {
+                    CategoryAdminScreen(authViewModel, recipeViewModel, navController)
+                }
+
+                composable("admin_add_ingredient") {
+                    AddEditIngredientScreen(
+                        ingredientId = null,
+                        adminViewModel = adminViewModel,
+                        authViewModel = authViewModel,
+                        navController = navController,
+//                        isEdit = false,
+//                        onSave = {}
+                    )
+                }
+
+                composable("admin_edit_ingredient/{id}") { backStackEntry ->
+                    val id = backStackEntry.arguments?.getString("id")?.toLongOrNull()
+
+
+                    Log.d("ADMIN", "NavGraph: id = $id")
+
+                    AddEditIngredientScreen(
+                        ingredientId = id,
+                        adminViewModel = adminViewModel,
+                        authViewModel = authViewModel,
+                        navController = navController,
+//                        isEdit = false,
+//                        onSave = {}
+                    )
+                }
+
+
             }       //  NavHost
 }

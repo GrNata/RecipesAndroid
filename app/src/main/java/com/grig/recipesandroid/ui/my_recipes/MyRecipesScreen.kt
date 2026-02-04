@@ -169,34 +169,6 @@ fun MyRecipesScreen(
 
                 Column() {
 
-//                    Row(
-//                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        //        поиск / фильтрация
-//                        OutlinedTextField(
-//                            value = query,
-//                            onValueChange = { newText ->
-//                                recipeViewModel.setQuery(newText)
-//                            },
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(4.dp),
-//                            placeholder = {
-//                                Text("Поиск рецептов…")
-//                            },
-//                            singleLine = true
-//                        )
-//                        Spacer(modifier = Modifier.width(8.dp))
-////                    //      кнопка фильтрации избранного
-////                    FilterChip(
-////                        selected = showOnlyFavorites,
-//////                        selected = showOnlyFavorites,
-////                        onClick = { showOnlyFavorites = !showOnlyFavorites },
-////                        label = { Text("Избранное") }
-////                    )
-//                    }
-
                     Column(
                         modifier = Modifier.padding(start = 10.dp)
                     ) {
@@ -245,20 +217,9 @@ fun MyRecipesScreen(
                                         )
                                     }
                                 }
-//                            }
-                                Log.d(
-                                    "СЕРДЦЕ MyRecipeScreen",
-                                    "recipesInCategory size ${recipesInCategory.size}"
-                                )
 
                                 items(recipesInCategory) { recipe ->
-//                            Log.d("MyRecipeItem", "MyRecipe recipe: ${recipe.ingredients.forEach {
-//                                (it.unit?.label) ?: ""
-//                            }}")
-                                    Log.d(
-                                        "ADD RECIPE-newEdit",
-                                        "MyRecipeScreen: для списка recipe: ${recipe}"
-                                    )
+
                                     RecipeItem(
                                         viewModel = recipeViewModel,
                                         recipe = recipe,

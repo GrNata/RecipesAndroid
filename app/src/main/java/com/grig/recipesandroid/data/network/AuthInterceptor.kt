@@ -82,7 +82,9 @@ class AuthInterceptor(
             }
             Log.i("MY Recipes token", "newAccessToken: $newAccessToken")
 
-            if (!newAccessToken.isNullOrBlank()) {
+
+//            if (!newAccessToken.isNullOrBlank()) {
+            if (newAccessToken != null && !newAccessToken.accessToken.isNullOrBlank()) {
                 // повторяем запрос с новым токеном
                 val newRequest = originalRequest.newBuilder()
                     .addHeader("Authorization", "Bearer $newAccessToken")
