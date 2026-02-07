@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import com.grig.recipesandroid.data.model.auth.BlockUserRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleResponse
 import com.grig.recipesandroid.data.model.auth.UserRequest
+import com.grig.recipesandroid.data.model.dto.CategoryTypeRequest
 import com.grig.recipesandroid.data.model.dto.CategoryValueRequest
 import com.grig.recipesandroid.data.model.dto.IngredientAddEdit
 import com.grig.recipesandroid.data.model.dto.IngredientRequest
@@ -161,17 +162,20 @@ class AdminViewModel(
         }
     }
 
-    suspend fun updateBlockedUser(userId: Long, blocked: BlockUserRequest) {
+    fun updateBlockedUser(userId: Long, blocked: BlockUserRequest) {
+        Log.d("ADMIN", "AdminViewModel: blocked: ${blocked}")
         _loading.value = true
         _error.value = null
-        try {
-            authRepository.updateBlockedUser(userId, blocked)
-            loadUsers()
-        } catch (e: Exception) {
-            _error.value = e.message
-            Log.e("ADMIN", "AdminViewModel: error: ${e.message}")
-        } finally {
-            _loading.value = false
+        viewModelScope.launch {
+            try {
+                authRepository.updateBlockedUser(userId, blocked)
+                loadUsers()
+            } catch (e: Exception) {
+                _error.value = e.message
+                Log.e("ADMIN", "AdminViewModel: error: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
         }
     }
 
@@ -286,6 +290,14 @@ class AdminViewModel(
     //        }
     }
 
+    fun onUpdateCategoryType() {
+        recipesViewModel.refreshCategoryType()
+        navController.navigate("admin_category")
+        //        {
+        //            popUpTo("recipe_edit/${recipeId}") { inclusive = true }
+        //        }
+    }
+
     fun loadCategoryValueById(id: Long) {
         if (id == null) {
             _error.value = "ID не указан"
@@ -373,17 +385,62 @@ class AdminViewModel(
 
     }
 
-//    fun updateCategoryValue(id: Long, categoryValue: CategoryValueUpdate) {
-//        viewModelScope.launch {
-//            categoryRepository.updateCategoryValue(id, categoryValue)
-//            recipesViewModel.refreshCategoryValues()
-//        }
-//    }
-
     fun deleteCategoryValue(id: Long) {
         viewModelScope.launch {
             categoryRepository.deleteCategoryValue(id)
             recipesViewModel.refreshCategoryValues()
         }
     }
+
+    fun saveCategoryType(isEdit: Boolean, onSuccess: () -> Unit) {
+        Log.d("ADMIN", "AdminViewModel: START saveCategoryType")
+        _loading.value = true
+
+        Log.d("ADMIN", "AdminViewModel: START categoryType categoryType = $nameCategoryType")
+
+        try {
+            viewModelScope.launch {
+                if (isEdit) {
+                    Log.d("ADMIN", "AdminViewModel: update categoryType id = $currentCategoryTypeId")
+//                    val categoryTypeId = currentCategoryValueId ?: return@launch
+                    val categoryTypeId = currentCategoryTypeId ?: run {
+                        _error.value = "ID категории не указан. Невозможно обновить."
+                        Log.e("ADMIN", "currentCategoryValueId is null!")
+                        return@launch
+                    }
+                    Log.d("ADMIN", "AdminViewModel: update categoryTypeId = $categoryTypeId")
+                    Log.d("ADMIN", "AdminViewModel: update nameType = $nameCategoryType")
+
+                    val response = categoryRepository.updateCategoryType(categoryTypeId, CategoryTypeRequest(
+                        nameType = nameCategoryType
+                    ))
+                    Log.d("ADMIN", "AdminViewModel: update response: $response")
+//                    onUpdateCategoryValue()
+                } else {
+                    categoryRepository.createCategoryType(
+                        CategoryTypeRequest(
+                            nameType = nameCategoryType
+                        )
+                    )
+//                    onUpdateCategoryValue()
+                }
+
+                onUpdateCategoryType()
+            }
+        } catch (e: Exception) {
+            _error.value = e.message
+        } catch (e: HttpException) {
+            _error.value = e.message()
+        } finally {
+            _loading.value = false
+        }
+    }
+
+    fun deleteCategoryType(id: Long) {
+        viewModelScope.launch {
+            categoryRepository.deleteCategoryType(id)
+            recipesViewModel.refreshCategoryType()
+        }
+    }
+
 }

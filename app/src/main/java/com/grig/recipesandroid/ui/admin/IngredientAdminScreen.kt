@@ -1,6 +1,9 @@
 package com.grig.recipesandroid.ui.admin
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Divider
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -36,6 +40,7 @@ import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun IngredientAdminScreen(
     authViewModel: AuthViewModel,
@@ -67,6 +72,7 @@ fun IngredientAdminScreen(
 //    }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize(),
 
         //        Кнопка добавить ингредиент
@@ -76,10 +82,15 @@ fun IngredientAdminScreen(
                     adminViewModel.resetFormIngredient()
                     navController.navigate("admin_add_ingredient")
                 },
-                containerColor = Color.Red,
+                containerColor = MaterialTheme.colorScheme.onTertiary,
+//                containerColor = Color.Red,
                 modifier = Modifier.size(35.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Добавить ингредиент")
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Добавить ингредиент",
+                    tint = Color.White
+                    )
             }
         },
         floatingActionButtonPosition = FabPosition.End, // не обязательно, но правильно
@@ -90,6 +101,7 @@ fun IngredientAdminScreen(
                 isAuthenticated = isAuthenticated,
                 isAdmin = isAdmin,
                 onBack = { navController.popBackStack() },
+                onMainScreen = { navController.navigate("recipe_list") },
                 showMyRecipes = false,
                 onLoginClick = {},
                 onLogoutClick = {},
@@ -106,22 +118,32 @@ fun IngredientAdminScreen(
         Box(
             Modifier
                 .padding(paddingValues)
+//                .background(Color(0xFFFFF8F7))
                 .background(Color(0xFFF7EDE9))
 //                .background(Color(0xFFEEE2DC))
+//                .border(
+//                    border = BorderStroke(1.dp, Color(0xFF9D9598)),
+////                    shape =
+//                )
         ) {
 //            if (LoadState.Loading) {
 //                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
 //            } else {
 
+//            Spacer(modifier = Modifier.height(16.dp))
+
                 LazyColumn(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 42.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 60.dp).background(Color(0xFFFFF8F7))
+                        .border(
+                            border = BorderStroke(1.dp, Color(0xFF9D9598))
+                        )
                 ) {
-                    item {
 
-                    }
-
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
+//                    item {
+                    stickyHeader {
+//                        Spacer(modifier = Modifier.height(16.dp))
 
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(10.dp)
@@ -130,24 +152,31 @@ fun IngredientAdminScreen(
                                 Text(
                                     "Название \nрус.",
                                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                                    color = Color(0xFF123C69)
+                                    color = MaterialTheme.colorScheme.surface
+//                                    color = Color(0xFF123C69)
                                 )
                             }
                             Column(modifier = Modifier.weight(1.2f)) {
                                 Text(
                                     "Название \neng",
                                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                                    color = Color(0xFF123C69)
+                                    color = MaterialTheme.colorScheme.surface
+//                                    color = Color(0xFF123C69)
                                 )
                             }
                             Column(modifier = Modifier.weight(1.2f)) {
                                 Text(
                                     "Калории \nв 100г",
                                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                                    color = Color(0xFF123C69)
+                                    color = MaterialTheme.colorScheme.surface
+//                                    color = Color(0xFF123C69)
                                 )
                             }
-                        }
+                        }   //  Row
+                        Divider(
+                            color = Color(0xFF9D9598),
+                            thickness = 0.3.dp
+                        )
                     }
 
                     items(ingredientAll) { ingredient ->
@@ -158,7 +187,8 @@ fun IngredientAdminScreen(
                                 Text(
                                     "${ingredient.name}",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFF123C69),
+                                    color = MaterialTheme.colorScheme.surface,
+//                                    color = Color(0xFF123C69),
                                     softWrap = true, // Разрешает перенос текста
                                     maxLines = 3,  // Максимум 3 строки (можно убрать ограничение)
                                     overflow = TextOverflow.Ellipsis // Если текст > 3 строк — добавит "..."
@@ -168,7 +198,8 @@ fun IngredientAdminScreen(
                                 Text(
                                     "${ingredient.nameEng}",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFF123C69),
+                                    color = MaterialTheme.colorScheme.surface,
+//                                    color = Color(0xFF123C69),
                                     softWrap = true, // Разрешает перенос текста
                                     maxLines = 3,  // Максимум 3 строки (можно убрать ограничение)
                                     overflow = TextOverflow.Ellipsis // Если текст > 3 строк — добавит "..."
@@ -178,7 +209,8 @@ fun IngredientAdminScreen(
                                 Text(
                                     "${ingredient.energyKcal100g}",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFF123C69)
+                                    color = MaterialTheme.colorScheme.surface
+//                                    color = Color(0xFF123C69)
                                 )
                             }
                             Column(modifier = Modifier.weight(0.3f)) {
@@ -189,7 +221,8 @@ fun IngredientAdminScreen(
                                     Icon(
                                         Icons.Default.Edit,
                                         contentDescription = "Редактировать ингредиент",
-                                        tint = Color(0xFF123C69)
+                                        tint = MaterialTheme.colorScheme.surface
+//                                        tint = Color(0xFF123C69)
                                     )
                                 }
                             }
@@ -201,12 +234,17 @@ fun IngredientAdminScreen(
                                     Icon(
                                         Icons.Default.Delete,
                                         contentDescription = "Удалить ингредиент",
-                                        tint = Color(0xFF123C69)
+                                        tint = MaterialTheme.colorScheme.surface
+//                                        tint = Color(0xFF123C69)
                                     )
                                 }
                             }
 
-                        }
+                        }   //  Row
+                        Divider(
+                            color = Color(0xFF9D9598),
+                            thickness = 1.dp
+                        )
                     }
                 }   //  LazyColumn
 //            }

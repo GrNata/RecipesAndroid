@@ -2,11 +2,13 @@ package com.grig.recipesandroid.ui.app_top_bar
 
 
 import android.util.Log
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
@@ -27,9 +29,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType.Companion.Text
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupPositionProvider
 import com.grig.recipesandroid.domain.model.Recipe
 import com.grig.recipesandroid.ui.auth.AuthViewModel
+import com.grig.recipesandroid.ui.colorScheme.MyAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,6 +42,7 @@ fun AppTopBar(
     isAuthenticated: Boolean,
     isAdmin: Boolean = false,
     showMyRecipes: Boolean,
+    onMainScreen: (() -> Unit)? = null,
     onBack: (() -> Unit)? = null,
     onLoginClick: () -> Unit,
     onLogoutClick: () -> Unit,
@@ -56,12 +61,18 @@ fun AppTopBar(
     val tooltipState = remember { TooltipState() }
 
     TopAppBar(
+        modifier = Modifier.height(60.dp),
         title = { Text(
-            title,
-            color = Color(0xFF8E4253),
+            text = title,
             maxLines = 1, // Заголовок в одну строку
             overflow = TextOverflow.Ellipsis // Если не влезет — будет троеточие
         ) },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = Color(0xFF883F58),
+            navigationIconContentColor = Color(0xFf3C254E),
+            actionIconContentColor = Color(0xFf59595C)
+        ),
         navigationIcon = {
             onBack?.let {
                 IconButton(onClick = it) {
@@ -70,6 +81,14 @@ fun AppTopBar(
             }
         },
         actions = {
+//            Кнопка к списку всех рецептов - на главный экран
+            if (onMainScreen != null) {
+                IconButton(onClick = onMainScreen) {
+                    Icon(Icons.Default.Home, contentDescription = "К списку рецептов - главный экран")
+                }
+            }
+
+
             // 1 Кнопка для ADMIN
             Log.d("ADMIN", "AppTopBar: isCategory: $isCategory,  isAdmin = $isAdmin")
             if (isAdmin) {

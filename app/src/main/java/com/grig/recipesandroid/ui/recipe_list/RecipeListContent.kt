@@ -51,6 +51,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.font.FontStyle
 import androidx.navigation.NavController
 import com.grig.recipesandroid.ui.utilRecipe.CategoryTypeDropDown
 import com.grig.recipesandroid.ui.utilRecipe.GroupedByCategoryType
@@ -116,11 +117,8 @@ fun RecipeListContent(
                     )
                 }
 
-//                Log.d("ADMIN", "RecipeListContent: selectedCategoryTypeId: $selectedCategoryTypeId")
-
                 //            Группируем рецепты по первой категории (можно доработать для нескольких)
                 val grouped = GroupedByCategoryType(filteredRecipes, selectedCategoryTypeId)
-
 
                 // Основной список
                 LazyColumn(
@@ -137,17 +135,25 @@ fun RecipeListContent(
 
 // Sticky Header для категории - объединение рецептов по категориям
                             stickyHeader {
-                                Box(
+//                                Box(
+                                Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(Color(0xFFEFEFEF))
+                                        .background(MaterialTheme.colorScheme.background)
+//                                        .background(Color(0xFFE8DBE0))
+//                                        .background(Color(0xFFfffffa))
+//                                        .background(Color(0xFF9D9598))
+//                                        .background(Color(0xFFEFEFEF))
                                         .padding(8.dp)
+                                        .height(20.dp)
                                 ) {
                                     Text(
                                         text = category,
-//                                    text = category.name,
                                         style = MaterialTheme.typography.titleMedium,
-                                        color = Color(0xFF123C69)
+                                        color = Color(0xFF3C326B),
+//                                        color = Color(0xFF123C69),
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth()
                                     )
                                 }
                             }

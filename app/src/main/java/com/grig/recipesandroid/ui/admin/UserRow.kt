@@ -1,73 +1,331 @@
 package com.grig.recipesandroid.ui.admin
 
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.grig.recipesandroid.data.model.auth.BlockUserRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleResponse
 import com.grig.recipesandroid.data.model.auth.UserRequest
+import com.grig.recipesandroid.ui.utilRecipe.DateTimeFormater
 
 
 @Composable
 fun UserRow(
     user: UserRequest,
-    onUpdateRole: (Long, UpdateUserRoleResponse) -> Unit
+    adminViewModel: AdminViewModel
+//    onUpdateRole: (Long, UpdateUserRoleResponse) -> Unit
 //    onUpdateRole: (Long, UpdateUserRoleRequest) -> Unit
 ) {
 
     var isExpanded by remember { mutableStateOf(false) }
 
+    var isCheckedAdmin by remember { mutableStateOf(false) }
+    var isCheckedBlocked by remember { mutableStateOf(false) }
+
+
     Card(
-        modifier = Modifier.padding(8.dp),
-        onClick = { isExpanded = true }
+//        modifier = Modifier.padding(8.dp),
+        onClick = { isExpanded = true },
+        modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .clip(RoundedCornerShape(2.dp)),
+        elevation = CardDefaults.cardElevation(4.dp),
+//        colors = CardDefaults.cardColors(Color(0xFFFFF8F7))
+        colors = CardDefaults.cardColors(Color(0xFFFFFBFB))
     ) {
         Column(
-//            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .background(Color(0xFFFFFBFB))
         ) {
-            Text(
-                "Имя: ${user.username}"
+            Row(modifier = Modifier.fillMaxWidth().padding(1.dp)) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Имя:",
+                        color = Color(0xFF3C326B),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                Column(modifier = Modifier.weight(3f)) {
+                    Text(
+                        "${user.username}",
+                        color = Color(0xFF6F6AB8),
+                        style = MaterialTheme.typography.bodyMedium
+                        )
+                }
+            }
+            Divider(
+                color = Color(0xFF9D9598),
+                thickness = 1.dp
             )
-            Text(
-                "Email: ${user.email}"
+
+            Row(modifier = Modifier.fillMaxWidth().padding(1.dp)) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Email:",
+                        color = Color(0xFF3C326B),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                Column(modifier = Modifier.weight(3f)) {
+                    Text(
+                        "${user.email}",
+                        color = Color(0xFF6F6AB8),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+            Divider(
+                color = Color(0xFF9D9598),
+                thickness = 1.dp
             )
-            Text(
-                "Роли: ${user.roles}"
+
+            Row(modifier = Modifier.fillMaxWidth()
+                .padding(top = 10.dp, start = 1.dp, bottom = 1.dp)
+                .height(20.dp)) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Роли:",
+                        color = Color(0xFF3C326B),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                Column(modifier = Modifier.weight(2f)) {
+                    Row() {
+                        user.roles.forEach { role ->
+                            if (role == "ADMIN") {
+                                Text(
+                                    text = "$role, ",
+                                    color = Color(0xFF58142B),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            } else {
+                                Text(
+                                    text = "$role, ",
+                                    color = Color(0xFF6F6AB8),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+
+                        }
+                    }
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    if (!user.roles.contains("ADMIN")) {
+                        Checkbox(
+                            checked = isCheckedAdmin,
+                            onCheckedChange = { isCheckedAdmin = it },
+                            modifier = Modifier.size(0.1.dp),
+                            enabled = true,
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Color(0xFF883F58),
+                                checkmarkColor = Color(0xFF883F58),
+                                uncheckedColor = Color(0xFFCDA090)
+                            )
+                        )
+                    } else {
+                        Checkbox(
+                            checked = true,
+                            onCheckedChange = {
+                                if (user.id != null && !user.roles.contains("ADMIN")) {
+                                    val roles = user.roles.toMutableSet()
+                                    roles.add("ADMIN")
+                                    val newRoles = UpdateUserRoleResponse(roles)
+                                    adminViewModel.updateRole(user.id, newRoles)
+                                }
+                            },
+                            modifier = Modifier.size(0.1.dp),
+//                            enabled = false,
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Color(0xFF883F58),
+                                checkmarkColor = Color(0xFF883F58),
+                                uncheckedColor = Color(0xFFCDA090)
+                            )
+                        )
+                    }
+                }
+            }
+            Divider(
+                color = Color(0xFF9D9598),
+                thickness = 1.dp
             )
-            Text(
-                "Дата: ${user.registrationDate}"
+
+            Row(modifier = Modifier.fillMaxWidth().padding(1.dp)) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Дата:",
+                        color = Color(0xFF3C326B),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                Column(modifier = Modifier.weight(3f)) {
+                    Text(
+                        "${DateTimeFormater( user.registrationDate)}",
+//                        "${user.registrationDate}",
+                        color = Color(0xFF6F6AB8),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+            Divider(
+                color = Color(0xFF9D9598),
+                thickness = 1.dp
             )
-            Text(
-                "Блокировка: ${user.blocked}"
-            )
+
+            Row(modifier = Modifier.fillMaxWidth()
+                .padding(top = 10.dp, start = 1.dp, bottom = 1.dp)
+                .height(20.dp)
+            ) {
+                Column(modifier = Modifier.weight(2f)) {
+                    Text(
+                        "Блокировка:",
+                        color = Color(0xFF3C326B),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    if (user.blocked) {
+                        Text(
+                            "${user.blocked}",
+                            color = Color(0xFF58142B),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    } else {
+                        Text(
+                            "${user.blocked}",
+                            color = Color(0xFF6F6AB8),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Checkbox(
+                        checked = isCheckedBlocked,
+                        onCheckedChange = {
+                            isCheckedBlocked = it
+                            val newIsBlocked = BlockUserRequest(it)
+                            if (user.id != null) {
+                                adminViewModel.updateBlockedUser(user.id, newIsBlocked)
+                            }
+                        },
+                        modifier = Modifier.size(0.1.dp),
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = Color(0xFF883F58),
+                            checkmarkColor = Color(0xFF883F58),
+                            uncheckedColor = Color(0xFFCDA090)
+                        )
+                    )
+                }
+            }
+
 
             Log.d("ADMIN", "UserRow: isExpanded: ${isExpanded}")
 
-//            if (isExpanded) {
 
-                Row() {
-                    if (user.id != null && !user.roles.contains("ADMIN")) {
-                        val roles = user.roles.toMutableSet()
-                        roles.add("ADMIN")
-                        val newRoles = UpdateUserRoleResponse(roles)
+//                Row(modifier = Modifier.fillMaxWidth()) {
+//
+//                    Column(
+//                        modifier = Modifier.weight(2f),
+//                        horizontalAlignment = Alignment.Start
+//                        ) {
+//                        if (user.id != null && !user.roles.contains("ADMIN")) {
+//                            val roles = user.roles.toMutableSet()
+//                            roles.add("ADMIN")
+//                            val newRoles = UpdateUserRoleResponse(roles)
+//
+//                            Button(
+////                                modifier = Modifier.size(20.dp),
+//                                onClick = { onUpdateRole(user.id, newRoles) }) {
+//                                Text("Сделать админом")
+//                            }
+//                        }
+//                    }
+//                    Column(
+//                        modifier = Modifier.weight(2f),
+//                        horizontalAlignment = Alignment.End
+//                        ) {
+////                        if (user.id != null && !user.roles.contains("ADMIN")) {
+////                            val roles = user.roles.toMutableSet()
+////                            roles.add("ADMIN")
+////                            val newRoles = UpdateUserRoleResponse(roles)
+//
+//                            Button(
+////                                modifier = Modifier.size(20.dp),
+//                                onClick = {  }) {
+//                                Text(if (user.blocked) "Разблокировать" else "Заблокировать")
+//                            }
+//                        }
+//                    }
+//            Divider(
+//                color = Color(0xFF9D9598),
+//                thickness = 1.dp
+//            )
+//
+//            Row(
+//                modifier = Modifier.fillMaxWidth().padding(start = 4.dp)
+//            ) {
+//                Column(modifier = Modifier.weight(1f)) {
+//                    if (!user.roles.contains("ADMIN")) {
+//                        Checkbox(
+//                            checked = isCheckedAdmin,
+//                            onCheckedChange = { isCheckedAdmin = it },
+//                            modifier = Modifier.padding(top = 1.dp)
+//                        )
+//                        Text(
+//                            "Сделать админом",
+//                            color = Color(0xFF883F58),
+//                            style = MaterialTheme.typography.bodyMedium
+//                        )
+//                    }
+//                }
+//                Column(modifier = Modifier.weight(1f)) {
+////                    Row() {
+//                        Checkbox(
+//                            checked = isCheckedBlocked,
+//                            onCheckedChange = { isCheckedBlocked = it },
+//                            modifier = Modifier.padding(top = 1.dp)
+//                        )
+//                    Text(
+//                        if (!user.blocked) "Заблокировать" else "Разблокировать",
+//                        color = Color(0xFF883F58),
+//                        style = MaterialTheme.typography.bodyMedium
+//                    )
+////                    }
+//                }
+//
+//            }
 
-                        Button(onClick = { onUpdateRole(user.id, newRoles) }) {
-                            Text("Сделать админом")
-                        }
-                    }
 
-            }
         }
     }
 }

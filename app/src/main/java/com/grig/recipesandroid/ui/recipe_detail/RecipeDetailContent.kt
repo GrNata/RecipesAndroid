@@ -65,6 +65,8 @@ fun RecipeDetailContent(
     val context = LocalContext.current
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+
         topBar = {
             val authRestored by authViewModel.authStateRestored.collectAsState()
 
@@ -118,7 +120,8 @@ fun RecipeDetailContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Color(0xFFEEE2DC))
+                .background(MaterialTheme.colorScheme.background)
+//                .background(Color(0xFFEEE2DC))
         ) {
             when {
                 loading -> {

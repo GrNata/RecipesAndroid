@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -42,6 +43,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
+import com.grig.recipesandroid.ui.colorScheme.MyAppTheme
 import com.grig.recipesandroid.ui.recipe_list.RecipeItem
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import com.grig.recipesandroid.ui.utilRecipe.CategoryTypeDropDown
@@ -124,6 +126,8 @@ fun MyRecipesScreen(
     var isMyRecipes = true
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+//        containerColor = Color(0xFFF7F3EC),
         modifier = Modifier.fillMaxSize(),
 
 //        Кнопка добавить рецепт
@@ -133,9 +137,14 @@ fun MyRecipesScreen(
                     addEditRecipeViewModel.resetForm()
                     navController.navigate("recipe_add")
                 },
-                containerColor = Color.Red
+                containerColor = MaterialTheme.colorScheme.onTertiary
+//                containerColor = Color.Red
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Добавить рецепт")
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Добавить рецепт",
+                    tint = Color(0xFFFFFFFF)
+                )
             }
         },
         floatingActionButtonPosition = FabPosition.End, // не обязательно, но правильно
@@ -199,13 +208,16 @@ fun MyRecipesScreen(
 
                         LazyColumn(
                             modifier = Modifier.fillMaxSize()
+                                .background(Color(0xFFF7EDE9))
                         ) {
                             grouped.forEach { (category, recipesInCategory) ->
                                 stickyHeader {
-                                    Box(
+//                                    Box(
+                                    Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .background(Color(0xFFEFEFEF))
+                                            .background(MaterialTheme.colorScheme.background)
+//                                            .background(Color(0xFFEFEFEF))
                                             .padding(8.dp)
                                     ) {
                                         Text(
@@ -213,7 +225,10 @@ fun MyRecipesScreen(
 //                                        text = category.categoryValue,
 //                                    text = category.name,
                                             style = MaterialTheme.typography.titleMedium,
-                                            color = Color(0xFF123C69)
+//                                            color = MaterialTheme.colorScheme.background
+                                            color = Color(0xFF123C69),
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.fillMaxWidth()
                                         )
                                     }
                                 }

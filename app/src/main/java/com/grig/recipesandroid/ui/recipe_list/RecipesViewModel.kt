@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.grig.recipesandroid.data.model.dto.CategoryTypeCreate
+import com.grig.recipesandroid.data.model.dto.CategoryTypeRequest
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryTypeUpdate
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
@@ -216,26 +216,26 @@ open class RecipesViewModel(
         }
     }
 
-    fun createCategoryType(categoryType: CategoryTypeCreate) {
-        viewModelScope.launch {
-            categoryRepository.createCategoryType(categoryType)
-            refreshCategoryType()
-        }
-    }
-
-    fun updateCategoryType(id: Long, categoryType: CategoryTypeUpdate) {
-        viewModelScope.launch {
-            categoryRepository.updateCategoryType(id, categoryType)
-            refreshCategoryType()
-        }
-    }
-
-    fun deleteCategoryType(id: Long) {
-        viewModelScope.launch {
-            categoryRepository.deleteCategoryType(id)
-            refreshCategoryType()
-        }
-    }
+//    fun createCategoryType(categoryType: CategoryTypeRequest) {
+//        viewModelScope.launch {
+//            categoryRepository.createCategoryType(categoryType)
+//            refreshCategoryType()
+//        }
+//    }
+//
+//    fun updateCategoryType(id: Long, categoryType: CategoryTypeRequest) {
+//        viewModelScope.launch {
+//            categoryRepository.updateCategoryType(id, categoryType)
+//            refreshCategoryType()
+//        }
+//    }
+//
+//    fun deleteCategoryType(id: Long) {
+//        viewModelScope.launch {
+//            categoryRepository.deleteCategoryType(id)
+//            refreshCategoryType()
+//        }
+//    }
 //    _______________________
     fun refreshCategoryValues() {
         viewModelScope.launch {

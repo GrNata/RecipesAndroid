@@ -26,11 +26,13 @@ import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.UnitRepository
 import com.grig.recipesandroid.ui.admin.AddEditCategoryScreen
+import com.grig.recipesandroid.ui.admin.AddEditCategoryTypeScreen
 import com.grig.recipesandroid.ui.admin.AddEditIngredientScreen
 import com.grig.recipesandroid.ui.admin.AdminScreen
 import com.grig.recipesandroid.ui.admin.AdminViewModel
 import com.grig.recipesandroid.ui.admin.CategoryAdminScreen
 import com.grig.recipesandroid.ui.admin.IngredientAdminScreen
+import com.grig.recipesandroid.ui.admin.NewUpdateCategoryTypeScreen
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
@@ -292,6 +294,28 @@ fun AppNavGraph(
                         navController)
                 }
 
+                composable("admin_change_categoryType") {
+                    AddEditCategoryTypeScreen(
+                        recipeViewModel,
+                        authViewModel,
+                        adminViewModel,
+                        navController
+                    )
+                }
+
+                composable("admin_new_edit_categoryType/{id}") { backStackEntry ->
+                    val id = backStackEntry.arguments?.getString("id")?.toLongOrNull()
+
+                    Log.d("ADMIN", "NavGrapf: id = $id")
+
+                    NewUpdateCategoryTypeScreen(
+                        id,
+                        authViewModel,
+                        adminViewModel,
+                        navController
+                    )
+                }
+
                 composable("admin_add_ingredient") {
                     AddEditIngredientScreen(
                         ingredientId = null,
@@ -318,6 +342,7 @@ fun AppNavGraph(
 //                        onSave = {}
                     )
                 }
+
 
 
             }       //  NavHost

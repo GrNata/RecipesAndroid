@@ -1,7 +1,7 @@
 package com.grig.recipesandroid.data.api
 
 //import com.grig.recipesandroid.data.model.dto.CategoryDto
-import com.grig.recipesandroid.data.model.dto.CategoryTypeCreate
+import com.grig.recipesandroid.data.model.dto.CategoryTypeRequest
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryTypeUpdate
 import com.grig.recipesandroid.data.model.dto.CategoryValueRequest
@@ -14,6 +14,7 @@ import com.grig.recipesandroid.data.model.request.RecipeUpdateRequest
 import com.grig.recipesandroid.data.model.dto.UnitDto
 import com.grig.recipesandroid.data.model.request.SearchByIngredientsRequest
 import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
+import okhttp3.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -106,10 +107,10 @@ interface RecipeApi {
     suspend fun getCategoryTypeById(@Path("id") id: Long) : CategoryTypeDto
 
     @POST("/api/admin/categories-types")
-    suspend fun createCategoryType(@Body request: CategoryTypeCreate)
+    suspend fun createCategoryType(@Body request: CategoryTypeRequest)
 
     @PUT("/api/admin/categories-types/{id}")
-    suspend fun updateCategoryType(@Path ("id") id: Long, @Body request: CategoryTypeUpdate)
+    suspend fun updateCategoryType(@Path("id") id: Long, @Body request: CategoryTypeRequest)
 
     @DELETE("/api/admin/categories-types/{id}")
     suspend fun deleteCategoryType(@Path("id") id: Long)

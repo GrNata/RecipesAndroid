@@ -7,7 +7,7 @@ data class CategoryTypeDto(
     @SerializedName("nameType") val nameType: String
 )
 
-data class CategoryTypeCreate(
+data class CategoryTypeRequest(
     val nameType: String
 )
 

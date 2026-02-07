@@ -2,11 +2,12 @@ package com.grig.recipesandroid.data.repository
 
 import android.util.Log
 import com.grig.recipesandroid.data.api.RecipeApi
-import com.grig.recipesandroid.data.model.dto.CategoryTypeCreate
+import com.grig.recipesandroid.data.model.dto.CategoryTypeRequest
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryTypeUpdate
 import com.grig.recipesandroid.data.model.dto.CategoryValueRequest
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
+import okhttp3.Response
 
 //import com.grig.recipesandroid.domain.model.Category
 
@@ -66,10 +67,13 @@ class CategoryRepository(private val api: RecipeApi) {
         }
     }
 
-    suspend fun createCategoryType(categoryType: CategoryTypeCreate) = api.createCategoryType(categoryType)
+    suspend fun createCategoryType(categoryType: CategoryTypeRequest) = api.createCategoryType(categoryType)
 
 
-    suspend fun updateCategoryType(id: Long, categoryType: CategoryTypeUpdate) = api.updateCategoryType(id, categoryType)
+    suspend fun updateCategoryType(id: Long, categoryType: CategoryTypeRequest)  {
+        Log.d("ADMIN", "CategoryRepository: update id=$id, categoryType=${categoryType.nameType}")
+        api.updateCategoryType(id, categoryType)
+    }
 
 
     suspend fun deleteCategoryType(id: Long) = api.deleteCategoryType(id)

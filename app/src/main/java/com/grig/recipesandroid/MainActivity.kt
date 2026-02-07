@@ -20,6 +20,7 @@ import com.grig.recipesandroid.data.repository.UnitRepository
 import com.grig.recipesandroid.ui.admin.AdminViewModel
 import com.grig.recipesandroid.ui.admin.AdminViewModelFactory
 import com.grig.recipesandroid.ui.auth.AuthViewModel
+import com.grig.recipesandroid.ui.colorScheme.MyAppTheme
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModel
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModelFactory
 import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModel
@@ -139,79 +140,93 @@ class MainActivity : ComponentActivity() {
 
         // 7. Compose и NavHost
         setContent {
-            RecipesAndroidTheme {
-                val navController = rememberNavController()
+//            Моя цветовая схема
+            MyAppTheme {
+//                RecipesAndroidTheme {
+                    val navController = rememberNavController()
 
-                // Создаём ViewModels
-                val authViewModel: AuthViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
-                    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-                        @Suppress("UNCHECKED_CAST")
-                        return AuthViewModel(
-                            authRepository,
-                            tokenRepository
-                            ) as T
-                    }
-                })
+                    // Создаём ViewModels
+                    val authViewModel: AuthViewModel =
+                        viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
+                            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                                @Suppress("UNCHECKED_CAST")
+                                return AuthViewModel(
+                                    authRepository,
+                                    tokenRepository
+                                ) as T
+                            }
+                        })
 
-                val recipesViewModel: RecipesViewModel = viewModel(
-                    factory = RecipesViewModelFactory(
-                        repository = recipeRepository,
-                        favoritesRepository = favoritesRepository,
-                        categoryRepository = categoryRepository,
-                        ingredientRepository = ingredientRepository,
-                        userIdFlow = authViewModel.userId
+                    val recipesViewModel: RecipesViewModel = viewModel(
+                        factory = RecipesViewModelFactory(
+                            repository = recipeRepository,
+                            favoritesRepository = favoritesRepository,
+                            categoryRepository = categoryRepository,
+                            ingredientRepository = ingredientRepository,
+                            userIdFlow = authViewModel.userId
+                        )
                     )
-                )
 
-                val myRecipesViewModel: MyRecipesViewModel = viewModel(
+                    val myRecipesViewModel: MyRecipesViewModel = viewModel(
 //                    parentEntry,
-                    factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
-                )
+                        factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
+                    )
 
-                val searchByIngredientsViewModel: SearchByIngredientsViewModel = viewModel(
-                    factory = SearchByIngredientViewModelFactory(recipeRepository, ingredientRepository, recipesViewModel)
-                )
+                    val searchByIngredientsViewModel: SearchByIngredientsViewModel = viewModel(
+                        factory = SearchByIngredientViewModelFactory(
+                            recipeRepository,
+                            ingredientRepository,
+                            recipesViewModel
+                        )
+                    )
 
 //                val recipeDetailViewModel: RecipeDetailViewModel = viewModel(
 //                    factory = RecipeDetailViewModelFactory(recipeApi)
 //                )
 
-                val addEditRecipeViewModel: AddEditRecipeViewModel = viewModel(
-                    factory = AddEditRecipeViewModelFactory(
+                    val addEditRecipeViewModel: AddEditRecipeViewModel = viewModel(
+                        factory = AddEditRecipeViewModelFactory(
+                            recipeRepository = recipeRepository,
+                            categoryRepository = categoryRepository,
+                            ingredientRepository = ingredientRepository,
+                            unitRepository = unitRepository,
+                            authViewModel = authViewModel,
+                            recipesViewModel,
+                            myRecipesViewModel,
+                            navController
+                        )
+                    )
+
+                    val adminViewModel: AdminViewModel = viewModel(
+                        factory = AdminViewModelFactory(
+                            authRepository,
+                            ingredientRepository,
+                            categoryRepository,
+                            recipesViewModel,
+                            navController
+                        )
+                    )
+
+                    AppNavGraph(
+                        navController = navController,
+                        api = recipeApi,
+                        authViewModel = authViewModel,
                         recipeRepository = recipeRepository,
                         categoryRepository = categoryRepository,
+                        tokenRepository = tokenRepository,
                         ingredientRepository = ingredientRepository,
                         unitRepository = unitRepository,
-                        authViewModel = authViewModel,
-                        recipesViewModel,
-                        myRecipesViewModel,
-                        navController
-                    )
-                )
-
-                val adminViewModel: AdminViewModel = viewModel(
-                    factory = AdminViewModelFactory(authRepository, ingredientRepository, categoryRepository, recipesViewModel, navController)
-                )
-
-                AppNavGraph(
-                    navController = navController,
-                    api = recipeApi,
-                    authViewModel = authViewModel,
-                    recipeRepository = recipeRepository,
-                    categoryRepository = categoryRepository,
-                    tokenRepository = tokenRepository,
-                    ingredientRepository = ingredientRepository,
-                    unitRepository = unitRepository,
-                    applicationContext = applicationContext,
-                    recipeViewModel = recipesViewModel,
-                    addEditRecipeViewModel = addEditRecipeViewModel,
-                    myRecipesViewModel = myRecipesViewModel,
-                    searchByIngredientsViewModel = searchByIngredientsViewModel,
-                    adminViewModel = adminViewModel
+                        applicationContext = applicationContext,
+                        recipeViewModel = recipesViewModel,
+                        addEditRecipeViewModel = addEditRecipeViewModel,
+                        myRecipesViewModel = myRecipesViewModel,
+                        searchByIngredientsViewModel = searchByIngredientsViewModel,
+                        adminViewModel = adminViewModel
 //                    recipeDetailViewModel = recipeDetailViewModel
-                )
+                    )
+//                }   //  RecipeAndroidTheme
             }
-        }
+        }   //  setContent
     }
 }
 

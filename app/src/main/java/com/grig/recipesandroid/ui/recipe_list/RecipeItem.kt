@@ -59,7 +59,8 @@ fun RecipeItem(
             .clickable { onClick() }            // переход к detail
             .clip(RoundedCornerShape(20.dp)),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(Color(0xFFEEE2DC))
+        colors = CardDefaults.cardColors(Color(0xFFFFF8F7))
+//        colors = CardDefaults.cardColors(Color(0xFFEEE2DC))
     ) {
         Column(
             modifier = Modifier
@@ -79,7 +80,11 @@ fun RecipeItem(
                         },
                             modifier = Modifier.size(18.dp) // Размер кнопки
                             ) {
-                            Icon(Icons.Default.Edit, contentDescription = "Редактировать")
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = "Редактировать",
+                                tint = MaterialTheme.colorScheme.surface
+                            )
                         }
 
                         // Отступ 8 dp между кнопками
@@ -91,7 +96,11 @@ fun RecipeItem(
                         },
                             modifier = Modifier.size(18.dp)  // Размер кнопки
                             ) {
-                            Icon(Icons.Default.Delete, contentDescription = "Удалить")
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Удалить",
+                                tint = MaterialTheme.colorScheme.surface
+                                )
                         }
 
                     // Отступ 8 dp между кнопками

@@ -1,12 +1,14 @@
 package com.grig.recipesandroid.ui.admin
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -19,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
@@ -43,11 +46,14 @@ fun AdminScreen(
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+
         topBar = {
             AppTopBar(
-                title = "АДМИН",
+                title = "Пользователи - АДМИН",
                 isAuthenticated = isAuthenticated,
                 isAdmin = isAdmin,
+                onMainScreen = { navController.navigate("recipe_list") },
                 onBack = { navController.popBackStack() },
                 showMyRecipes = false,
                 onLoginClick = {},
@@ -71,10 +77,23 @@ fun AdminScreen(
             if (loading) {
                 CircularProgressIndicator()
             } else {
-                LazyColumn() {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .background(Color(0xFFD3D0D4))
+//                        .background(Color(0xFFBFBBBB))
+                ) {
                     items(usersAll) { user ->
-                        UserRow(user, adminViewModel::updateRole)
+                        Column(
+                            modifier = Modifier
+//                                .padding(16.dp)
+//                                .background(Color(0xFFF7EDE9))
+                        ) {
+                            UserRow(user, adminViewModel)
+//                            UserRow(user, adminViewModel::updateRole)
 //                        UserRow(user, adminViewModel::updateRole)
+                        }
                     }
                 }
             }
