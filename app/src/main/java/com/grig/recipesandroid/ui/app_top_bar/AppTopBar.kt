@@ -76,7 +76,11 @@ fun AppTopBar(
         navigationIcon = {
             onBack?.let {
                 IconButton(onClick = it) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = "Назад",
+                        tint = MaterialTheme.colorScheme.surface
+                    )
                 }
             }
         },
@@ -84,7 +88,11 @@ fun AppTopBar(
 //            Кнопка к списку всех рецептов - на главный экран
             if (onMainScreen != null) {
                 IconButton(onClick = onMainScreen) {
-                    Icon(Icons.Default.Home, contentDescription = "К списку рецептов - главный экран")
+                    Icon(
+                        Icons.Default.Home,
+                        contentDescription = "К списку рецептов - главный экран",
+                        tint = MaterialTheme.colorScheme.surface
+                    )
                 }
             }
 
@@ -95,7 +103,11 @@ fun AppTopBar(
                 if (onAdmin != null) {
 //                    Кнопка экран Админа - толко на RecipeListScreen
                     IconButton(onClick = onAdmin) {
-                        Icon(Icons.Default.Face, contentDescription = "Admin")
+                        Icon(
+                            Icons.Default.Face,
+                            contentDescription = "Admin",
+                            tint = MaterialTheme.colorScheme.surface
+                        )
                     }
                 }
 //                else {
@@ -110,7 +122,11 @@ fun AppTopBar(
 //                            enableUserInput = false
                         ) {
                             IconButton(onClick = onCategoryAdmin) {
-                                Icon(Icons.Default.Menu, contentDescription = "Ингредиенты")
+                                Icon(
+                                    Icons.Default.Menu,
+                                    contentDescription = "Ингредиенты",
+                                    tint = MaterialTheme.colorScheme.surface
+                                )
                             }
                         }
 
@@ -124,7 +140,11 @@ fun AppTopBar(
                             state = tooltipState
                         ) {
                             IconButton(onClick = onIngredientAdmin) {
-                                Icon(Icons.Default.Menu, contentDescription = "Категории-Админ")
+                                Icon(
+                                    Icons.Default.Menu,
+                                    contentDescription = "Категории-Админ",
+                                    tint = MaterialTheme.colorScheme.surface
+                                )
                             }
                         }
                     }
@@ -134,7 +154,11 @@ fun AppTopBar(
             // 1 Кнопка поиск рецептов по ингредиентам
             if (onSearchByIngredients != null) {
                 IconButton(onClick = onSearchByIngredients) {
-                    Icon(Icons.Default.Search, contentDescription = "Поиск рецептов по ингредиентам")
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = "Поиск рецептов по ингредиентам",
+                        tint = MaterialTheme.colorScheme.surface
+                    )
                 }
             }
 
@@ -143,14 +167,22 @@ fun AppTopBar(
             if (isAuthenticated && onShareClick != null) {
                 Log.d("SEARCH INGREDIENT", "AppTopBar: onShareClick: ${onShareClick}")
                 IconButton(onClick = onShareClick) {
-                    Icon(Icons.Default.Share, contentDescription = "Поделиться рецептом")
+                    Icon(
+                        Icons.Default.Share,
+                        contentDescription = "Поделиться рецептом",
+                        tint = MaterialTheme.colorScheme.surface
+                    )
                 }
             }
 
 //            // 3 Кнопка "Мои рецепты" (только для залогиненных и если передан обработчик)
             if (showMyRecipes && onMyRecipesClick != null) {
                 IconButton(onClick = onMyRecipesClick) {
-                    Icon(Icons.Default.List, contentDescription = "Мои рецепты")
+                    Icon(
+                        Icons.Default.List,
+                        contentDescription = "Мои рецепты",
+                        tint = MaterialTheme.colorScheme.surface
+                        )
                 }
             }
 
@@ -158,11 +190,18 @@ fun AppTopBar(
             if (isAuthenticated) {
                 IconButton(onClick = onLogoutClick) {
 //                    Icon(Icons.Default.Logout, contentDescription = "Выйти")
-                    Icon(Icons.Default.AccountBox, contentDescription = "Выйти")
+                    Icon(
+                        Icons.Default.AccountBox,
+                        contentDescription = "Выйти",
+                        tint = MaterialTheme.colorScheme.surface
+                        )
                 }
             } else {
                 TextButton(onClick = onLoginClick) {
-                    Text("Войти")
+                    Text(
+                        "Войти",
+                        color = MaterialTheme.colorScheme.surface
+                        )
                 }
             }
         }

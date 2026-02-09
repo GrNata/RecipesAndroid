@@ -17,6 +17,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 import java.time.LocalDateTime
 
 
@@ -56,5 +57,13 @@ interface AuthApi {
         @Body request: BlockUserRequest
     )
 
+    @GET("/api/admin/users/role")
+    suspend fun getUsersWithRole(@Query("role") role: String) : List<UserRequest>
+
+    @GET("/api/admin/users/blocked")
+    suspend fun getUsersWithBlocked(@Query("blocked") blocked: Boolean) : List<UserRequest>
+
+    @GET("/api/admin/users/filter")
+    suspend fun getUsersFiltred(@Query("role") role: String?, @Query("blocked") blocked: Boolean?): List<UserRequest>
 
 }

@@ -3,12 +3,16 @@ package com.grig.recipesandroid.ui.admin
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -41,6 +45,8 @@ fun AdminScreen(
     val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
     val isAdmin by authViewModel.isAdmin.collectAsState()
 
+    val queryAdmin by adminViewModel.queryAdmin.collectAsState()
+
     LaunchedEffect(Unit) {
         adminViewModel.loadUsers()
     }
@@ -67,8 +73,6 @@ fun AdminScreen(
         }
     ) { paddingValues ->
 
-        Log.d("ADMIN", "AdminScreen: isAdmin = $isAdmin")
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -77,6 +81,13 @@ fun AdminScreen(
             if (loading) {
                 CircularProgressIndicator()
             } else {
+
+                //        поиск / фильтрация
+                    DropDownForFilterUser(adminViewModel)
+
+                Log.d("ADMIN", "AdminScreen: newQuery = $queryAdmin")
+
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()

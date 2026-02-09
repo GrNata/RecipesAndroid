@@ -31,4 +31,8 @@ data class BlockUserRequest(
     val blocked: Boolean
 )
 
+data class RoleUserRequest(
+    val role: String
+)
+
 

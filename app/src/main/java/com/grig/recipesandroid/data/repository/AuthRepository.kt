@@ -10,6 +10,7 @@ import com.grig.recipesandroid.data.model.auth.BlockUserRequest
 import com.grig.recipesandroid.data.model.auth.LoginRequest
 import com.grig.recipesandroid.data.model.auth.RefreshTokenRequest
 import com.grig.recipesandroid.data.model.auth.RegisterRequest
+import com.grig.recipesandroid.data.model.auth.RoleUserRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleResponse
 import com.grig.recipesandroid.data.model.auth.UserRequest
@@ -71,5 +72,13 @@ class AuthRepository(
 
     suspend fun updateBlockedUser(id: Long, blocked: BlockUserRequest) =
         api.updateBlockedUser(id, blocked)
+
+    suspend fun getUsersWithRole(role: String): List<UserRequest> {
+        return api.getUsersWithRole(role)
+    }
+
+    suspend fun getUsersWithBlocked(blocked: Boolean) : List<UserRequest> = api.getUsersWithBlocked(blocked)
+
+    suspend fun getUsersFiltred(role: String?, blocked: Boolean?): List<UserRequest> = api.getUsersFiltred(role, blocked)
 
 }

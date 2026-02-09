@@ -35,6 +35,21 @@ class AdminViewModel(
     private val _usersAll = MutableStateFlow<List<UserRequest>>(emptyList())
     val usersAll: StateFlow<List<UserRequest>> = _usersAll
 
+//    Фильтры для Users
+    private val _roleFilter = MutableStateFlow<String?>(null)
+    val roleFilter: StateFlow<String?> = _roleFilter
+    fun setRoleFilter(newRole: String?) {
+        _roleFilter.value = newRole
+    }
+    private val _blockedFilter = MutableStateFlow<Boolean?>(null)
+    val blockedFilter: StateFlow<Boolean?> = _blockedFilter
+    fun setBlockedFilter(newBlocked: Boolean?) {
+        _blockedFilter.value = newBlocked
+    }
+
+//    private val _roleFiltred = MutableStateFlow<String>("Все")
+//    val roleFilter: StateFlow<String> = _roleFiltred
+
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
@@ -71,6 +86,13 @@ class AdminViewModel(
     private var currentCategoryValueId: Long? = null
 
     private var currentCategoryTypeId: Long? = null
+
+    private val _queryAdmin = MutableStateFlow("")       // _query — хранит текущий текст поиска
+    val queryAdmin: StateFlow<String> = _queryAdmin               // setQuery() — вызывается при вводе в текстовое поле
+
+    fun setQueryAdmin(newQuery: String) {
+        _queryAdmin.value = newQuery
+    }
 
 
     fun onNameChange(value: String) {
@@ -125,13 +147,19 @@ class AdminViewModel(
         _error.value = null
     }
 
+//    ++++++++++++++++++++++++++
+//    USERS
 
     fun loadUsers() {
         viewModelScope.launch {
             _loading.value = true
             _error.value = null
             try {
-                _usersAll.value = authRepository.getAllUsers()
+//                _usersAll.value = authRepository.getAllUsers()
+                _usersAll.value = authRepository.getUsersFiltred(
+                    role = _roleFilter.value,
+                    blocked = _blockedFilter.value
+                )
                 Log.d("ADMIN", "AdminViewModel: usersAll: ${_usersAll.value}")
 
             } catch (e: Exception) {
@@ -173,6 +201,41 @@ class AdminViewModel(
             } catch (e: Exception) {
                 _error.value = e.message
                 Log.e("ADMIN", "AdminViewModel: error: ${e.message}")
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    fun getUsersWithRole(role: String) {
+        _loading.value = true
+        _error.value = null
+        viewModelScope.launch {
+            try {
+                if (role == "Все") {
+                    loadUsers()
+                } else {
+                    _usersAll.value = authRepository.getUsersWithRole(role)
+                }
+                Log.d("ADMIN", "AdminViewModel: _usersAll.value: ${_usersAll.value}")
+            } catch (e: Exception) {
+                _error.value = e.message
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    fun getUsersWithBlocked(blocked: Boolean) {
+        _loading.value = true
+        _error.value = null
+        viewModelScope.launch {
+            try {
+                Log.d("ADMIN", "AdminViewModel: blocked: ${blocked}")
+                _usersAll.value = authRepository.getUsersWithBlocked(blocked)
+                Log.d("ADMIN", "AdminViewModel: blocked: ${blocked}")
+            } catch (e: Exception) {
+                _error.value = e.message
             } finally {
                 _loading.value = false
             }
