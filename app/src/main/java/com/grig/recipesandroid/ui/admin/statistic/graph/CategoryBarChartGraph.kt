@@ -30,7 +30,7 @@ fun CategoryBarChartGraph(
             .background(MaterialTheme.colorScheme.secondary)
     ) {
         Text(
-            "Популярные категории",
+            "Популярные категории (количество рецептов)",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.surface,
             modifier = Modifier.padding(10.dp)

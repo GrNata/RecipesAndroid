@@ -30,7 +30,7 @@ fun AuthorBarChartGraph(
             .background(MaterialTheme.colorScheme.secondary)
     ) {
         Text(
-            "Топ авторы",
+            "Топ авторы (количество рецептов)",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.surface,
             modifier = Modifier.padding(10.dp)
