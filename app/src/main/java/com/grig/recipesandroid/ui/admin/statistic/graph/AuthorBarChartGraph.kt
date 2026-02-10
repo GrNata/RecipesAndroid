@@ -56,6 +56,8 @@ fun AuthorBarChartGraph(
                         Box(
                             modifier = Modifier
                                 .height(16.dp)
+//                                .width()
+//                                .fillMaxWidth(author.recipeCount.toFloat() / (max * max ) )
                                 .fillMaxWidth((author.recipeCount.toFloat() / max ) / 2)
                                 .background(
                                     color = MaterialTheme.colorScheme.onSurface,

@@ -52,18 +52,20 @@ fun CategoryBarChartGraph(
                 Column(modifier = Modifier.weight(5f)) {
                     Row() {
                         //                ГРАФИК
+//                        val lengthGraph =
                         Box(
                             modifier = Modifier
                                 .height(18.dp)
-                                .width(
-                                    (180.dp * (category.recipeCount.toFloat() / max))
-                                )
+//                                .width(
+////                                    (120.dp * (category.recipeCount.toFloat() / (max * max)) )
+//                                    (180.dp * (category.recipeCount.toFloat() / max) / 2)
+//                                )
                                 .background(
 //                                    color = MaterialTheme.colorScheme.primary,
                                     color = MaterialTheme.colorScheme.onSurface,
                                     shape = MaterialTheme.shapes.small
                                 )
-                                .fillMaxWidth(category.recipeCount.toFloat() / max)
+                                .fillMaxWidth(category.recipeCount.toFloat() / (max * max))
                         )
 
                         Spacer(Modifier.width(12.dp))
