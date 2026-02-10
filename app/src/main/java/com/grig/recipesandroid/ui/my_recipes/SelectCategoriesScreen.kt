@@ -37,6 +37,7 @@ fun SelectCategoriesScreen(
                 title = "Выбор категорий",
                 isAuthenticated = true,
                 showMyRecipes = true,
+                onMainScreen = { navController.navigate("recipe_list") },
                 onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},

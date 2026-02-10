@@ -1,9 +1,11 @@
 package com.grig.recipesandroid.ui.admin.topBarAdmin
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,6 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.navigation.NavController
+import com.grig.recipesandroid.data.model.AdminMenuItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,19 +36,20 @@ fun AdminAppTopBar(
     onBack: (() -> Unit),
     onLoginClick: () -> Unit,
     onLogoutClick: () -> Unit,
-//    onShareClick: (() -> Unit)? = null,      //  nullable — показываем только для залогиненных
-//    onMyRecipesClick: (() -> Unit)? = null,      //  nullable — показываем только для залогиненных
-//    onSearchByIngredients: (() -> Unit)? = null,
-//    onAdmin:(() -> Unit)? = null,
-    onIngredientAdmin:(() -> Unit)? = null,
-    onCategoryAdmin:(() -> Unit)? = null,
-    onAuditLogs: (() -> Unit)? = null,
-    onStatistics: (() -> Unit)? = null,
-    onUsers: (() -> Unit)? = null,
+
 //    isCategory: Boolean? = false,
-//    isIngredient: Boolean? = null
+//    isIngredient: Boolean? = null,
+    navController: NavController
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
+
+    val menuItem = listOf(
+        AdminMenuItem("Пользователи") { navController.navigate("admin") },
+        AdminMenuItem("Ингредиенты") { navController.navigate("admin_ingredient") },
+        AdminMenuItem("Категории") { navController.navigate("admin_category") },
+        AdminMenuItem("Статистика") { navController.navigate("admin_statistics") },
+        AdminMenuItem("Аудит-логи") { navController.navigate("admin_audit_logs") }
+    )
 
     TopAppBar(
         title = { Text(
@@ -91,50 +96,17 @@ fun AdminAppTopBar(
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false }
                 ) {
-                    if (onUsers != null) {
-                        DropdownMenuItem(
-                            text = { Text("Пользователи") },
-                            onClick = {
-                                menuExpanded = false
-                                onUsers()
-                            }
-                        )
-                    }
-                    if (onIngredientAdmin != null) {
-                        DropdownMenuItem(
-                            text = { Text("Ингредиенты") },
-                            onClick = {
-                                menuExpanded = false
-                                onIngredientAdmin()
-                            }
-                        )
-                    }
-                    if (onCategoryAdmin != null) {
-                        DropdownMenuItem(
-                            text = { Text("Категории") },
-                            onClick = {
-                                menuExpanded = false
-                                onCategoryAdmin()
-                            }
-                        )
-                    }
-                    if (onStatistics != null) {
-                        DropdownMenuItem(
-                            text = { Text("Статистика") },
-                            onClick = {
-                                menuExpanded = false
-                                onStatistics()
-                            }
-                        )
-                    }
-                    if (onAuditLogs != null) {
-                        DropdownMenuItem(
-                            text = { Text("Аудит-логи") },
-                            onClick = {
-                                menuExpanded = false
-                                onAuditLogs()
-                            }
-                        )
+                    menuItem.forEach { item ->
+                            DropdownMenuItem(
+                                leadingIcon = {
+                                    Icon(Icons.Default.PlayArrow, contentDescription = null)
+                                },
+                                text = { Text(item.title) },
+                                onClick = {
+                                    menuExpanded = false
+                                    item.onClick()
+                                }
+                            )
                     }
                 }
             }

@@ -29,6 +29,7 @@ fun IngredientsScreen(
                 title = "Выбор ингредиентов",
                 isAuthenticated = true,
                 showMyRecipes = true,
+                onMainScreen = { navController.navigate("recipe_list") },
                 onBack = {
                     viewModel.cleanEmptyIngredients()
                     navController.popBackStack()

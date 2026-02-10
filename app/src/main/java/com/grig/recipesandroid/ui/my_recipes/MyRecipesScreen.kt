@@ -158,6 +158,7 @@ fun MyRecipesScreen(
                     isMyRecipes = false
                     navController.popBackStack()
                          },
+                onMainScreen = { navController.navigate("recipe_list") },
                 onLoginClick = {},
                 onLogoutClick = {
                     authViewModel.logout()

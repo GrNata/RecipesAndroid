@@ -45,11 +45,7 @@ fun AdminStatsScreen(
                 onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},
-                onIngredientAdmin = { navController.navigate("admin_ingredient") },
-                onCategoryAdmin = { navController.navigate("admin_category") },
-                onAuditLogs = { navController.navigate("admin_audit_logs") },
-//                onStatistics = { navController.navigate("admin_statistics") },
-                onUsers =  { navController.navigate("admin") },
+                navController = navController
             )
         }
     ) { paddingValues ->

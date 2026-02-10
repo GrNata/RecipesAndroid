@@ -45,23 +45,6 @@ fun AdminScreen(
         containerColor = MaterialTheme.colorScheme.background,
 
         topBar = {
-//            AppTopBar(
-//                title = "Пользователи - АДМИН",
-//                isAuthenticated = isAuthenticated,
-//                isAdmin = isAdmin,
-//                onMainScreen = { navController.navigate("recipe_list") },
-//                onBack = { navController.popBackStack() },
-//                showMyRecipes = false,
-//                onLoginClick = {},
-//                onLogoutClick = {},
-//                onIngredientAdmin = { navController.navigate("admin_ingredient")},
-//                onCategoryAdmin = { navController.navigate("admin_category")},
-//                onAuditLogs = { navController.navigate("admin_audit_logs")},
-//                onStatistics = { navController.navigate("admin_statistics") },
-//                isCategory = true,
-//                isIngredient = true
-////                onAdmin = { navController.navigate("admin")}
-//            )
             AdminAppTopBar(
                 title = "Пользователи - АДМИН",
                 isAuthenticated = isAuthenticated,
@@ -70,10 +53,7 @@ fun AdminScreen(
                 onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},
-                onIngredientAdmin = { navController.navigate("admin_ingredient")},
-                onCategoryAdmin = { navController.navigate("admin_category")},
-                onAuditLogs = { navController.navigate("admin_audit_logs")},
-                onStatistics = { navController.navigate("admin_statistics") },
+                navController
             )
         }
     ) { paddingValues ->

@@ -91,11 +91,7 @@ fun CategoryAdminScreen(
                 onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},
-                onIngredientAdmin = { navController.navigate("admin_ingredient") },
-//                onCategoryAdmin = { navController.navigate("admin_category") },
-                onAuditLogs = { navController.navigate("admin_audit_logs") },
-                onStatistics = { navController.navigate("admin_statistics") },
-                onUsers =  { navController.navigate("admin") },
+                navController = navController
     )
 }
 
@@ -115,8 +111,11 @@ fun CategoryAdminScreen(
                 modifier = Modifier.padding(top = 32.dp, start = 16.dp)
             ) {
                 // Dropdown для выбора группировки
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.weight(3f)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                    ) {
+                    Column(modifier = Modifier.weight(3f).padding(start = 20.dp)) {
                         CategoryTypeDropDown(
                             categoryTypes = categoryTypesAll,
                             selectedId = selectedCategoryTypeId,
@@ -124,7 +123,7 @@ fun CategoryAdminScreen(
                         )
                     }
 
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column(modifier = Modifier.weight(1f).padding(start = 20.dp)) {
                         IconButton(
                             onClick = { navController.navigate("admin_change_categoryType")},
                             modifier = Modifier.padding(12.dp),

@@ -77,6 +77,7 @@ fun RecipeDetailContent(
                 title = recipe?.name ?: "Детали рецепта",
                 isAuthenticated = isAuthenticated,
                 showMyRecipes = authRestored && isAuthenticated,
+                onMainScreen = { navController.navigate("recipe_list") },
                 onBack = onBack,
 //                onLoginClick = { navController.navigate("login") },
                 onLoginClick = {

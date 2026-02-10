@@ -22,6 +22,7 @@ fun StepScreen(
                 title = "Шаги приготовления",
                 isAuthenticated = true,
                 showMyRecipes = true,
+                onMainScreen = { navController.navigate("recipe_list") },
                 onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},

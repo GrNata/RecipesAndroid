@@ -29,6 +29,7 @@ fun ImageScreen(
                 title = "Картинка",
                 isAuthenticated = true,
                 showMyRecipes = true,
+                onMainScreen = { navController.navigate("recipe_list") },
                 onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},

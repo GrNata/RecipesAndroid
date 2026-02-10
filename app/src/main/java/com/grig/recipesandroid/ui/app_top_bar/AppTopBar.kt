@@ -44,14 +44,12 @@ fun AppTopBar(
     onMyRecipesClick: (() -> Unit)? = null,      //  nullable — показываем только для залогиненных
     onSearchByIngredients: (() -> Unit)? = null,
     onAdmin:(() -> Unit)? = null,
-    onIngredientAdmin:(() -> Unit)? = null,
-    onCategoryAdmin:(() -> Unit)? = null,
-    onAuditLogs: (() -> Unit)? = null,
-    onStatistics: (() -> Unit)? = null,
+//    onIngredientAdmin:(() -> Unit)? = null,
+//    onCategoryAdmin:(() -> Unit)? = null,
+//    onAuditLogs: (() -> Unit)? = null,
+//    onStatistics: (() -> Unit)? = null,
     isCategory: Boolean? = false,
     isIngredient: Boolean? = null
-//    isAdmin: Boolean
-//    authViewModel: AuthViewModel
 ) {
 
     val tooltipState = remember { TooltipState() }
@@ -106,68 +104,7 @@ fun AppTopBar(
                         )
                     }
                 }
-//                else {
-//                    Кнопка для Админа  - ингредиенты
-                    if (isIngredient == true && onCategoryAdmin != null) {
-                        TooltipBox(
-                            tooltip = { Text("Ингредиенты-Админ") },
-//                            focusable = true,
-//                            modifier = Modifier.clickable(onClick = onCategoryAdmin),
-                            positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
-                            state = tooltipState,
-//                            enableUserInput = false
-                        ) {
-                            IconButton(onClick = onCategoryAdmin) {
-                                Icon(
-                                    Icons.Default.Menu,
-                                    contentDescription = "Ингредиенты",
-                                    tint = MaterialTheme.colorScheme.surface
-                                )
-                            }
-                        }
-
-                    }
-//                    Кнопка для Админа  - категории
-                    if (isCategory == true && onIngredientAdmin != null) {
-                        TooltipBox(
-                            tooltip = { Text("Категории") },
-//                            focusable = true,
-                            positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
-                            state = tooltipState
-                        ) {
-                            IconButton(onClick = onIngredientAdmin) {
-                                Icon(
-                                    Icons.Default.Menu,
-                                    contentDescription = "Категории-Админ",
-                                    tint = MaterialTheme.colorScheme.surface
-                                )
-                            }
-                        }
-                    }
-//                }
-//                Кнопка для аудит логов
-                if (onAuditLogs != null) {
-                    IconButton(onClick = onAuditLogs) {
-                        Icon(
-                            Icons.Default.Build,
-                            contentDescription = "Список аудит логов",
-                            tint = MaterialTheme.colorScheme.surface
-                        )
-                    }
-                }
-
-//                Кнопка для статистики
-                if (onStatistics != null) {
-                    IconButton(onClick = onStatistics) {
-                        Icon(
-                            Icons.Default.Info,
-                            contentDescription = "Статистика",
-                            tint = MaterialTheme.colorScheme.surface
-                        )
-                    }
-                }
-
-            }   //  isAdmin
+            }
 
             // 1 Кнопка поиск рецептов по ингредиентам
             if (onSearchByIngredients != null) {
@@ -180,7 +117,6 @@ fun AppTopBar(
                 }
             }
 
-//        actions = {
             // 2 Кнопка Share (если есть рецепт и пользователь залогинен)
             if (isAuthenticated && onShareClick != null) {
                 Log.d("SEARCH INGREDIENT", "AppTopBar: onShareClick: ${onShareClick}")

@@ -96,6 +96,7 @@ fun AddEditRecipeScreen(
                 title = if (isEdit) "Редактировать рецепт" else "Добавить рецепт",
                 isAuthenticated = true,
                 showMyRecipes = true,
+                onMainScreen = { navController.navigate("recipe_list") },
                 onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},

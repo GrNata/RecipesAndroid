@@ -58,6 +58,7 @@ fun SearchResultScreen(
                 title = "Поиск по ингредиентам",
                 isAuthenticated = true,
                 showMyRecipes = true,
+                onMainScreen = { navController.navigate("recipe_list") },
                 onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {}
