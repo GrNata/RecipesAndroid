@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.ui.auditLogs
+package com.grig.recipesandroid.ui.admin.auditLogs
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

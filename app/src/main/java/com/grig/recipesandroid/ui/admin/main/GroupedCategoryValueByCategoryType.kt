@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.ui.admin
+package com.grig.recipesandroid.ui.admin.main
 
 import android.util.Log
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto

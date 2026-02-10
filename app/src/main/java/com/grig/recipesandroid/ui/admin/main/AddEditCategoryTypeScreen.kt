@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.ui.admin
+package com.grig.recipesandroid.ui.admin.main
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
@@ -20,18 +20,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.sharp.Delete
-import androidx.compose.material.icons.sharp.Edit
-import androidx.compose.material.icons.twotone.Edit
 import androidx.compose.material3.Divider
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.grig.recipesandroid.ui.admin.topBarAdmin.AdminAppTopBar
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
@@ -59,21 +55,19 @@ fun AddEditCategoryTypeScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            AppTopBar(
+            AdminAppTopBar(
                 title = "Типы категорий АДМИН",
                 isAuthenticated = isAuthenticated,
                 isAdmin = isAdmin,
-                onBack = { navController.popBackStack() },
                 onMainScreen = { navController.navigate("recipe_list") },
-                showMyRecipes = false,
+                onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},
-                onAdmin = { navController.navigate("admin") },
                 onIngredientAdmin = { navController.navigate("admin_ingredient") },
-                onCategoryAdmin = { },
-                isCategory = true,
-                isIngredient = false
-//                onAdmin = { navController.navigate("admin")}
+                onCategoryAdmin = { navController.navigate("admin_category") },
+                onAuditLogs = { navController.navigate("admin_audit_logs") },
+                onStatistics = { navController.navigate("admin_statistics") },
+                onUsers =  { navController.navigate("admin") },
             )
         }
     ) { paddingValues ->

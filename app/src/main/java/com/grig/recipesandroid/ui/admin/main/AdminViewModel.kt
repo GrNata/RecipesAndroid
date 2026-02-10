@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.ui.admin
+package com.grig.recipesandroid.ui.admin.main
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -7,7 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.grig.recipesandroid.data.model.auth.AdminAuditLogDto
 import com.grig.recipesandroid.data.model.auth.BlockUserRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleResponse
 import com.grig.recipesandroid.data.model.auth.UserRequest

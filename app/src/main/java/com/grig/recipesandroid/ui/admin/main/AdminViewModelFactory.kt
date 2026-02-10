@@ -1,6 +1,5 @@
-package com.grig.recipesandroid.ui.admin
+package com.grig.recipesandroid.ui.admin.main
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController

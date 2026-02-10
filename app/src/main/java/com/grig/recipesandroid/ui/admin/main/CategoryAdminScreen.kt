@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.ui.admin
+package com.grig.recipesandroid.ui.admin.main
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
@@ -7,11 +7,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,11 +17,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.sharp.Edit
-import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.grig.recipesandroid.ui.admin.topBarAdmin.AdminAppTopBar
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
@@ -88,24 +83,23 @@ fun CategoryAdminScreen(
 //        floatingActionButtonPosition = FabPosition.End, // не обязательно, но правильно
 
         topBar = {
-            AppTopBar(
-                title = "Категории АДМИН",
+            AdminAppTopBar(
+                title = "Категории - АДМИН",
                 isAuthenticated = isAuthenticated,
                 isAdmin = isAdmin,
-                onBack = { navController.popBackStack() },
                 onMainScreen = { navController.navigate("recipe_list") },
-                showMyRecipes = false,
+                onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},
-                onAdmin = { navController.navigate("admin") },
-                onIngredientAdmin = { navController.navigate("admin_ingredient")},
-                onCategoryAdmin = { },
-                isCategory = true,
-                isIngredient = false
-//                onAdmin = { navController.navigate("admin")}
-            )
-        }
-    ) { paddingValues ->
+                onIngredientAdmin = { navController.navigate("admin_ingredient") },
+//                onCategoryAdmin = { navController.navigate("admin_category") },
+                onAuditLogs = { navController.navigate("admin_audit_logs") },
+                onStatistics = { navController.navigate("admin_statistics") },
+                onUsers =  { navController.navigate("admin") },
+    )
+}
+
+) { paddingValues ->
 
         Log.d("ADMIN", "CategoryAdminScreen: categoryValuesAll: ${categoryValuesAll}")
 

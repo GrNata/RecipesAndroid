@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.ui.adminStatistic
+package com.grig.recipesandroid.ui.admin.statistic
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

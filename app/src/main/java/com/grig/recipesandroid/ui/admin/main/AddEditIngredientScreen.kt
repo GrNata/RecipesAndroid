@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.ui.admin
+package com.grig.recipesandroid.ui.admin.main
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
@@ -8,20 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
@@ -37,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.grig.recipesandroid.ui.admin.topBarAdmin.AdminAppTopBar
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 
@@ -68,21 +59,19 @@ fun AddEditIngredientScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            AppTopBar(
+            AdminAppTopBar(
                 title = if (isEdit) "Редактирование ингредиента" else "Созданеи ингредиента",
                 isAuthenticated = isAuthenticated,
                 isAdmin = isAdmin,
-                onBack = { navController.popBackStack() },
                 onMainScreen = { navController.navigate("recipe_list") },
-                showMyRecipes = false,
+                onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},
-                onAdmin = { navController.navigate("admin") },
-                onIngredientAdmin = { },
-                onCategoryAdmin = { navController.navigate("admin_category")},
-                isCategory = false,
-                isIngredient = true
-//                onAdmin = { navController.navigate("admin")}
+                onIngredientAdmin = { navController.navigate("admin_ingredient") },
+                onCategoryAdmin = { navController.navigate("admin_category") },
+                onAuditLogs = { navController.navigate("admin_audit_logs") },
+                onStatistics = { navController.navigate("admin_statistics") },
+                onUsers =  { navController.navigate("admin") },
             )
         }
     ) {paddingValues ->

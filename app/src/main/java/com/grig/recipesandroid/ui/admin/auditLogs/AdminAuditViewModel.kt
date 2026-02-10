@@ -1,31 +1,37 @@
-package com.grig.recipesandroid.ui.adminStatistic
+package com.grig.recipesandroid.ui.admin.auditLogs
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.grig.recipesandroid.data.model.auth.AdminStatisticsDto
+import com.grig.recipesandroid.data.model.auth.AdminAuditLogDto
 import com.grig.recipesandroid.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.lang.Exception
 
-class AdminStatsViewModel(
+class AdminAuditViewModel(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _stats = MutableStateFlow<AdminStatisticsDto?>(null)
-    val stats: StateFlow<AdminStatisticsDto?> = _stats
+
+
+    //    +++++++++++++++++
+    //    АУДИТ-ЛОГ
+
+    private val _logs = MutableStateFlow<List<AdminAuditLogDto>>(emptyList())
+    val logs: StateFlow<List<AdminAuditLogDto>> = _logs
 
     private val _loading = MutableStateFlow(false)
-    val loading = _loading
+    val loading: StateFlow<Boolean> = _loading
 
-    private val _error = MutableStateFlow<String?>(null)
-    val error = _error
+    var _error = MutableStateFlow<String?>(null)
+    var error: StateFlow<String?> = _error
 
-    fun loadStatistics() {
+    fun loadLogs() {
         viewModelScope.launch {
             _loading.value = true
             try {
-                _stats.value = authRepository.getAdminStatistics()
+                _logs.value = authRepository.getAllAuditLogs()
             } catch (e: Exception) {
                 _error.value = e.message
             } finally {
@@ -33,4 +39,5 @@ class AdminStatsViewModel(
             }
         }
     }
+
 }

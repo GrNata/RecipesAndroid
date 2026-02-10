@@ -1,6 +1,5 @@
-package com.grig.recipesandroid.ui.admin
+package com.grig.recipesandroid.ui.admin.main
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,13 +22,12 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.grig.recipesandroid.ui.admin.topBarAdmin.AdminAppTopBar
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 
@@ -48,21 +46,19 @@ fun NewUpdateCategoryTypeScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            AppTopBar(
+            AdminAppTopBar(
                 title = if(isEdit) "Редактирование типа АДМИН" else "Создание типа АДМИН",
                 isAuthenticated = isAuthenticated,
                 isAdmin = isAdmin,
-                onBack = { navController.popBackStack() },
                 onMainScreen = { navController.navigate("recipe_list") },
-                showMyRecipes = false,
+                onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},
-                onAdmin = { navController.navigate("admin") },
                 onIngredientAdmin = { navController.navigate("admin_ingredient") },
-                onCategoryAdmin = { },
-                isCategory = true,
-                isIngredient = false
-//                onAdmin = { navController.navigate("admin")}
+                onCategoryAdmin = { navController.navigate("admin_category") },
+                onAuditLogs = { navController.navigate("admin_audit_logs") },
+                onStatistics = { navController.navigate("admin_statistics") },
+                onUsers =  { navController.navigate("admin") },
             )
         }
     ) { paddingValues ->

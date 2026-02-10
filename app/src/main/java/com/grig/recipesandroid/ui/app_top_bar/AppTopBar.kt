@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Face
@@ -24,18 +23,11 @@ import androidx.compose.material3.*
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardType.Companion.Text
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupPositionProvider
-import com.grig.recipesandroid.domain.model.Recipe
-import com.grig.recipesandroid.ui.auth.AuthViewModel
-import com.grig.recipesandroid.ui.colorScheme.MyAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

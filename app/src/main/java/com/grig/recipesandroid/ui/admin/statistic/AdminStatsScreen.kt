@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.ui.adminStatistic
+package com.grig.recipesandroid.ui.admin.statistic
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.grig.recipesandroid.ui.admin.topBarAdmin.AdminAppTopBar
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 
@@ -36,22 +37,19 @@ fun AdminStatsScreen(
         containerColor = MaterialTheme.colorScheme.background,
 
         topBar = {
-            AppTopBar(
+            AdminAppTopBar(
                 title = "Статистика",
                 isAuthenticated = isAuthenticated,
                 isAdmin = isAdmin,
-                onMainScreen = { navController.navigate("admin") },
+                onMainScreen = { navController.navigate("recipe_list") },
                 onBack = { navController.popBackStack() },
-                showMyRecipes = false,
                 onLoginClick = {},
                 onLogoutClick = {},
-//                onIngredientAdmin = { navController.navigate("admin_ingredient")},
-//                onCategoryAdmin = { navController.navigate("admin_category")},
-//                onAuditLogs = { navController.navigate("admin_audit_logs")},
+                onIngredientAdmin = { navController.navigate("admin_ingredient") },
+                onCategoryAdmin = { navController.navigate("admin_category") },
                 onAuditLogs = { navController.navigate("admin_audit_logs") },
-                isCategory = true,
-                isIngredient = true
-//                onAdmin = { navController.navigate("admin")}
+//                onStatistics = { navController.navigate("admin_statistics") },
+                onUsers =  { navController.navigate("admin") },
             )
         }
     ) { paddingValues ->

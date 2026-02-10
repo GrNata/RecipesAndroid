@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.ui.admin
+package com.grig.recipesandroid.ui.admin.main
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.grig.recipesandroid.ui.admin.topBarAdmin.AdminAppTopBar
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
@@ -62,21 +63,19 @@ fun AddEditCategoryScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            AppTopBar(
+            AdminAppTopBar(
                 title = "Названия категорий АДМИН",
                 isAuthenticated = isAuthenticated,
                 isAdmin = isAdmin,
-                onBack = { navController.popBackStack() },
                 onMainScreen = { navController.navigate("recipe_list") },
-                showMyRecipes = false,
+                onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},
-                onAdmin = { navController.navigate("admin") },
-                onIngredientAdmin = { navController.navigate("admin_ingredient")},
-                onCategoryAdmin = { },
-                isCategory = true,
-                isIngredient = false
-//                onAdmin = { navController.navigate("admin")}
+                onIngredientAdmin = { navController.navigate("admin_ingredient") },
+                onCategoryAdmin = { navController.navigate("admin_category") },
+                onAuditLogs = { navController.navigate("admin_audit_logs") },
+                onStatistics = { navController.navigate("admin_statistics") },
+                onUsers =  { navController.navigate("admin") },
             )
         }
     ) { paddingValues ->

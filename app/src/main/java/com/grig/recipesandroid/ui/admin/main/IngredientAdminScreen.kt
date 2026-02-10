@@ -1,4 +1,4 @@
-package com.grig.recipesandroid.ui.admin
+package com.grig.recipesandroid.ui.admin.main
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -7,10 +7,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.grig.recipesandroid.ui.admin.topBarAdmin.AdminAppTopBar
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
@@ -96,42 +95,29 @@ fun IngredientAdminScreen(
         floatingActionButtonPosition = FabPosition.End, // не обязательно, но правильно
 
         topBar = {
-            AppTopBar(
-                title = "Игрединты АДМИН",
+            AdminAppTopBar(
+                title = "Ингредиенты - АДМИН",
                 isAuthenticated = isAuthenticated,
                 isAdmin = isAdmin,
-                onBack = { navController.popBackStack() },
                 onMainScreen = { navController.navigate("recipe_list") },
-                showMyRecipes = false,
+                onBack = { navController.popBackStack() },
                 onLoginClick = {},
                 onLogoutClick = {},
-                onAdmin = { navController.navigate("admin") },
-                onIngredientAdmin = { },
-                onCategoryAdmin = { navController.navigate("admin_category")},
-                isCategory = false,
-                isIngredient = true
-//                onAdmin = { navController.navigate("admin")}
+//                onIngredientAdmin = { navController.navigate("admin_ingredient") },
+                onCategoryAdmin = { navController.navigate("admin_category") },
+                onAuditLogs = { navController.navigate("admin_audit_logs") },
+                onStatistics = { navController.navigate("admin_statistics") },
+                onUsers =  { navController.navigate("admin") },
             )
         }
+
     ) { paddingValues ->
 
         Box(
             Modifier
                 .padding(paddingValues)
-//                .background(Color(0xFFFFF8F7))
                 .background(Color(0xFFF7EDE9))
-//                .background(Color(0xFFEEE2DC))
-//                .border(
-//                    border = BorderStroke(1.dp, Color(0xFF9D9598)),
-////                    shape =
-//                )
         ) {
-//            if (LoadState.Loading) {
-//                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-//            } else {
-
-//            Spacer(modifier = Modifier.height(16.dp))
-
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
