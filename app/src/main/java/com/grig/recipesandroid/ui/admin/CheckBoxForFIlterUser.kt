@@ -13,46 +13,46 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-@Composable
-fun CheckBoxForRole(
-    isRole: Boolean
-) : Boolean {
-
-//    var isRole by remember { mutableStateOf(false) }
-//    val isChooseRole = false
-
-    Checkbox(
-        checked = isRole,
-        onCheckedChange = { isRole  },
-//        onCheckedChange = { isRole = it },
-        modifier = Modifier.size(0.1.dp),
-        enabled = true,
-        colors = CheckboxDefaults.colors(
-            checkedColor = Color(0xFF883F58),
-            checkmarkColor = Color(0xFF883F58),
-            uncheckedColor = Color(0xFFCDA090)
-        )
-    )
-    Log.d("ADMIN", "CheckBoxForRole: isRole = $isRole")
-    return isRole
-}
-
-@Composable
-fun CheckBoxForBlocked(
-
-) {
-    var isBlocked by remember { mutableStateOf(false) }
-
-    Checkbox(
-        checked = isBlocked,
-        onCheckedChange = { isBlocked = it },
-        modifier = Modifier.size(0.1.dp),
-        enabled = true,
-        colors = CheckboxDefaults.colors(
-            checkedColor = Color(0xFF883F58),
-            checkmarkColor = Color(0xFF883F58),
-            uncheckedColor = Color(0xFFCDA090)
-        )
-    )
-}
+//@Composable
+//fun CheckBoxForRole(
+//    isRole: Boolean
+//) : Boolean {
+//
+////    var isRole by remember { mutableStateOf(false) }
+////    val isChooseRole = false
+//
+//    Checkbox(
+//        checked = isRole,
+//        onCheckedChange = { isRole  },
+////        onCheckedChange = { isRole = it },
+//        modifier = Modifier.size(0.1.dp),
+//        enabled = true,
+//        colors = CheckboxDefaults.colors(
+//            checkedColor = Color(0xFF883F58),
+//            checkmarkColor = Color(0xFF883F58),
+//            uncheckedColor = Color(0xFFCDA090)
+//        )
+//    )
+//    Log.d("ADMIN", "CheckBoxForRole: isRole = $isRole")
+//    return isRole
+//}
+//
+//@Composable
+//fun CheckBoxForBlocked(
+//
+//) {
+//    var isBlocked by remember { mutableStateOf(false) }
+//
+//    Checkbox(
+//        checked = isBlocked,
+//        onCheckedChange = { isBlocked = it },
+//        modifier = Modifier.size(0.1.dp),
+//        enabled = true,
+//        colors = CheckboxDefaults.colors(
+//            checkedColor = Color(0xFF883F58),
+//            checkmarkColor = Color(0xFF883F58),
+//            uncheckedColor = Color(0xFFCDA090)
+//        )
+//    )
+//}
 

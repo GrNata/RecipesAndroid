@@ -45,7 +45,7 @@ fun AdminScreen(
     val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
     val isAdmin by authViewModel.isAdmin.collectAsState()
 
-    val queryAdmin by adminViewModel.queryAdmin.collectAsState()
+//    val queryAdmin by adminViewModel.queryAdmin.collectAsState()
 
     LaunchedEffect(Unit) {
         adminViewModel.loadUsers()
@@ -66,6 +66,8 @@ fun AdminScreen(
                 onLogoutClick = {},
                 onIngredientAdmin = { navController.navigate("admin_ingredient")},
                 onCategoryAdmin = { navController.navigate("admin_category")},
+                onAuditLogs = { navController.navigate("admin_audit_logs")},
+                onStatistics = { navController.navigate("admin_statistics") },
                 isCategory = true,
                 isIngredient = true
 //                onAdmin = { navController.navigate("admin")}
@@ -85,9 +87,6 @@ fun AdminScreen(
                 //        поиск / фильтрация
                     DropDownForFilterUser(adminViewModel)
 
-                Log.d("ADMIN", "AdminScreen: newQuery = $queryAdmin")
-
-
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -98,12 +97,8 @@ fun AdminScreen(
                     items(usersAll) { user ->
                         Column(
                             modifier = Modifier
-//                                .padding(16.dp)
-//                                .background(Color(0xFFF7EDE9))
                         ) {
                             UserRow(user, adminViewModel)
-//                            UserRow(user, adminViewModel::updateRole)
-//                        UserRow(user, adminViewModel::updateRole)
                         }
                     }
                 }

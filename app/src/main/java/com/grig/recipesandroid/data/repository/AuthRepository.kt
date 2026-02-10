@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.ui.semantics.Role
 import com.grig.recipesandroid.data.api.AuthApi
 import com.grig.recipesandroid.data.local.TokenRepository
+import com.grig.recipesandroid.data.model.auth.AdminAuditLogDto
+import com.grig.recipesandroid.data.model.auth.AdminStatisticsDto
 import com.grig.recipesandroid.data.model.auth.AuthTokens
 import com.grig.recipesandroid.data.model.auth.AuthTokensWithRole
 import com.grig.recipesandroid.data.model.auth.BlockUserRequest
@@ -80,5 +82,14 @@ class AuthRepository(
     suspend fun getUsersWithBlocked(blocked: Boolean) : List<UserRequest> = api.getUsersWithBlocked(blocked)
 
     suspend fun getUsersFiltred(role: String?, blocked: Boolean?): List<UserRequest> = api.getUsersFiltred(role, blocked)
+
+//    АУДИТ - ЛОГИ
+    suspend fun getAllAuditLogs() : List<AdminAuditLogDto> =
+        api.getAllAuditLogs()
+
+//    Статистика
+    suspend fun getAdminStatistics() : AdminStatisticsDto =
+        api.AdminSatistics()
+
 
 }

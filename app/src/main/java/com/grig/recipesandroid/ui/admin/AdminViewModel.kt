@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.grig.recipesandroid.data.model.auth.AdminAuditLogDto
 import com.grig.recipesandroid.data.model.auth.BlockUserRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleResponse
 import com.grig.recipesandroid.data.model.auth.UserRequest
@@ -47,9 +48,6 @@ class AdminViewModel(
         _blockedFilter.value = newBlocked
     }
 
-//    private val _roleFiltred = MutableStateFlow<String>("Все")
-//    val roleFilter: StateFlow<String> = _roleFiltred
-
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
@@ -57,8 +55,6 @@ class AdminViewModel(
     var error: StateFlow<String?> = _error
 
     //    +++++++ состояние формы
-//    var ingredientId by mutableStateOf(null)
-//        private set
 
     var name by mutableStateOf("")
         private set
@@ -87,17 +83,9 @@ class AdminViewModel(
 
     private var currentCategoryTypeId: Long? = null
 
-    private val _queryAdmin = MutableStateFlow("")       // _query — хранит текущий текст поиска
-    val queryAdmin: StateFlow<String> = _queryAdmin               // setQuery() — вызывается при вводе в текстовое поле
-
-    fun setQueryAdmin(newQuery: String) {
-        _queryAdmin.value = newQuery
-    }
-
 
     fun onNameChange(value: String) {
         name = value
-        Log.d("ADMIN", "AdminScreenViewModel onNameChange: value=$value, name=$name")
     }
 
     fun onNameEngChange(value: String) {
@@ -110,7 +98,6 @@ class AdminViewModel(
 
     fun onNameCategoryValueChange(value: String) {
         nameCategoryValue = value
-        Log.d("ADMIN", "AdminScreenViewModel nameCategoryValue: value=$value, name=$nameCategoryValue")
     }
 
     fun onNameCategoryTypeByValueChange(value: String) {
@@ -126,7 +113,6 @@ class AdminViewModel(
     }
 
     fun resetFormIngredient() {
-            Log.d("ADMIN", "AddminViewModel: resetForm, name: ${name}")
             currentIngredientId = null
             name = ""
             nameEng = ""
@@ -207,40 +193,40 @@ class AdminViewModel(
         }
     }
 
-    fun getUsersWithRole(role: String) {
-        _loading.value = true
-        _error.value = null
-        viewModelScope.launch {
-            try {
-                if (role == "Все") {
-                    loadUsers()
-                } else {
-                    _usersAll.value = authRepository.getUsersWithRole(role)
-                }
-                Log.d("ADMIN", "AdminViewModel: _usersAll.value: ${_usersAll.value}")
-            } catch (e: Exception) {
-                _error.value = e.message
-            } finally {
-                _loading.value = false
-            }
-        }
-    }
-
-    fun getUsersWithBlocked(blocked: Boolean) {
-        _loading.value = true
-        _error.value = null
-        viewModelScope.launch {
-            try {
-                Log.d("ADMIN", "AdminViewModel: blocked: ${blocked}")
-                _usersAll.value = authRepository.getUsersWithBlocked(blocked)
-                Log.d("ADMIN", "AdminViewModel: blocked: ${blocked}")
-            } catch (e: Exception) {
-                _error.value = e.message
-            } finally {
-                _loading.value = false
-            }
-        }
-    }
+//    fun getUsersWithRole(role: String) {
+//        _loading.value = true
+//        _error.value = null
+//        viewModelScope.launch {
+//            try {
+//                if (role == "Все") {
+//                    loadUsers()
+//                } else {
+//                    _usersAll.value = authRepository.getUsersWithRole(role)
+//                }
+//                Log.d("ADMIN", "AdminViewModel: _usersAll.value: ${_usersAll.value}")
+//            } catch (e: Exception) {
+//                _error.value = e.message
+//            } finally {
+//                _loading.value = false
+//            }
+//        }
+//    }
+//
+//    fun getUsersWithBlocked(blocked: Boolean) {
+//        _loading.value = true
+//        _error.value = null
+//        viewModelScope.launch {
+//            try {
+//                Log.d("ADMIN", "AdminViewModel: blocked: ${blocked}")
+//                _usersAll.value = authRepository.getUsersWithBlocked(blocked)
+//                Log.d("ADMIN", "AdminViewModel: blocked: ${blocked}")
+//            } catch (e: Exception) {
+//                _error.value = e.message
+//            } finally {
+//                _loading.value = false
+//            }
+//        }
+//    }
 
 //    +++++++++++++++++++
 
@@ -505,5 +491,7 @@ class AdminViewModel(
             recipesViewModel.refreshCategoryType()
         }
     }
+
+
 
 }

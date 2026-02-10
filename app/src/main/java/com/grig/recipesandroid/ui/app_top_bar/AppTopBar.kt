@@ -7,8 +7,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
@@ -52,6 +54,8 @@ fun AppTopBar(
     onAdmin:(() -> Unit)? = null,
     onIngredientAdmin:(() -> Unit)? = null,
     onCategoryAdmin:(() -> Unit)? = null,
+    onAuditLogs: (() -> Unit)? = null,
+    onStatistics: (() -> Unit)? = null,
     isCategory: Boolean? = false,
     isIngredient: Boolean? = null
 //    isAdmin: Boolean
@@ -149,7 +153,29 @@ fun AppTopBar(
                         }
                     }
 //                }
-            }
+//                Кнопка для аудит логов
+                if (onAuditLogs != null) {
+                    IconButton(onClick = onAuditLogs) {
+                        Icon(
+                            Icons.Default.Build,
+                            contentDescription = "Список аудит логов",
+                            tint = MaterialTheme.colorScheme.surface
+                        )
+                    }
+                }
+
+//                Кнопка для статистики
+                if (onStatistics != null) {
+                    IconButton(onClick = onStatistics) {
+                        Icon(
+                            Icons.Default.Info,
+                            contentDescription = "Статистика",
+                            tint = MaterialTheme.colorScheme.surface
+                        )
+                    }
+                }
+
+            }   //  isAdmin
 
             // 1 Кнопка поиск рецептов по ингредиентам
             if (onSearchByIngredients != null) {

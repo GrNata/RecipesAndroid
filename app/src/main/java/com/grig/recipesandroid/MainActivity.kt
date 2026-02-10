@@ -19,6 +19,10 @@ import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.UnitRepository
 import com.grig.recipesandroid.ui.admin.AdminViewModel
 import com.grig.recipesandroid.ui.admin.AdminViewModelFactory
+import com.grig.recipesandroid.ui.adminStatistic.AdminStatsViewModel
+import com.grig.recipesandroid.ui.adminStatistic.AdminStatsViewModelFabrica
+import com.grig.recipesandroid.ui.auditLogs.AdminAuditViewModel
+import com.grig.recipesandroid.ui.auditLogs.AdminAuditViewModelFactory
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.colorScheme.MyAppTheme
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModel
@@ -83,6 +87,8 @@ class MainActivity : ComponentActivity() {
             .build()
 
         authApi = authRetrofit.create(AuthApi::class.java)
+
+
 
         authRepository = AuthRepository(authApi, tokenRepository)
 
@@ -207,6 +213,18 @@ class MainActivity : ComponentActivity() {
                         )
                     )
 
+                val adminAuditViewModel: AdminAuditViewModel = viewModel(
+                    factory = AdminAuditViewModelFactory(
+                        authRepository
+                    )
+                )
+
+                val adminStatsViewModel: AdminStatsViewModel = viewModel(
+                    factory = AdminStatsViewModelFabrica(
+                        authRepository
+                    )
+                )
+
                     AppNavGraph(
                         navController = navController,
                         api = recipeApi,
@@ -221,7 +239,9 @@ class MainActivity : ComponentActivity() {
                         addEditRecipeViewModel = addEditRecipeViewModel,
                         myRecipesViewModel = myRecipesViewModel,
                         searchByIngredientsViewModel = searchByIngredientsViewModel,
-                        adminViewModel = adminViewModel
+                        adminViewModel = adminViewModel,
+                        adminAuditViewModel = adminAuditViewModel,
+                        adminStatsViewModel
 //                    recipeDetailViewModel = recipeDetailViewModel
                     )
 //                }   //  RecipeAndroidTheme

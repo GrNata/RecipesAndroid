@@ -47,12 +47,14 @@ fun UserRow(
 
     var isExpanded by remember { mutableStateOf(false) }
 
-    var isCheckedAdmin by remember { mutableStateOf(false) }
-    var isCheckedBlocked by remember { mutableStateOf(false) }
+//    var isCheckedAdmin by remember { mutableStateOf(false) }
+
+//    val isCheckedAdmin = if (user.roles.contains("ADMIN")) true else false
+    val hasAdminRole = "ADMIN" in user.roles
+    val isBlocked = user.blocked
 
 
     Card(
-//        modifier = Modifier.padding(8.dp),
         onClick = { isExpanded = true },
         modifier = Modifier
                 .fillMaxWidth()
@@ -141,39 +143,48 @@ fun UserRow(
                     }
                 }
                 Column(modifier = Modifier.weight(1f)) {
-                    if (!user.roles.contains("ADMIN")) {
+//                    if (!user.roles.contains("ADMIN")) {
                         Checkbox(
-                            checked = isCheckedAdmin,
-                            onCheckedChange = { isCheckedAdmin = it },
-                            modifier = Modifier.size(0.1.dp),
-                            enabled = true,
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = Color(0xFF883F58),
-                                checkmarkColor = Color(0xFF883F58),
-                                uncheckedColor = Color(0xFFCDA090)
-                            )
-                        )
-                    } else {
-                        Checkbox(
-                            checked = true,
-                            onCheckedChange = {
-                                if (user.id != null && !user.roles.contains("ADMIN")) {
-                                    val roles = user.roles.toMutableSet()
-                                    roles.add("ADMIN")
-                                    val newRoles = UpdateUserRoleResponse(roles)
-                                    adminViewModel.updateRole(user.id, newRoles)
-                                }
+//                            checked = isCheckedAdmin,
+                            checked = hasAdminRole,
+                            onCheckedChange = { checked ->
+                                // добавляем роль ADMIN
+                                val roles = user.roles.toMutableSet()
+                                roles.add("ADMIN")
+                                val newRoles = UpdateUserRoleResponse(roles)
+                                if (user.id != null) adminViewModel.updateRole(user.id, newRoles)
                             },
                             modifier = Modifier.size(0.1.dp),
-//                            enabled = false,
+                            // если уже есть ADMIN — игнорируем снятие галочки
+//                            enabled = true,
+                            enabled = !hasAdminRole, // запрещаем убрать ADMIN
                             colors = CheckboxDefaults.colors(
                                 checkedColor = Color(0xFF883F58),
-                                checkmarkColor = Color(0xFF883F58),
+                                checkmarkColor = Color.White,
                                 uncheckedColor = Color(0xFFCDA090)
                             )
                         )
                     }
-                }
+//                else {
+//                        Checkbox(
+//                            checked = true,
+//                            onCheckedChange = {
+//                                if (user.id != null && !user.roles.contains("ADMIN")) {
+//                                    val roles = user.roles.toMutableSet()
+//                                    roles.add("ADMIN")
+//                                    val newRoles = UpdateUserRoleResponse(roles)
+//                                    adminViewModel.updateRole(user.id, newRoles)
+//                                }
+//                            },
+//                            modifier = Modifier.size(0.1.dp),
+//                            colors = CheckboxDefaults.colors(
+//                                checkedColor = Color(0xFF883F58),
+//                                checkmarkColor = Color.White,
+//                                uncheckedColor = Color(0xFFCDA090)
+//                            )
+//                        )
+//                    }
+//                }
             }
             Divider(
                 color = Color(0xFF9D9598),
@@ -230,101 +241,20 @@ fun UserRow(
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Checkbox(
-                        checked = isCheckedBlocked,
-                        onCheckedChange = {
-                            isCheckedBlocked = it
-                            val newIsBlocked = BlockUserRequest(it)
-                            if (user.id != null) {
-                                adminViewModel.updateBlockedUser(user.id, newIsBlocked)
-                            }
+                        checked = isBlocked,
+                        onCheckedChange = { newValue ->
+                            val newIsBlocked = BlockUserRequest(newValue)
+                            user.id?.let { adminViewModel.updateBlockedUser(it, newIsBlocked) }
                         },
                         modifier = Modifier.size(0.1.dp),
                         colors = CheckboxDefaults.colors(
-                            checkedColor = Color(0xFF883F58),
-                            checkmarkColor = Color(0xFF883F58),
-                            uncheckedColor = Color(0xFFCDA090)
+                            checkedColor = Color(0xFF883F58),   // закрашенная
+                            checkmarkColor = Color.White,               // галочка белая
+                            uncheckedColor = Color(0xFFCDA090)      // незакрашенная
                         )
                     )
                 }
             }
-
-
-            Log.d("ADMIN", "UserRow: isExpanded: ${isExpanded}")
-
-
-//                Row(modifier = Modifier.fillMaxWidth()) {
-//
-//                    Column(
-//                        modifier = Modifier.weight(2f),
-//                        horizontalAlignment = Alignment.Start
-//                        ) {
-//                        if (user.id != null && !user.roles.contains("ADMIN")) {
-//                            val roles = user.roles.toMutableSet()
-//                            roles.add("ADMIN")
-//                            val newRoles = UpdateUserRoleResponse(roles)
-//
-//                            Button(
-////                                modifier = Modifier.size(20.dp),
-//                                onClick = { onUpdateRole(user.id, newRoles) }) {
-//                                Text("Сделать админом")
-//                            }
-//                        }
-//                    }
-//                    Column(
-//                        modifier = Modifier.weight(2f),
-//                        horizontalAlignment = Alignment.End
-//                        ) {
-////                        if (user.id != null && !user.roles.contains("ADMIN")) {
-////                            val roles = user.roles.toMutableSet()
-////                            roles.add("ADMIN")
-////                            val newRoles = UpdateUserRoleResponse(roles)
-//
-//                            Button(
-////                                modifier = Modifier.size(20.dp),
-//                                onClick = {  }) {
-//                                Text(if (user.blocked) "Разблокировать" else "Заблокировать")
-//                            }
-//                        }
-//                    }
-//            Divider(
-//                color = Color(0xFF9D9598),
-//                thickness = 1.dp
-//            )
-//
-//            Row(
-//                modifier = Modifier.fillMaxWidth().padding(start = 4.dp)
-//            ) {
-//                Column(modifier = Modifier.weight(1f)) {
-//                    if (!user.roles.contains("ADMIN")) {
-//                        Checkbox(
-//                            checked = isCheckedAdmin,
-//                            onCheckedChange = { isCheckedAdmin = it },
-//                            modifier = Modifier.padding(top = 1.dp)
-//                        )
-//                        Text(
-//                            "Сделать админом",
-//                            color = Color(0xFF883F58),
-//                            style = MaterialTheme.typography.bodyMedium
-//                        )
-//                    }
-//                }
-//                Column(modifier = Modifier.weight(1f)) {
-////                    Row() {
-//                        Checkbox(
-//                            checked = isCheckedBlocked,
-//                            onCheckedChange = { isCheckedBlocked = it },
-//                            modifier = Modifier.padding(top = 1.dp)
-//                        )
-//                    Text(
-//                        if (!user.blocked) "Заблокировать" else "Разблокировать",
-//                        color = Color(0xFF883F58),
-//                        style = MaterialTheme.typography.bodyMedium
-//                    )
-////                    }
-//                }
-//
-//            }
-
 
         }
     }

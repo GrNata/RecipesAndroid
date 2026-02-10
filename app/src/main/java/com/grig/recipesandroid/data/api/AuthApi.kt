@@ -1,6 +1,8 @@
 package com.grig.recipesandroid.data.api
 
 import com.google.gson.GsonBuilder
+import com.grig.recipesandroid.data.model.auth.AdminAuditLogDto
+import com.grig.recipesandroid.data.model.auth.AdminStatisticsDto
 import com.grig.recipesandroid.data.model.auth.AuthResponse
 import com.grig.recipesandroid.data.model.auth.AuthResponseWithRole
 import com.grig.recipesandroid.data.model.auth.BlockUserRequest
@@ -65,5 +67,14 @@ interface AuthApi {
 
     @GET("/api/admin/users/filter")
     suspend fun getUsersFiltred(@Query("role") role: String?, @Query("blocked") blocked: Boolean?): List<UserRequest>
+
+//    Аудит - логи
+    @GET("/api/admin/audit")
+    suspend fun getAllAuditLogs(): List<AdminAuditLogDto>
+
+    //    Статистика
+
+    @GET("/api/admin/statistics")
+    suspend fun AdminSatistics(): AdminStatisticsDto
 
 }

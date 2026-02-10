@@ -33,6 +33,10 @@ import com.grig.recipesandroid.ui.admin.AdminViewModel
 import com.grig.recipesandroid.ui.admin.CategoryAdminScreen
 import com.grig.recipesandroid.ui.admin.IngredientAdminScreen
 import com.grig.recipesandroid.ui.admin.NewUpdateCategoryTypeScreen
+import com.grig.recipesandroid.ui.adminStatistic.AdminStatsScreen
+import com.grig.recipesandroid.ui.adminStatistic.AdminStatsViewModel
+import com.grig.recipesandroid.ui.auditLogs.AdminAuditScreen
+import com.grig.recipesandroid.ui.auditLogs.AdminAuditViewModel
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
@@ -66,7 +70,9 @@ fun AppNavGraph(
     addEditRecipeViewModel: AddEditRecipeViewModel,
     myRecipesViewModel: MyRecipesViewModel,
     searchByIngredientsViewModel: SearchByIngredientsViewModel,
-    adminViewModel: AdminViewModel
+    adminViewModel: AdminViewModel,
+    adminAuditViewModel: AdminAuditViewModel,
+    adminStatsViewModel: AdminStatsViewModel
 //    recipeDetailViewModel: RecipeDetailViewModel
     ) {
 
@@ -343,6 +349,17 @@ fun AppNavGraph(
                     )
                 }
 
+                composable("admin_audit_logs") {
+                    AdminAuditScreen(
+                        adminAuditViewModel,
+                        authViewModel,
+                        navController
+                    )
+                }
+
+                composable("admin_statistics") {
+                    AdminStatsScreen(adminStatsViewModel, authViewModel, navController)
+                }
 
 
             }       //  NavHost
