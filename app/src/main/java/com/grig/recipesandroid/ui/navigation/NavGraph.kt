@@ -37,6 +37,7 @@ import com.grig.recipesandroid.ui.admin.statistic.AdminStatsScreen
 import com.grig.recipesandroid.ui.admin.statistic.AdminStatsViewModel
 import com.grig.recipesandroid.ui.admin.auditLogs.AdminAuditScreen
 import com.grig.recipesandroid.ui.admin.auditLogs.AdminAuditViewModel
+import com.grig.recipesandroid.ui.admin.statistic.graph.GraphStatsScreen
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
@@ -359,6 +360,14 @@ fun AppNavGraph(
 
                 composable("admin_statistics") {
                     AdminStatsScreen(adminStatsViewModel, authViewModel, navController)
+                }
+
+                composable("admin_stats_graph") {
+                    GraphStatsScreen(
+                        adminStatsViewModel,
+                        authViewModel,
+                        navController
+                    )
                 }
 
 

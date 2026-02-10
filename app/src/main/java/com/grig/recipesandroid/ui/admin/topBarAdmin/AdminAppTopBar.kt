@@ -48,6 +48,7 @@ fun AdminAppTopBar(
         AdminMenuItem("Ингредиенты") { navController.navigate("admin_ingredient") },
         AdminMenuItem("Категории") { navController.navigate("admin_category") },
         AdminMenuItem("Статистика") { navController.navigate("admin_statistics") },
+        AdminMenuItem("Графики-статистика") { navController.navigate("admin_stats_graph") },
         AdminMenuItem("Аудит-логи") { navController.navigate("admin_audit_logs") }
     )
 

@@ -5,7 +5,8 @@ data class AdminStatisticsDto(
     val totalRecipes: Long,
     val totalIngredients: Long,
     val popularCategoriesValue: List<CategoryStateValue>,
-    val topAuthor: List<AuthorStars>
+    val topAuthors: List<AuthorStars>
+//    val topAuthor: List<AuthorStars> = emptyList()
 )
 
 data class CategoryStateValue(

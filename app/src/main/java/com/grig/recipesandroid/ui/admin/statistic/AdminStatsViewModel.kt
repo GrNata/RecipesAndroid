@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.admin.statistic
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.grig.recipesandroid.data.model.auth.AdminStatisticsDto
@@ -26,6 +27,10 @@ class AdminStatsViewModel(
             _loading.value = true
             try {
                 _stats.value = authRepository.getAdminStatistics()
+
+                Log.d("STATS ADMIN", "AdminStatsViewModel: stats: ${stats.value}")
+                Log.d("STATS ADMIN", "AdminStatsViewModel: stats: ${stats.value?.topAuthors}")
+
             } catch (e: Exception) {
                 _error.value = e.message
             } finally {
