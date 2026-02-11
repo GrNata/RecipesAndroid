@@ -179,7 +179,13 @@ fun AppNavGraph(
                 }
 
                 composable("register") {
-                    RegisterScreen(onRegisterSuccess = { navController.navigate("recipe_list") })
+                    RegisterScreen(
+                        authViewModel,
+                        onRegisterSuccess = {
+                            navController.navigate("recipe_list")
+                        },
+                        navController
+                    )
                 }
 
 //                if (isAuthenticated) {

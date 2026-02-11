@@ -6,12 +6,15 @@ import com.grig.recipesandroid.data.api.AuthApi
 import com.grig.recipesandroid.data.local.TokenRepository
 import com.grig.recipesandroid.data.model.auth.AdminAuditLogDto
 import com.grig.recipesandroid.data.model.auth.AdminStatisticsDto
+import com.grig.recipesandroid.data.model.auth.AuthResponseWithRole
 import com.grig.recipesandroid.data.model.auth.AuthTokens
 import com.grig.recipesandroid.data.model.auth.AuthTokensWithRole
 import com.grig.recipesandroid.data.model.auth.BlockUserRequest
 import com.grig.recipesandroid.data.model.auth.LoginRequest
 import com.grig.recipesandroid.data.model.auth.RefreshTokenRequest
 import com.grig.recipesandroid.data.model.auth.RegisterRequest
+import com.grig.recipesandroid.data.model.auth.RegisterResponse
+import com.grig.recipesandroid.data.model.auth.RegisterUserRequest
 import com.grig.recipesandroid.data.model.auth.RoleUserRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleResponse
@@ -24,11 +27,19 @@ class AuthRepository(
 ) {
 
 //    suspend fun register(request: RegisterRequest) : AuthTokens {
-    suspend fun register(request: RegisterRequest) : AuthTokensWithRole {
+//    suspend fun register(request: RegisterRequest) : AuthTokensWithRole {
+//    suspend fun register(request: RegisterUserRequest) : AuthTokensWithRole {
+    suspend fun register(request: RegisterUserRequest) : RegisterResponse {
+    Log.d("REGISTRATION", "AuthRepository: request: $request")
         val response = api.register(request)
-        tokenRepository.saveTokens(response.accessToken, response.refreshToken, response.userInfo)
-        return AuthTokensWithRole(response.accessToken, response.refreshToken, response.userInfo.roles)
+    Log.d("REGISTRATION", "AuthViewModel: response: $response")
+////        tokenRepository.saveTokens(response.accessToken, response.refreshToken, response.userInfo)
+//        tokenRepository.saveTokens(response.accessToken, response.refreshToken, response.)
+//    Log.d("REGISTRATION", "AuthViewModel: request: $request")
+//        return AuthTokensWithRole(response.accessToken, response.refreshToken, response.userInfo.roles)
 //        return AuthTokens(response.accessToken, response.refreshToken)
+
+    return response
     }
 
 //    suspend fun login(request: LoginRequest) : AuthTokens {

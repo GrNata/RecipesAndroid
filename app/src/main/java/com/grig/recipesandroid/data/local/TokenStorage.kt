@@ -28,12 +28,15 @@ class TokenRepository(
         .map { it[TokenStorage.REFRESH_TOKEN_KEY] }
 
     suspend fun saveTokens(access: String, refresh: String, roles: UserInfoResponse) {
-        Log.d("ADMIN", "SAVE_TOKEN access=${access.take(20)}")
+//        Log.d("ADMIN", "SAVE_TOKEN access=${access.take(20)}")
+//        Log.d("REGISTRATION", "TokenRepository: SAVE_TOKEN access=${access.take(20)}")
+        Log.d("REGISTRATION", "TokenRepository: SAVE_TOKEN ")
         context.dataStore.edit { pefs ->
             pefs[TokenStorage.ACCESS_TOKEN_KEY] = access
             pefs[TokenStorage.REFRESH_TOKEN_KEY] = refresh
             pefs[TokenStorage.ROLES_TOKEN_KEY] = roles.roles.joinToString(",")
         }
+        Log.d("REGISTRATION", "TokenRepository: SAVE_TOKEN FINISH")
     }
 
     suspend fun clearTokens() {

@@ -4,10 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.grig.recipesandroid.data.local.TokenRepository
-import com.grig.recipesandroid.data.model.auth.AuthTokens
 import com.grig.recipesandroid.data.model.auth.AuthTokensWithRole
 import com.grig.recipesandroid.data.model.auth.LoginRequest
-import com.grig.recipesandroid.data.model.auth.RegisterRequest
+import com.grig.recipesandroid.data.model.auth.RegisterUserRequest
 import com.grig.recipesandroid.data.repository.AuthRepository
 import com.grig.recipesandroid.utils.JwtUtils
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,6 +54,9 @@ class AuthViewModel(
     private val _tokens = MutableStateFlow<AuthTokensWithRole?>(null)
     val tokens: StateFlow<AuthTokensWithRole?> = _tokens
 
+    private val _registerSuccess = MutableStateFlow(false)
+    val registerSuccess: StateFlow<Boolean> = _registerSuccess
+
 
     // ✅ Новый флаг
     private val _authStateRestored = MutableStateFlow(false)
@@ -94,14 +96,20 @@ class AuthViewModel(
         }
     }
 
-    fun register(email: String, password: String, name: String? = null) {
-        Log.d("CICLE AuthViewModel", "AuthViewModel - register")
+//    fun register(email: String, password: String, username: String? = null) {
+    fun register(email: String, password: String, username: String) {
+        Log.d("REGISTRATION", "AuthViewModel: email: $email, name: $username, pass: $password")
         viewModelScope.launch {
             _loading.value = true
             _error.value = null
+            _registerSuccess.value = false
             try {
-                val request = RegisterRequest(email, password, name)
+//                val request = RegisterRequest(email, password, name)
+                val request = RegisterUserRequest(username, email, password)
+                Log.d("REGISTRATION", "AuthViewModel: request: $request")
                 authRepository.register(request)
+//                УСПЕХ
+                _registerSuccess.value = true
 //                val result = authRepository.register(request)
 //                _tokens.value = result
             } catch (e: Exception) {

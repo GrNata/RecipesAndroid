@@ -1,32 +1,29 @@
 package com.grig.recipesandroid.data.api
 
-import com.google.gson.GsonBuilder
 import com.grig.recipesandroid.data.model.auth.AdminAuditLogDto
 import com.grig.recipesandroid.data.model.auth.AdminStatisticsDto
-import com.grig.recipesandroid.data.model.auth.AuthResponse
-import com.grig.recipesandroid.data.model.auth.AuthResponseWithRole
 import com.grig.recipesandroid.data.model.auth.BlockUserRequest
 import com.grig.recipesandroid.data.model.auth.LoginRequest
 import com.grig.recipesandroid.data.model.auth.RefreshTokenRequest
-import com.grig.recipesandroid.data.model.auth.RegisterRequest
+import com.grig.recipesandroid.data.model.auth.RegisterResponse
+import com.grig.recipesandroid.data.model.auth.RegisterUserRequest
 import com.grig.recipesandroid.data.model.auth.TokenResponse
-import com.grig.recipesandroid.data.model.auth.UpdateUserRoleRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleResponse
 import com.grig.recipesandroid.data.model.auth.UserRequest
-import com.grig.recipesandroid.utils.LocalDateTimeAdapter
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
-import java.time.LocalDateTime
 
 
 interface AuthApi {
 
     @POST("api/auth/register")
-    suspend fun register(@Body request: RegisterRequest) : AuthResponseWithRole
+//    suspend fun register(@Body request: RegisterRequest) : AuthResponseWithRole
+//    suspend fun register(@Body request: RegisterUserRequest) = AuthResponseWithRole
+    suspend fun register(@Body request: RegisterUserRequest) : RegisterResponse
 //    suspend fun register(@Body request: RegisterRequest) : AuthResponse
 
     @POST("api/auth/login")

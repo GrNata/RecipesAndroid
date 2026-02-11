@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.auth
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.*
@@ -7,15 +8,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 
 @Composable
 fun RegisterScreen(
-    viewModel: AuthViewModel = viewModel(),
-    onRegisterSuccess: () -> Unit
+//    viewModel: AuthViewModel = viewModel(),
+    viewModel: AuthViewModel,
+    onRegisterSuccess: () -> Unit,
+    navController: NavController
 ) {
     val loading by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
     val tokens by viewModel.tokens.collectAsState()
+    val registerSuccess by viewModel.registerSuccess.collectAsState()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -24,6 +29,16 @@ fun RegisterScreen(
     LaunchedEffect(tokens) {
         if (tokens != null) onRegisterSuccess()
     }
+
+    LaunchedEffect(registerSuccess) {
+        if (registerSuccess) {
+            navController.navigate("login") {
+                popUpTo("register") { inclusive = true }
+            }
+        }
+    }
+
+//    Log.d("REGISTRATION", "RegisterScreen: START")
 
     Column(
         modifier = Modifier
@@ -52,6 +67,9 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
+
+        Log.d("REGISTRATION", "RegisterScreen: email: $email, name: $name, pass: $password")
+
         Button(
             onClick = { viewModel.register(email, password, name) },
             enabled = !loading,

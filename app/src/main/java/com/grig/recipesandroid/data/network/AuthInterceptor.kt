@@ -98,7 +98,7 @@ class AuthInterceptor(
             // если обновить не получилось — отдаем оригинальный ответ (401/403)
         }
 
-        Log.d("MY Recipes token", "URL=$url token=${accessToken?.take(10)}")
+//        Log.d("MY Recipes token", "URL=$url token=${accessToken?.take(10)}")
 
         return response
     }

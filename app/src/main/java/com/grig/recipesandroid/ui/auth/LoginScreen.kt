@@ -1,6 +1,7 @@
 package com.grig.recipesandroid.ui.auth
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.*
@@ -82,6 +83,23 @@ fun LoginScreen(
         error?.let{
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = it, color = MaterialTheme.colorScheme.error)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+//        TextButton(
+            onClick = {
+                navController.navigate("register")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primary)
+        ) {
+            Text(
+                "Нет аккаунта? Зарегистрироваться.",
+                color = MaterialTheme.colorScheme.surface,
+            )
         }
     }
 }

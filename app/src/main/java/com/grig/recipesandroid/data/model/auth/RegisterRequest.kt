@@ -6,3 +6,9 @@ data class RegisterRequest(
     val name: String? = null,
     val userInfo: UserInfoResponse = UserInfoResponse(email, setOf("USER"))
 )
+
+data class RegisterUserRequest(
+    val username: String,
+    val email: String,
+    val password: String? = null
+)
