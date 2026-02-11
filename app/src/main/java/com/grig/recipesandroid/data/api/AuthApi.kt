@@ -72,6 +72,14 @@ interface AuthApi {
     @GET("/api/admin/audit")
     suspend fun getAllAuditLogs(): List<AdminAuditLogDto>
 
+    @GET("/api/admin/audit/filter")
+    suspend fun filteredAuditLogs(
+        @Query("actionType") actiontype: String?,
+        @Query("entityType") entityType: String?,
+        @Query("from") from: String?,
+        @Query("to") to: String?,
+    ): List<AdminAuditLogDto>
+
     //    Статистика
 
     @GET("/api/admin/statistics")

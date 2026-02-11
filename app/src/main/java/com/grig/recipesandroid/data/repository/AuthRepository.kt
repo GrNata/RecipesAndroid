@@ -87,6 +87,19 @@ class AuthRepository(
     suspend fun getAllAuditLogs() : List<AdminAuditLogDto> =
         api.getAllAuditLogs()
 
+    suspend fun filtredAuditLogs(
+        actionType: String?,
+        entityType: String?,
+        from: String?,
+        to: String?
+        ) : List<AdminAuditLogDto> =
+        api.filteredAuditLogs(
+            actiontype = actionType,
+            entityType = entityType,
+            from = from,
+            to = to
+        )
+
 //    Статистика
     suspend fun getAdminStatistics() : AdminStatisticsDto =
         api.AdminSatistics()

@@ -9,3 +9,10 @@ data class AdminAuditLogDto(
     val description: String,
     val createdAt: String
 )
+
+data class AuditLogFilteruiState(
+    val actionType: String? = null,
+    val entityType: String? = null,
+    val from: String? = null,   //  dd-MM-yyyy
+    val to: String? = null   //  dd-MM-yyyy
+)
