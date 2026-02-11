@@ -175,7 +175,7 @@ fun RecipeItem(
                     }
             }     // Row
 
-            Spacer(modifier = Modifier.padding(4.dp))
+            Spacer(modifier = Modifier.padding(1.dp))
 //            Column {
             Row {
                 val ingredientsUi = recipe.ingredients.map { it.toUi() }

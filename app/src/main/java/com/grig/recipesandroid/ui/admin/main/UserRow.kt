@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.admin.main
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -185,16 +186,39 @@ fun UserRow(
             )
 
             Row(modifier = Modifier.fillMaxWidth().padding(1.dp)) {
-                Column(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier.weight(2f)) {
                     Text(
-                        "Дата:",
+                        "Дата регистрации:",
                         color = Color(0xFF3C326B),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
-                Column(modifier = Modifier.weight(3f)) {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "${DateTimeFormater( user.registrationDate)}",
+                        user.registrationDate,
+//                        "${user.registrationDate}",
+                        color = Color(0xFF6F6AB8),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+            Divider(
+                color = Color(0xFF9D9598),
+                thickness = 1.dp
+            )
+
+            Log.d("DATE LOG", "UserRow: lastLoginAt: ${user.lastLoginAt}")
+            Row(modifier = Modifier.fillMaxWidth().padding(2.dp)) {
+                Column(modifier = Modifier.weight(2f)) {
+                    Text(
+                        "Дата послед. логир.:",
+                        color = Color(0xFF3C326B),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        user.lastLoginAt,
 //                        "${user.registrationDate}",
                         color = Color(0xFF6F6AB8),
                         style = MaterialTheme.typography.bodyMedium
