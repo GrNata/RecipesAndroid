@@ -29,6 +29,8 @@ fun RecipeDto.toDomain() : Recipe =
         name = name,
         description = description,
         image = image,
+        createdAt = createdAt,
+        author = author,
         baseServings = baseServings,
         categories = categories
             ?.values

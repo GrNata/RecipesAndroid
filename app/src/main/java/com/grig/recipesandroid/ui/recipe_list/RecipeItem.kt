@@ -192,6 +192,25 @@ fun RecipeItem(
 //                    Text(text = ing.unit?.label ?: "")
                 }
             }
+
+            Spacer(Modifier.height(10.dp))
+//            Автор и дата создания
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.weight(3f)) {
+                    Text(
+                        text = recipe.createdAt,
+                        color = MaterialTheme.colorScheme.surface,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = recipe.author.username,
+                        color = MaterialTheme.colorScheme.surface,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
         }
     }
 }

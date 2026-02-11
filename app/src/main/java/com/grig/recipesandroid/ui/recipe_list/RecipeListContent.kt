@@ -140,10 +140,6 @@ fun RecipeListContent(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .background(MaterialTheme.colorScheme.background)
-//                                        .background(Color(0xFFE8DBE0))
-//                                        .background(Color(0xFFfffffa))
-//                                        .background(Color(0xFF9D9598))
-//                                        .background(Color(0xFFEFEFEF))
                                         .padding(8.dp)
                                         .height(20.dp)
                                 ) {
