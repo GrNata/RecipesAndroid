@@ -1,6 +1,7 @@
 package com.grig.recipesandroid.ui.admin.main
 
 import android.util.Log
+import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -20,6 +21,7 @@ import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.lang.Exception
@@ -46,6 +48,23 @@ class AdminViewModel(
     fun setBlockedFilter(newBlocked: Boolean?) {
         _blockedFilter.value = newBlocked
     }
+
+    private val _emailFilter = MutableStateFlow<String?>(null)
+    val emailFilter = _emailFilter.asStateFlow()
+    fun setEmailFilter(value: String?) {
+        _emailFilter.value = value
+
+        if (_emailError.value != null) {
+            _emailError.value = null
+        }
+    }
+
+    private var _emailError = MutableStateFlow<String?>(null)
+    val emailError = _emailError.asStateFlow()
+    fun setEmailError(value: String?) {
+        _emailError.value = value
+    }
+//    +++++++++++++++++++++++++++++++
 
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
@@ -111,6 +130,8 @@ class AdminViewModel(
         nameCategoryType = value
     }
 
+//    +++++++++++++++++++++++++
+//    Сброс формы
     fun resetFormIngredient() {
             currentIngredientId = null
             name = ""
@@ -140,16 +161,16 @@ class AdminViewModel(
             _loading.value = true
             _error.value = null
             try {
-//                _usersAll.value = authRepository.getAllUsers()
+//                if (_emailError.value.isNullOrEmpty() && _emailFilter.value.isNullOrEmpty()) {
+                if (!isValidEmail()) return@launch
+
                 _usersAll.value = authRepository.getUsersFiltred(
                     role = _roleFilter.value,
-                    blocked = _blockedFilter.value
+                    blocked = _blockedFilter.value,
+                    email = _emailFilter.value
                 )
-                Log.d("ADMIN", "AdminViewModel: usersAll: ${_usersAll.value}")
-
             } catch (e: Exception) {
                 _error.value = e.message
-                Log.e("ADMIN", "AdminViewModel: error: ${e.message}")
             } finally {
                 _loading.value = false
             }
@@ -192,34 +213,24 @@ class AdminViewModel(
         }
     }
 
-//    fun getUsersWithRole(role: String) {
-//        _loading.value = true
-//        _error.value = null
+//    fun getUserByEmail() {
 //        viewModelScope.launch {
-//            try {
-//                if (role == "Все") {
-//                    loadUsers()
-//                } else {
-//                    _usersAll.value = authRepository.getUsersWithRole(role)
-//                }
-//                Log.d("ADMIN", "AdminViewModel: _usersAll.value: ${_usersAll.value}")
-//            } catch (e: Exception) {
-//                _error.value = e.message
-//            } finally {
-//                _loading.value = false
-//            }
-//        }
-//    }
+//            _loading.value = true
+//            _error.value = null
 //
-//    fun getUsersWithBlocked(blocked: Boolean) {
-//        _loading.value = true
-//        _error.value = null
-//        viewModelScope.launch {
 //            try {
-//                Log.d("ADMIN", "AdminViewModel: blocked: ${blocked}")
-//                _usersAll.value = authRepository.getUsersWithBlocked(blocked)
-//                Log.d("ADMIN", "AdminViewModel: blocked: ${blocked}")
-//            } catch (e: Exception) {
+//                if (!isValidEmail(_emailFilter.value) || _emailFilter.value.isNullOrEmpty())
+//                {
+//                    loadUsers()
+//                    if (!isValidEmail(_emailFilter.value)) {
+//                        setEmailError("Некорректный email")
+//                    }
+//                    return@launch
+//                }
+//                val response = authRepository.getUserByEmail(_emailFilter.value)
+//                _usersAll.value = listOfNotNull(response)
+//
+//            } catch (e: kotlin.Exception) {
 //                _error.value = e.message
 //            } finally {
 //                _loading.value = false
@@ -227,13 +238,35 @@ class AdminViewModel(
 //        }
 //    }
 
+
 //    +++++++++++++++++++
+//    VALID
 
     fun isValid(): Boolean {
         return name.isNotBlank() && (energyKcal100g == null )
 //        return name.isNotBlank() && (energyKcal100g == null || energyKcal100g >= 0  )
     }
 
+    fun isValidEmail(): Boolean {
+        val email = _emailFilter.value
+
+        if (email.isNullOrEmpty()) {
+            _emailError.value = null
+            return true
+        }
+        return if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            _emailError.value = null
+            true
+        } else {
+            _emailError.value = "Некоррктный email"
+            false
+        }
+//        if (email.isNullOrEmpty()) return true
+//        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+//    +++++++++++++++++++++++++++++
+//      INGREDIENT
     fun getIngredientAddEdit(ingredientId: Long?) : IngredientAddEdit? {
         if (isValid()) return null
         return IngredientAddEdit(
@@ -244,13 +277,9 @@ class AdminViewModel(
         )
     }
 
-
     fun onUpdateIngredients() {
         recipesViewModel.refreshIngredients()
         navController.navigate("admin_ingredient")
-//        {
-//            popUpTo("recipe_edit/${recipeId}") { inclusive = true }
-//        }
     }
     fun loadIngredientById(id: Long?) {
         Log.d("ADMIN", "loadIngredientById: id=$id")
@@ -283,7 +312,6 @@ class AdminViewModel(
         }
     }
 
-//    fun createIngredient(ingredient: IngredientCreate) {
     fun saveIngredient(isEdit: Boolean, onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
@@ -293,15 +321,12 @@ class AdminViewModel(
                     Log.d("ADMIN", "AdminViewModel: update ingredient id = $currentIngredientId")
                     val ingredientId = currentIngredientId ?: return@launch
 
-//                    ingredientRepository.updateIngredient(ingredientId, IngredientUpdate(
                     ingredientRepository.updateIngredient(ingredientId, IngredientRequest(
-//                        id = currentIngredientId,
                         name = name,
                         nameEng = nameEng,
                         energyKcal100g = energyKcal100g
                     ))
                     onUpdateIngredients()
-//                    recipesViewModel.refreshIngredients()
                 } else {
                     ingredientRepository.createIngredient(IngredientRequest(
                         name = name,
@@ -333,9 +358,6 @@ class AdminViewModel(
     fun onUpdateCategoryValue() {
         recipesViewModel.refreshCategoryValues()
         navController.navigate("admin_category")
-    //        {
-    //            popUpTo("recipe_edit/${recipeId}") { inclusive = true }
-    //        }
     }
 
     fun onUpdateCategoryType() {

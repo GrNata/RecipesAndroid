@@ -15,9 +15,6 @@ data class UserRequest(
     @SerializedName("email") val email: String,
     @SerializedName("registrationDate") val registrationDate: String,
     @SerializedName("lastLoginAt") val lastLoginAt: String,
-//    @SerializedName("registrationDate") val registrationDate: LocalDateTime,
-//    @SerializedName("lastLoginAt") val lastLoginAt: LocalDateTime,
-//    @SerializedName("roles") val roles: List<String>,
     @SerializedName("roles") val roles: List<String>,
     @SerializedName("blocked") val blocked: Boolean
 )

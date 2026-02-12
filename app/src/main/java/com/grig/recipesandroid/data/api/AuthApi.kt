@@ -43,6 +43,9 @@ interface AuthApi {
     @GET("/api/admin/users")
     suspend fun getUsers(): List<UserRequest>
 
+    @GET("/api/admin/users/by_email/{email}")
+    suspend fun getUserByEmail(@Path("email") email : String?) : UserRequest?
+
     @PUT("/api/admin/users/{id}/roles")
     suspend fun updateRoleUser(
         @Path("id") id: Long,
@@ -63,7 +66,12 @@ interface AuthApi {
     suspend fun getUsersWithBlocked(@Query("blocked") blocked: Boolean) : List<UserRequest>
 
     @GET("/api/admin/users/filter")
-    suspend fun getUsersFiltred(@Query("role") role: String?, @Query("blocked") blocked: Boolean?): List<UserRequest>
+    suspend fun getUsersFiltred(
+        @Query("role") role: String?,
+        @Query("blocked") blocked: Boolean?,
+        @Query("email") email: String?
+    ): List<UserRequest>
+//    suspend fun getUsersFiltred(@Query("role") role: String?, @Query("blocked") blocked: Boolean?): List<UserRequest>
 
 //    Аудит - логи
     @GET("/api/admin/audit")
@@ -78,7 +86,6 @@ interface AuthApi {
     ): List<AdminAuditLogDto>
 
     //    Статистика
-
     @GET("/api/admin/statistics")
     suspend fun AdminSatistics(): AdminStatisticsDto
 

@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.admin.main
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +32,7 @@ fun AdminScreen(
     val usersAll by adminViewModel.usersAll.collectAsState()
     val loading by adminViewModel.loading.collectAsState()
     val error by adminViewModel.error.collectAsState()
+    val emailFilter by adminViewModel.emailFilter.collectAsState()
 
     val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
     val isAdmin by authViewModel.isAdmin.collectAsState()
@@ -40,6 +42,12 @@ fun AdminScreen(
     LaunchedEffect(Unit) {
         adminViewModel.loadUsers()
     }
+
+//    LaunchedEffect(usersAll) {
+//        adminViewModel.loadUsers()
+//        Log.d("ADMIN", "AdminScreen: LaunchedEffect userAll: ${usersAll}" )
+//    }
+
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -69,6 +77,11 @@ fun AdminScreen(
 
                 //        поиск / фильтрация
                     DropDownForFilterUser(adminViewModel)
+
+                if (usersAll.isNullOrEmpty()) {
+
+                    Text("Ничего не найдено")
+                }
 
                 LazyColumn(
                     modifier = Modifier

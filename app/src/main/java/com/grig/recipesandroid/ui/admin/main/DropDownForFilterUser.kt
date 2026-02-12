@@ -15,6 +15,7 @@ import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,9 +41,11 @@ fun DropDownForFilterUser(
     val optionsBlocked = listOf("Все", "False", "True")
     val selectedBlocked by adminViewModel.blockedFilter.collectAsState()
 
+
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded  =!expanded },
+//        onExpandedChange = { expanded  =!expanded },      //  закрывается само, после выбора
+        onExpandedChange = { expanded  = it },
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, top = 16.dp)
@@ -59,7 +62,10 @@ fun DropDownForFilterUser(
         // Раскрывающийся список
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = {
+                expanded = false
+                adminViewModel.loadUsers()
+            }
         ) {
 
             Row(modifier = Modifier
@@ -82,7 +88,7 @@ fun DropDownForFilterUser(
                             selected = (option == (selectedRole ?: "Все")),
                             onClick = {
                                 adminViewModel.setRoleFilter(if (option == "Все") null else option)
-                                adminViewModel.loadUsers()
+//                                adminViewModel.loadUsers()
                             },
 //                                null, // Отключаем клик на самой кнопке (кликаем по Row)
                             colors = RadioButtonDefaults.colors(
@@ -136,7 +142,7 @@ fun DropDownForFilterUser(
                                             else -> false
                                         }
                                 )
-                                adminViewModel.loadUsers()
+//                                adminViewModel.loadUsers()
                             },
 //                                null, // Отключаем клик на самой кнопке (кликаем по Row)
                             colors = RadioButtonDefaults.colors(
@@ -152,7 +158,10 @@ fun DropDownForFilterUser(
                     }
                 }
             }
-            Log.d("ADMIN", "DropDownForFIlterUser: BLOCKED selectedBlocked = $selectedBlocked")
+
+            ComponentDropDownFilterEmail(adminViewModel)
+
+            Log.d("ADMIN", "DropDownForFilterUser: BLOCKED selectedBlocked = $selectedBlocked")
         }
     }
 }

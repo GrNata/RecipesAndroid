@@ -92,7 +92,16 @@ class AuthRepository(
 
     suspend fun getUsersWithBlocked(blocked: Boolean) : List<UserRequest> = api.getUsersWithBlocked(blocked)
 
-    suspend fun getUsersFiltred(role: String?, blocked: Boolean?): List<UserRequest> = api.getUsersFiltred(role, blocked)
+    suspend fun getUsersFiltred(
+        role: String?,
+        blocked: Boolean?,
+        email: String?
+    ): List<UserRequest> =
+        api.getUsersFiltred(role, blocked, email)
+//    suspend fun getUsersFiltred(role: String?, blocked: Boolean?): List<UserRequest> = api.getUsersFiltred(role, blocked)
+
+    suspend fun getUserByEmail(email: String?) : UserRequest? =
+        api.getUserByEmail(email)
 
 //    АУДИТ - ЛОГИ
     suspend fun getAllAuditLogs() : List<AdminAuditLogDto> =

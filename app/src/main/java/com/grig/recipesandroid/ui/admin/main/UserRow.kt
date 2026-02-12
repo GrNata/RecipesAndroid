@@ -35,8 +35,6 @@ import com.grig.recipesandroid.ui.utilRecipe.DateTimeFormater
 fun UserRow(
     user: UserRequest,
     adminViewModel: AdminViewModel
-//    onUpdateRole: (Long, UpdateUserRoleResponse) -> Unit
-//    onUpdateRole: (Long, UpdateUserRoleRequest) -> Unit
 ) {
 
     var isExpanded by remember { mutableStateOf(false) }
@@ -55,7 +53,6 @@ fun UserRow(
                 .padding(10.dp)
                 .clip(RoundedCornerShape(2.dp)),
         elevation = CardDefaults.cardElevation(4.dp),
-//        colors = CardDefaults.cardColors(Color(0xFFFFF8F7))
         colors = CardDefaults.cardColors(Color(0xFFFFFBFB))
     ) {
         Column(

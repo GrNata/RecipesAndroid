@@ -53,23 +53,6 @@ fun IngredientAdminScreen(
 
     val ingredientAll = recipesViewModel.ingredientsDictionary
 
-
-//    //    Для добавления вновь созданного ингредиента (обновление списка)
-//    val refresh = navController
-//        .currentBackStackEntry
-//        ?.savedStateHandle
-//        ?.getLiveData<Boolean>("REFRESH_INGREDIENT")
-////        ?.observeAsState()
-//
-//    LaunchedEffect(refresh?.value) {
-//        if (refresh?.value == true) {
-//            adminViewModel.refresh()
-//            navController.currentBackStackEntry
-//                ?.savedStateHandle
-//                ?.remove<Boolean>("REFRESH_RECIPES")
-//        }
-//    }
-
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize(),
