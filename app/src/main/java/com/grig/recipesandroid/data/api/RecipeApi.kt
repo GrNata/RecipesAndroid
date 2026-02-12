@@ -18,6 +18,7 @@ import okhttp3.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -64,6 +65,28 @@ interface RecipeApi {
         @Body request: SearchByIngredientsRequest
     ): List<RecipeDto>
 
+//        ++++++++++++++++++++
+//    MODERATOR
+//    Отправить на модерацию
+    @PATCH("/api/recipes/{id}/send-to-moderation")
+    suspend fun sendModeration(@Path("id") id: Long): RecipeDto
+
+//    MODERATOR - получить список рецептов на модерацию
+    @GET("/api/recipes/moderation/pending")
+    suspend fun getPendingRecipes(
+        @Query("page") page: Int,
+        @Query("size") size: Int
+    ): PagedRecipesResponse
+
+//    MODERATOR - одобрить
+    @PATCH("/api/recipes/{id}/approve")
+    suspend fun approveRecipe(@Path("id") id: Long): RecipeDto
+
+//    MODERATOR - отклонить
+    @PATCH("/api/recipes/{id}/reject")
+    suspend fun rejectRecipe(@Path("id") id: Long): RecipeDto
+
+//    +++++++++++++++++++++
 
 //  ++++++++++++++++++++++++
 //    Favorites recipes API

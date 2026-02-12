@@ -25,6 +25,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.lang.Exception
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class AdminViewModel(
     private val authRepository: AuthRepository,
@@ -64,6 +67,25 @@ class AdminViewModel(
     fun setEmailError(value: String?) {
         _emailError.value = value
     }
+
+//    private val _lastLoginFrom = MutableStateFlow<LocalDate?>(null)
+    private val _lastLoginFrom = MutableStateFlow<String?>(null)
+    val lastLoginFrom = _lastLoginFrom.asStateFlow()
+//    fun setLastLoginFrom(date: LocalDate?) {
+    fun setLastLoginFrom(date: String?) {
+        _lastLoginFrom.value = date
+    }
+
+//    private val _lastLoginTo = MutableStateFlow<LocalDate?>(null)
+    private val _lastLoginTo = MutableStateFlow<String?>(null)
+    val lastLoginTo = _lastLoginTo.asStateFlow()
+//    fun setLastLoginTo(date: LocalDate?) {
+    fun setLastLoginTo(date: String?) {
+        _lastLoginTo.value = date
+    }
+//    Форматирование даты для API
+    private fun LocalDate?.toApi(): String? =
+        this?.format(DateTimeFormatter.ISO_DATE)
 //    +++++++++++++++++++++++++++++++
 
     private val _loading = MutableStateFlow(false)
@@ -167,8 +189,14 @@ class AdminViewModel(
                 _usersAll.value = authRepository.getUsersFiltred(
                     role = _roleFilter.value,
                     blocked = _blockedFilter.value,
-                    email = _emailFilter.value
+                    email = _emailFilter.value,
+                    lastLoginFrom = _lastLoginFrom.value,
+                    lastLoginTo = _lastLoginTo.value
                 )
+
+                Log.d("DATE LOGIN", "AdminViewModel: lastLoginFrom: ${_lastLoginFrom.value}, lastLoginTo: ${_lastLoginTo.value}")
+                Log.d("DATE LOGIN", "AdminViewModel: userAll: ${_usersAll.value}")
+
             } catch (e: Exception) {
                 _error.value = e.message
             } finally {

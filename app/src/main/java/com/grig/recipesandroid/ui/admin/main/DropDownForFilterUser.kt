@@ -161,6 +161,8 @@ fun DropDownForFilterUser(
 
             ComponentDropDownFilterEmail(adminViewModel)
 
+            ComponentDropDownDataFilter(adminViewModel)
+
             Log.d("ADMIN", "DropDownForFilterUser: BLOCKED selectedBlocked = $selectedBlocked")
         }
     }

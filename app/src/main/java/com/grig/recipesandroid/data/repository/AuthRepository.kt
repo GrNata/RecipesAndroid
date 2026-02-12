@@ -20,6 +20,7 @@ import com.grig.recipesandroid.data.model.auth.UpdateUserRoleRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleResponse
 import com.grig.recipesandroid.data.model.auth.UserRequest
 import kotlinx.coroutines.flow.first
+import java.time.LocalDate
 
 class AuthRepository(
     private val api: AuthApi,
@@ -95,9 +96,11 @@ class AuthRepository(
     suspend fun getUsersFiltred(
         role: String?,
         blocked: Boolean?,
-        email: String?
+        email: String?,
+        lastLoginFrom: String?,
+        lastLoginTo: String?
     ): List<UserRequest> =
-        api.getUsersFiltred(role, blocked, email)
+        api.getUsersFiltred(role, blocked, email, lastLoginFrom, lastLoginTo)
 //    suspend fun getUsersFiltred(role: String?, blocked: Boolean?): List<UserRequest> = api.getUsersFiltred(role, blocked)
 
     suspend fun getUserByEmail(email: String?) : UserRequest? =

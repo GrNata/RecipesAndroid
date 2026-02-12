@@ -9,6 +9,8 @@ data class RecipeDto(
     @SerializedName("description") val description: String?,
     @SerializedName("image") val image: String?,
     @SerializedName("createdAt")val createdAt: String,  //  уже отформатированная дата
+    @SerializedName("publishedAt")val publishedAt: String?,   // Дата публикации (null, если не опубликован)
+    @SerializedName("status")val status: RecipeStatus,  //  Статус (DRAFT, PENDING, APPROVED, REJECTED)
     @SerializedName("author")val author: RecipeAuthor,
     @SerializedName("baseServings") val baseServings: Int?,
     @SerializedName("categoryValues") val categories: Map<String, CategoryValueDto>?,

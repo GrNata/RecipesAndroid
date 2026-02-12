@@ -69,7 +69,9 @@ interface AuthApi {
     suspend fun getUsersFiltred(
         @Query("role") role: String?,
         @Query("blocked") blocked: Boolean?,
-        @Query("email") email: String?
+        @Query("email") email: String?,
+        @Query("lastLoginFrom") lastLoginFrom: String?,
+        @Query("lastLoginTo") lastLoginTo: String?
     ): List<UserRequest>
 //    suspend fun getUsersFiltred(@Query("role") role: String?, @Query("blocked") blocked: Boolean?): List<UserRequest>
 
