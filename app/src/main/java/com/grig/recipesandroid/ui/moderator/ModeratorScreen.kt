@@ -7,12 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
@@ -40,6 +38,7 @@ fun ModeratorScreen(
     val error by resipViewModel.moderatorError.collectAsState()
 
     val isModerator by authViewModel.isModerator.collectAsState()
+    val isAdmin by authViewModel.isAdmin.collectAsState()
     val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -48,11 +47,11 @@ fun ModeratorScreen(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-//        containerColor = Color(0xFFF7F3EC),
-//        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+
         topBar = {
             val authRestored by authViewModel.authStateRestored.collectAsState()
-            Log.d("MODERATOR", "ModeratorScreen: authRestored: $authRestored")
+            Log.d("MODERATOR", "ModeratorScreen: isModerator: $isModerator")
+            Log.d("MODERATOR", "ModeratorScreen: isAdmin: $isAdmin")
 
             AppTopBar(
                 title = "Модератор",
@@ -118,11 +117,11 @@ fun ModeratorScreen(
 
                         items(nonNullPending.content) { recipe ->
 
-                            Text(
-                                text = recipe.name
-                            )
-                            Text(
-                                text = recipe.status.toString()
+                            RecipesPendingRow(recipe, resipViewModel, navController)
+
+                            Divider(
+                                color = Color(0xFF9D9598),
+                                thickness = 1.dp
                             )
                         }
                     }   //  LazyColumn

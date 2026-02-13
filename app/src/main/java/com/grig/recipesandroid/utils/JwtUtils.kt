@@ -24,4 +24,47 @@ object JwtUtils {
             null
         }
     }
+
+    // Извлекаем payload токена JWT и парсим роли
+    fun getRolesFromToken(token: String): Set<String> {
+        try {
+            val parts = token.split(".")
+            if (parts.size != 3) return emptySet()   // JWT = header.payload.signature
+
+            val payloadEncoded = parts[1]
+            val payloadBytes = Base64.decode(payloadEncoded, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
+            val payloadJson = String(payloadBytes)
+            val jsonObj = JSONObject(payloadJson)
+
+            val rolesJsonArray = jsonObj.optJSONArray("roles") ?: return emptySet()
+            val roles = mutableSetOf<String>()
+            for (i in 0 until rolesJsonArray.length()) {
+                roles.add(rolesJsonArray.getString(i))
+            }
+            return roles
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return emptySet()
+        }
+    }
+
+    // Проверка на истёкший токен (можно использовать при каждом запросе)
+    fun isTokenExpired(token: String): Boolean {
+        return try {
+            val parts = token.split(".")
+            if (parts.size != 3) return true
+
+            val payloadEncoded = parts[1]
+            val payloadBytes = Base64.decode(payloadEncoded, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
+            val payloadJson = String(payloadBytes)
+            val jsonObj = JSONObject(payloadJson)
+
+            val exp = jsonObj.optLong("exp", 0L)
+            val now = System.currentTimeMillis() / 1000
+            exp <= now
+        } catch (e: Exception) {
+            true
+        }
+    }
+
 }

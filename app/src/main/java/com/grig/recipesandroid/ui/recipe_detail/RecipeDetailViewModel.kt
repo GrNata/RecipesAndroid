@@ -43,7 +43,9 @@ class RecipeDetailViewModel(
 //  +++++++++++++++++++++++++++++++++++++
 
     init {
+        Log.d("MODERATOR:", "RecipeDetailViewModel: before loadRecipe recipe: ${_recipe.value}")
         loadRecipe()
+        Log.d("MODERATOR:", "RecipeDetailViewModel: after loadRecipe recipe: ${_recipe.value}")
     }
 
     //    fun loadRecipe(id: Long) {
@@ -52,7 +54,9 @@ class RecipeDetailViewModel(
             _loading.value = true
             _error.value = null
             try {
+                Log.d("MODERATOR:", "RecipeDetailViewModel: recipeId: ${recipeId}")
                 val response = api.getRecipeById(requireNotNull(recipeId))
+                Log.d("MODERATOR:", "RecipeDetailViewModel: response: ${response}")
 
                 val ingredientResponse =
                     response.ingredients?.map { it.toDomain() }?.map { it.toIngredientUi() }
@@ -70,6 +74,7 @@ class RecipeDetailViewModel(
 
             } catch (e: Exception) {
                 _error.value = e.message ?: "RecipeDetailViewModel: Ошибка загрузки рецепта"
+                Log.d("MODERATOR:", "RecipeDetailViewModel: error: ${e.message}")
             } finally {
                 _loading.value = false
             }

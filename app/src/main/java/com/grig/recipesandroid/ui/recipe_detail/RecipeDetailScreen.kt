@@ -31,16 +31,16 @@ fun RecipeDetailScreen(
 //    recipeDetailViewModel: RecipeDetailViewModel,
     authViewModel: AuthViewModel,
     navController: NavController,
-    onBack : () -> Unit
+    onBack : () -> Unit,
+//    onCheckModerator: (() -> Unit)? = null
 ) {
 
     // Создаём scaffoldState для SnackBar
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val isAuthenticated by authViewModel
-        .isAuthenticated
-        .collectAsState()
-//    recipeDetailViewModel.loadRecipe()
+    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
+    val isModerator by authViewModel.isModerator.collectAsState()
+    val isAdmin by authViewModel.isAdmin.collectAsState()
 
     val recipe by viewModelDetailRecipe.recipe.collectAsState()
     val loading by viewModelDetailRecipe.loading.collectAsState()
@@ -62,8 +62,9 @@ fun RecipeDetailScreen(
     ) { paddingValues ->
 
 
-        Log.d("22-ИЩУ:", "RecipeDetailScreen: before RecipeDetailContent recipeId=${recipeId}")
-        Log.d("22-ИЩУ:", "RecipeDetailScreen: before RecipeDetailContent recipe: ${recipe}")
+        Log.d("MODERATOR:", "RecipeDetailScreen: before RecipeDetailContent isModerator =${isModerator}")
+        Log.d("MODERATOR:", "RecipeDetailScreen: before RecipeDetailContent isAdmin =${isAdmin}")
+        Log.d("MODERATOR:", "RecipeDetailScreen: before RecipeDetailContent isAuthenticated: ${isAuthenticated}")
 
         RecipeDetailContent(
             recipe = recipe,

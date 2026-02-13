@@ -49,18 +49,6 @@ fun RecipeDetailContent(
     recipeId: Long,
     snackbarHostState: SnackbarHostState
 ) {
-//    val scrollState = rememberLazyListState()
-
-//    val maxHeight = 120.dp
-//    val minHeight = 20.dp
-//
-//    // Считаем текущую высоту картинки в зависимости от scroll
-////    with(density) даёт доступ к функции .toDp()
-//    val density = LocalDensity.current
-//    val imageHeight by derivedStateOf {
-//        val offsetDp = with(density) { scrollState.firstVisibleItemScrollOffset.toDp() }
-//        (120.dp - offsetDp).coerceAtLeast(20.dp) // minHeight = 50.dp
-//    }
 
     val context = LocalContext.current
 
@@ -70,8 +58,8 @@ fun RecipeDetailContent(
         topBar = {
             val authRestored by authViewModel.authStateRestored.collectAsState()
 
-            Log.d("ИЩУ:", "RecipeDetailContent: before AppTopBar recipeId=$recipeId")
-            Log.d("ИЩУ:", "RecipeDetailContent: before AppTopBar recipe: $recipe")
+            Log.d("MODERATOR", "RecipeDetailContent: before AppTopBar recipeId=$recipeId")
+            Log.d("MODERATOR", "RecipeDetailContent: before AppTopBar recipe: $recipe")
 
             AppTopBar(
                 title = recipe?.name ?: "Детали рецепта",
@@ -112,8 +100,6 @@ fun RecipeDetailContent(
                 onMyRecipesClick = {
                     navController.navigate("my_recipes")
                 }
-//                onSearchByIngredients = {}
-//                authViewModel = authViewModel
             )
         }       //  topBar
     ) { paddingValues ->
@@ -122,7 +108,6 @@ fun RecipeDetailContent(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
-//                .background(Color(0xFFEEE2DC))
         ) {
             when {
                 loading -> {
