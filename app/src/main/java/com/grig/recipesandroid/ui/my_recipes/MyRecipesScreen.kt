@@ -72,19 +72,8 @@ fun MyRecipesScreen(
 
     val query by recipeViewModel.query.collectAsState()
 
+    val isModerator by authViewModel.isModerator.collectAsState()
 
-//    Для проверки
-    LaunchedEffect(myRecipes.loadState) {
-        Log.d(
-            "MY_RECIPES_LOAD_STATE",
-            """
-        refresh = ${myRecipes.loadState.refresh}
-        append  = ${myRecipes.loadState.append}
-        prepend = ${myRecipes.loadState.prepend}
-        """
-                .trimIndent()
-        )
-    }
 
 //    Для добавления вновь созданного рецепта (обновление списка)
     val refresh = navController
@@ -153,6 +142,7 @@ fun MyRecipesScreen(
             AppTopBar(
                 title = "Мои рецепты",
                 isAuthenticated = true,
+                isModerator = isModerator,
                 showMyRecipes = false,
                 onBack = {
                     isMyRecipes = false

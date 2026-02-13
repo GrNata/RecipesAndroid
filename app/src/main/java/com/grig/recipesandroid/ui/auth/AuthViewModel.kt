@@ -12,7 +12,9 @@ import com.grig.recipesandroid.utils.JwtUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -70,6 +72,9 @@ class AuthViewModel(
     private val _isAdmin = MutableStateFlow(false)
     val isAdmin: StateFlow<Boolean> = _isAdmin
 
+    private val _isModerator = MutableStateFlow(false)
+    val isModerator = _isModerator.asStateFlow()
+
     init {
         restoreSession()
         Log.d("CICLE AuthViewModel", "AuthViewModel - init")
@@ -87,6 +92,7 @@ class AuthViewModel(
                 _tokens.value = result
 
                 _isAdmin.value = result.roles.contains("ADMIN")
+                _isModerator.value = result.roles.contains("MODERATOR")
 
             } catch (e: Exception) {
                 _error.value = e.message
@@ -137,21 +143,25 @@ class AuthViewModel(
 
     private fun restoreSession() {
         viewModelScope.launch {
-            val refreshToken = tokenRepository.refreshToken.first()
+            val refreshTokenValue = tokenRepository.refreshToken.first()
+            val accessTokenValue = tokenRepository.accessToken.firstOrNull()
 
             // нет refreshToken → пользователь НЕ залогинен
-            if (refreshToken.isNullOrBlank()) {
+            if (refreshTokenValue.isNullOrBlank() || accessTokenValue.isNullOrBlank()) {
+                // нет токена → не залогинен
+                _authStateRestored.value = true
                 return@launch
             }
 
             try {
                 // тихо обновляем accessToken
-                val refreshToken = authRepository.refreshToken()
+                val newToken = authRepository.refreshToken()
                 // accessToken сохранён внутри TokenRepository
+                _tokens.value = newToken
 
-
-
-                _isAdmin.value = refreshToken.roles.contains("ADMIN")
+//                  Обновляем флаги по ролям
+                _isAdmin.value = newToken.roles.contains("ADMIN")
+                _isModerator.value = newToken.roles.contains("MODERATOR")
 
             } catch (e: java.lang.Exception) {
                 //  refreshToken протух → вычищаем сессию

@@ -11,7 +11,9 @@ import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,7 +37,8 @@ fun AppTopBar(
     title: String,
     isAuthenticated: Boolean,
     isAdmin: Boolean = false,
-    showMyRecipes: Boolean,
+    isModerator: Boolean = false,
+    showMyRecipes: Boolean? = false,
     onMainScreen: (() -> Unit)? = null,
     onBack: (() -> Unit)? = null,
     onLoginClick: () -> Unit,
@@ -44,12 +47,8 @@ fun AppTopBar(
     onMyRecipesClick: (() -> Unit)? = null,      //  nullable — показываем только для залогиненных
     onSearchByIngredients: (() -> Unit)? = null,
     onAdmin:(() -> Unit)? = null,
-//    onIngredientAdmin:(() -> Unit)? = null,
-//    onCategoryAdmin:(() -> Unit)? = null,
-//    onAuditLogs: (() -> Unit)? = null,
-//    onStatistics: (() -> Unit)? = null,
-    isCategory: Boolean? = false,
-    isIngredient: Boolean? = null
+    onModerator: (() -> Unit)? = null,
+    isCategory: Boolean? = false
 ) {
 
     val tooltipState = remember { TooltipState() }
@@ -98,8 +97,21 @@ fun AppTopBar(
 //                    Кнопка экран Админа - толко на RecipeListScreen
                     IconButton(onClick = onAdmin) {
                         Icon(
-                            Icons.Default.Face,
+                            Icons.Default.Person,
                             contentDescription = "Admin",
+                            tint = MaterialTheme.colorScheme.surface
+                        )
+                    }
+                }
+            }
+
+//            Кнопка для MODERATOR
+            if (isModerator || isAdmin) {
+                if (onModerator != null) {
+                    IconButton(onClick = onModerator) {
+                        Icon(
+                            Icons.Default.Lock,
+                            contentDescription = "Moderator",
                             tint = MaterialTheme.colorScheme.surface
                         )
                     }
@@ -130,7 +142,7 @@ fun AppTopBar(
             }
 
 //            // 3 Кнопка "Мои рецепты" (только для залогиненных и если передан обработчик)
-            if (showMyRecipes && onMyRecipesClick != null) {
+            if (showMyRecipes == true && onMyRecipesClick != null) {
                 IconButton(onClick = onMyRecipesClick) {
                     Icon(
                         Icons.Default.List,

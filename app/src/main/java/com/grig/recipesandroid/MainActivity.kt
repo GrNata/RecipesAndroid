@@ -171,7 +171,6 @@ class MainActivity : ComponentActivity() {
                     )
 
                     val myRecipesViewModel: MyRecipesViewModel = viewModel(
-//                    parentEntry,
                         factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
                     )
 
@@ -183,9 +182,6 @@ class MainActivity : ComponentActivity() {
                         )
                     )
 
-//                val recipeDetailViewModel: RecipeDetailViewModel = viewModel(
-//                    factory = RecipeDetailViewModelFactory(recipeApi)
-//                )
 
                     val addEditRecipeViewModel: AddEditRecipeViewModel = viewModel(
                         factory = AddEditRecipeViewModelFactory(
@@ -226,22 +222,14 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         api = recipeApi,
                         authViewModel = authViewModel,
-                        recipeRepository = recipeRepository,
-                        categoryRepository = categoryRepository,
-                        tokenRepository = tokenRepository,
-                        ingredientRepository = ingredientRepository,
-                        unitRepository = unitRepository,
-                        applicationContext = applicationContext,
                         recipeViewModel = recipesViewModel,
                         addEditRecipeViewModel = addEditRecipeViewModel,
                         myRecipesViewModel = myRecipesViewModel,
                         searchByIngredientsViewModel = searchByIngredientsViewModel,
                         adminViewModel = adminViewModel,
                         adminAuditViewModel = adminAuditViewModel,
-                        adminStatsViewModel
-//                    recipeDetailViewModel = recipeDetailViewModel
+                        adminStatsViewModel = adminStatsViewModel
                     )
-//                }   //  RecipeAndroidTheme
             }
         }   //  setContent
     }

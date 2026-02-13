@@ -75,4 +75,28 @@ class RecipeRepository(
     return response
 }
 
+//    +++++++++++++++++
+//    MODERATOR
+//    Отправить на модерацию
+    suspend fun sendToModeration(id: Long): RecipeDto =
+        api.sendModeration(id)
+
+//    MODERATOR - получить список рецептов на проверку
+    suspend fun getPendingRecipes(page: Int, size: Int) : PagedRecipesResponse {
+    Log.d("MODERATOR", "RecipeRepository: page: ${page}, size: $size")
+        val response = api.getPendingRecipes(page, size)
+        Log.d("MODERATOR", "RecipeRepository: response: ${response}")
+        return response
+    }
+
+//    MODERATOR - обобрить
+    suspend fun approveRecipe(id: Long): RecipeDto =
+        api.approveRecipe(id)
+
+//    MODERATOR - отклонить
+    suspend fun rejectRecipe(id: Long): RecipeDto =
+        api.rejectRecipe(id)
+
+//    +++++++++++++++++
+
 }

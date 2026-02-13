@@ -3,11 +3,13 @@ package com.grig.recipesandroid.data.mapper
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
 import com.grig.recipesandroid.data.model.dto.IngredientWithAmountDto
 import com.grig.recipesandroid.data.model.dto.RecipeDto
+import com.grig.recipesandroid.data.model.dto.RecipeStatus
 import com.grig.recipesandroid.data.model.ui.IngredientUi
 import com.grig.recipesandroid.domain.model.CategoryValue
 import com.grig.recipesandroid.domain.model.Ingredient
 import com.grig.recipesandroid.domain.model.Recipe
 import com.grig.recipesandroid.domain.model.RecipeIngredient
+import kotlin.String
 
 fun IngredientWithAmountDto.toDomain() : RecipeIngredient =
     RecipeIngredient(
@@ -30,6 +32,10 @@ fun RecipeDto.toDomain() : Recipe =
         description = description,
         image = image,
         createdAt = createdAt,
+
+        publishedAt = publishedAt,
+        status = status,
+
         author = author,
         baseServings = baseServings,
         categories = categories

@@ -77,6 +77,8 @@ fun RecipeListScreen(
     val message by viewModel.messageFlow.collectAsState("")
     
     val isAdmin by authViewModel.isAdmin.collectAsState()
+    val isModerator by authViewModel.isModerator.collectAsState()
+
 
     LaunchedEffect(message) {
         if (message.isNotEmpty()) {
@@ -92,9 +94,6 @@ fun RecipeListScreen(
     }
 
     Scaffold(
-//        containerColor = Color(0xFF9F633D),
-//        containerColor = MaterialTheme.colorScheme.primaryContainer,
-//        containerColor = MaterialTheme.colorScheme.primary,
         containerColor = Color(0xFFF7F3EC),
 
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -109,6 +108,7 @@ fun RecipeListScreen(
                 title = "Рецепты",
                 isAuthenticated = isAuthenticated,
                 isAdmin = isAdmin,
+                isModerator = isModerator,
                 showMyRecipes = isAuthenticated && authRestored,
                 onLoginClick = { navController.navigate("login") },
                 onLogoutClick = {
@@ -121,7 +121,8 @@ fun RecipeListScreen(
                     }
                 },
                 onSearchByIngredients = { navController.navigate("search_ingredients") },
-                onAdmin = { navController.navigate("admin") }
+                onAdmin = { navController.navigate("admin") },
+                onModerator = { navController.navigate("moderator") }
             )
         }
     ) { paddingValues ->

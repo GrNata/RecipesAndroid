@@ -1,9 +1,7 @@
 package com.grig.recipesandroid.data.api
 
-//import com.grig.recipesandroid.data.model.dto.CategoryDto
 import com.grig.recipesandroid.data.model.dto.CategoryTypeRequest
 import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
-import com.grig.recipesandroid.data.model.dto.CategoryTypeUpdate
 import com.grig.recipesandroid.data.model.dto.CategoryValueRequest
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
 import com.grig.recipesandroid.data.model.dto.IngredientRequest
@@ -14,7 +12,6 @@ import com.grig.recipesandroid.data.model.request.RecipeUpdateRequest
 import com.grig.recipesandroid.data.model.dto.UnitDto
 import com.grig.recipesandroid.data.model.request.SearchByIngredientsRequest
 import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
-import okhttp3.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET

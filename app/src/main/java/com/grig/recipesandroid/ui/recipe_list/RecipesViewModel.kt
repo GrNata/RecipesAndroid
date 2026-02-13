@@ -13,6 +13,9 @@ import com.grig.recipesandroid.data.model.dto.CategoryTypeDto
 import com.grig.recipesandroid.data.model.dto.CategoryTypeUpdate
 import com.grig.recipesandroid.data.model.dto.CategoryValueDto
 import com.grig.recipesandroid.data.model.dto.IngredientDto
+import com.grig.recipesandroid.data.model.dto.RecipeDto
+import com.grig.recipesandroid.data.model.dto.RecipeStatus
+import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.FavoritesRepository
@@ -31,6 +34,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlin.collections.emptyList
 
@@ -48,7 +52,6 @@ open class RecipesViewModel(
 
     fun refreshRecipe() {
         refreshTrigger.update { it + 1 }
-//        refreshTrigger.tryEmit(Unit)
     }
 
     val selectedCategoryValues = mutableMapOf<Long, CategoryValueDto>()
@@ -87,6 +90,16 @@ open class RecipesViewModel(
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
+//    MODERATOR
+    private val _pendingRecipes = MutableStateFlow<PagedRecipesResponse?>(null)
+    val pendingRecipes = _pendingRecipes.asStateFlow()
+
+    private val _moderatorLoading = MutableStateFlow(false)
+    val moderatorLoading = _moderatorLoading.asStateFlow()
+
+    private val _moderatorError = MutableStateFlow<String?>(null)
+    val moderatorError = _moderatorError.asStateFlow()
+
 ////    Теперь добавим объект Pager с Retry. Paging уже умеет повторять загрузку через метод retry() у PagingData. Нам нужно просто сохранить Flow, чтобы в UI можно было вызвать повтор
 //    lateinit var lastRecipesPagingFlow: PagingData<RecipeDto>
 
@@ -97,10 +110,12 @@ open class RecipesViewModel(
 //    val recipesPagingFlow: Flow<PagingData<RecipeDto>> =
     val recipesPagingFlow: Flow<PagingData<Recipe>> =
         combine(
-            refreshTrigger,
+            refreshTrigger, //  / <--- Вот он слушает изменения
             _query.debounce(300).distinctUntilChanged()
         ) { _, query -> query }
             .flatMapLatest { query ->
+                // При изменении refreshTrigger этот блок выполнится заново
+                // и создаст новый PagingSource, который загрузит свежие данные с сервера
                 repository.getRecipesPaper(query = query)
                     .catch { e ->
                         _messageFlow.emit("Ошибка загрузки рецептов: ${e.localizedMessage}")
@@ -109,6 +124,13 @@ open class RecipesViewModel(
             .cachedIn(viewModelScope)
 
     private var favoritesSyncedForUser: String? = null
+
+    //    +++++++++++++++
+//    MODERATION
+    private val _moderationStatus = MutableStateFlow<RecipeStatus>(RecipeStatus.DRAFT)
+    val moderationStatus = _moderationStatus.asStateFlow()
+
+//    +++++++++++++++
 
     init {
         Log.d("SEARCH INGREDIENT", "RecipeViewModel - init ")
@@ -135,9 +157,6 @@ open class RecipesViewModel(
                         }
                     }
                 }
-
-//            ingredientsDictionary = ingredientRepository.getAllIngredients()
-//            Log.d("SEARCH INGREDIENT", "RecipesViewModel: init ingredients: ${ingredientsDictionary}")
         }
     }
 
@@ -190,6 +209,7 @@ open class RecipesViewModel(
         }
     }
 
+//    +++++++++++++++++++
 //    Удаление рецепта
     fun deleteRecipe(recipeId: Long) {
         Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: deleteRecipe, START")
@@ -215,82 +235,84 @@ open class RecipesViewModel(
             categoryTypesAll = categoryRepository.getCategoryTypes()
         }
     }
-
-//    fun createCategoryType(categoryType: CategoryTypeRequest) {
-//        viewModelScope.launch {
-//            categoryRepository.createCategoryType(categoryType)
-//            refreshCategoryType()
-//        }
-//    }
-//
-//    fun updateCategoryType(id: Long, categoryType: CategoryTypeRequest) {
-//        viewModelScope.launch {
-//            categoryRepository.updateCategoryType(id, categoryType)
-//            refreshCategoryType()
-//        }
-//    }
-//
-//    fun deleteCategoryType(id: Long) {
-//        viewModelScope.launch {
-//            categoryRepository.deleteCategoryType(id)
-//            refreshCategoryType()
-//        }
-//    }
-//    _______________________
     fun refreshCategoryValues() {
         viewModelScope.launch {
             categoryValuesAll = categoryRepository.getCategoryValues()
         }
     }
-//
-//    fun createCategoryValue(categoryValue: CategoryValueCreate) {
-//        viewModelScope.launch {
-//            categoryRepository.createCategoryValues(categoryValue)
-//            refreshCategoryValues()
-//        }
-//    }
-//
-//    fun updateCategoryValue(id: Long, categoryValue: CategoryValueUpdate) {
-//        viewModelScope.launch {
-//            categoryRepository.updateCategoryValue(id, categoryValue)
-//            refreshCategoryValues()
-//        }
-//    }
-//
-//    fun deleteCategoryValue(id: Long) {
-//        viewModelScope.launch {
-//            categoryRepository.deleteCategoryValue(id)
-//            refreshCategoryValues()
-//        }
-//    }
-//    ______________________
 
     fun refreshIngredients() {
         viewModelScope.launch {
             ingredientsDictionary = ingredientRepository.getAllIngredients()
         }
     }
+//    +++++++++++++++++++++++++++++++++++++
+//    MODERATION
+//    Отправить на модерацию
+    suspend fun sendToModeration(recipeId: Long): Boolean {
+            return try {
+                repository.sendToModeration(recipeId)
+//                оповещаем пользователя (опционно)
+                _messageFlow.emit("Рецепт отправлен на проверку")
+                true
+            } catch (e: Exception) {
+//                errorMessage = e.message
+                _messageFlow.emit("Ошибка: ${e.message}")
+                false
+                // Если произошла ошибка, статус на сервере не поменялся.
+                // В идеале тут можно послать сигнал в UI вернуть цвет обратно в серый,
+                // но для начала можно оставить просто уведомление об ошибке.
 
-//    fun createIngredient(ingredient: IngredientCreate) {
-//        viewModelScope.launch {
-//            ingredientRepository.createIngredient(ingredient)
-//            refreshIngredients()
-//        }
-//    }
-//
-//    fun updateIngredient(id: Long, ingredient: IngredientUpdate) {
-//        viewModelScope.launch {
-//            ingredientRepository.updateIngredient(id, ingredient)
-//            refreshIngredients()
-//        }
-//    }
-//
-//    fun deleteIngredient(id: Long) {
-//        viewModelScope.launch {
-//            ingredientRepository.deleteIngredient(id)
-//            refreshIngredients()
-//        }
-//    }
+            }
+    }
+
+//    /    MODERATOR - получить список рецептов на проверку - Функция загрузки
+    fun loadPendingRecipes(
+        page: Int = 0,
+        size: Int = 10
+    ) {
+        viewModelScope.launch {
+            _moderatorLoading.value = true
+            _moderatorError.value = null
+
+            try {
+                Log.d("MODERATOR", "RecipeViewModel: _pendingRecipes.value: ${_pendingRecipes.value}")
+                val response = repository.getPendingRecipes(page, size)
+                Log.d("MODERATOR", "RecipeViewModel: response: ${response}")
+                _pendingRecipes.value = response
+            } catch (e: Exception) {
+                _moderatorError.value = e.message
+            } finally {
+                _moderatorLoading.value = false
+            }
+        }
+    }
+
+
+    //    MODERATOR - обобрить
+    fun approveRecipe(id: Long) {
+        viewModelScope.launch {
+            try {
+                repository.approveRecipe(id)
+                loadPendingRecipes()    //  перезагрузка
+            } catch (e: Exception) {
+                _moderatorError.value = e.message
+            }
+        }
+    }
+
+    //    MODERATOR - отклонить
+    fun rejectRecipe(id: Long) {
+        viewModelScope.launch {
+            try {
+                repository.rejectRecipe(id)
+                loadPendingRecipes()
+            } catch (e: Exception) {
+                _moderatorError.value = e.message
+            }
+        }
+    }
+
 //    +++++++++++++++++++++++++++++++++++++
 
 }

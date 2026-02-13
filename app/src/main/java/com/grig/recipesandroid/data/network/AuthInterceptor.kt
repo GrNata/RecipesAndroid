@@ -27,24 +27,22 @@ class AuthInterceptor(
         val url = originalRequest.url.toString()
 
         // Для защищённых эндпоинтов добавляем токен, если он есть
+         Log.d("MY Recipes token", "AuthInterceptor - before runBlocking, URL=$url")
         val accessToken = runBlocking { tokenRepository.accessToken.first() }
+        Log.d("MY Recipes token", "AuthInterceptor - after runBlocking, accessToken=$accessToken, URL=$url")
 
 //        Публичные эндпоинты — без токена
-//        val isPublicEndpoint =
-//                    url.contains("/api/recipes") ||
-//                    url.contains("/api/recipe/") ||
-//                    url.contains("/api/auth/")
-//        val isPublicEndpoint =
-//                    url.endsWith("/api/recipes") ||          // список рецептов
-//                    url.endsWith("/api/recipes/search") ||
-//                    (url.contains("/api/recipes/") && !url.contains("/my/")) ||
-//                    url.startsWith("http://10.0.2.2:9090/api/auth/")
         val isPublicEndpoint =
             (originalRequest.method == "GET" &&
                     (
                             url.endsWith("/api/recipes") ||
                             url.endsWith("/api/recipes/search") ||
-                            url.contains("/api/recipes/") && !url.contains("/my/"))) ||
+                            url.contains("/api/recipes/") && !url.contains("/my/")
+//                            ))
+//                    ||
+                    &&
+                    !url.contains("/moderation") // добавлено исключительно для модерации
+                            )) ||
                     url.startsWith("http://10.0.2.2:9090/api/auth/")
 
         // 👉 если public — всегда без токена
@@ -58,6 +56,7 @@ class AuthInterceptor(
             return chain.proceed(originalRequest)
         }
         Log.d("MY Recipes token", "accessToken: $accessToken")
+
         // 👉 защищённый эндпоинт + токен  - Добавляем токен в заголовок
         val requestWithToken = originalRequest.newBuilder()
             .addHeader("Authorization", "Bearer $accessToken")
@@ -68,7 +67,6 @@ class AuthInterceptor(
 
 
 // Если accessToken невалидный / истёк
-//        if (response.code == 401 || response.code == 403) {
         if (response.code == 401 && originalRequest.headers("X-Refresh") == null) {
             // TODO: здесь можно синхронно обновить accessToken через refreshToken и повторить запрос
             // попробуем обновить токен через refreshToken

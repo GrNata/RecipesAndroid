@@ -1,6 +1,5 @@
 package com.grig.recipesandroid.ui.navigation
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -20,11 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import com.grig.recipesandroid.data.api.RecipeApi
-import com.grig.recipesandroid.data.local.TokenRepository
-import com.grig.recipesandroid.data.repository.CategoryRepository
-import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.data.repository.RecipeRepository
-import com.grig.recipesandroid.data.repository.UnitRepository
 import com.grig.recipesandroid.ui.admin.main.AddEditCategoryScreen
 import com.grig.recipesandroid.ui.admin.main.AddEditCategoryTypeScreen
 import com.grig.recipesandroid.ui.admin.main.AddEditIngredientScreen
@@ -41,6 +36,7 @@ import com.grig.recipesandroid.ui.admin.statistic.graph.GraphStatsScreen
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import com.grig.recipesandroid.ui.auth.LoginScreen
 import com.grig.recipesandroid.ui.auth.RegisterScreen
+import com.grig.recipesandroid.ui.moderator.ModeratorScreen
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeViewModel
 import com.grig.recipesandroid.ui.my_recipes.AddEditRecipeScreen
 import com.grig.recipesandroid.ui.my_recipes.ImageScreen
@@ -61,12 +57,6 @@ fun AppNavGraph(
     navController: NavHostController,
     api: RecipeApi,
     authViewModel: AuthViewModel,
-    recipeRepository: RecipeRepository,
-    categoryRepository: CategoryRepository,
-    tokenRepository: TokenRepository,
-    ingredientRepository: IngredientRepository,
-    unitRepository: UnitRepository,
-    applicationContext: Context,
     recipeViewModel: RecipesViewModel,
     addEditRecipeViewModel: AddEditRecipeViewModel,
     myRecipesViewModel: MyRecipesViewModel,
@@ -74,7 +64,6 @@ fun AppNavGraph(
     adminViewModel: AdminViewModel,
     adminAuditViewModel: AdminAuditViewModel,
     adminStatsViewModel: AdminStatsViewModel
-//    recipeDetailViewModel: RecipeDetailViewModel
     ) {
 
             NavHost(
@@ -128,13 +117,11 @@ fun AppNavGraph(
                     enterTransition = {
                         fadeOut(animationSpec = tween(1500))
                         slideInHorizontally(
-//                    initialOffsetX = { it },
                             animationSpec = tween(
                                 durationMillis = 500,
                                 easing = FastOutSlowInEasing
                             )
                         )
-//                slideInVertically { it } + fadeIn()
                     },
                     popExitTransition = {
                         fadeIn(animationSpec = tween(1500))
@@ -188,19 +175,12 @@ fun AppNavGraph(
                     )
                 }
 
-//                if (isAuthenticated) {
                     composable("my_recipes") { backStackEntry ->
                         Log.d("NAV MyRecipe", "Entered MyRecipesScreen composable")
 
                         val parentEntry = remember(backStackEntry) {
                             navController.getBackStackEntry("recipe_list")
                         }
-
-//                        val myRecipesViewModel: MyRecipesViewModel = viewModel(
-//                            parentEntry,
-//                            factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
-//                        )
-
                         MyRecipesScreen(
                             myViewModul = myRecipesViewModel,
                             recipeViewModel = recipeViewModel,
@@ -371,6 +351,14 @@ fun AppNavGraph(
                 composable("admin_stats_graph") {
                     GraphStatsScreen(
                         adminStatsViewModel,
+                        authViewModel,
+                        navController
+                    )
+                }
+
+                composable("moderator") {
+                    ModeratorScreen(
+                        recipeViewModel,
                         authViewModel,
                         navController
                     )

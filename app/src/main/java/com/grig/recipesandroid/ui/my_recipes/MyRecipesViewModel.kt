@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import com.grig.recipesandroid.data.model.dto.RecipeStatus
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import kotlinx.coroutines.flow.*
@@ -15,6 +16,13 @@ class MyRecipesViewModel(
 ) : ViewModel() {
 
     private val refreshTrigger = MutableStateFlow(0)
+
+////    +++++++++++++++
+////    MODERATION
+//    private val _moderationStatus = MutableStateFlow<RecipeStatus>(RecipeStatus.DRAFT)
+//    val moderationStatus = _moderationStatus.asStateFlow()
+//
+////    +++++++++++++++
 
     // Преобразуем Flow<String?> → StateFlow<String?> прямо здесь
     private val accessTokenState: StateFlow<String?> = authViewModel.accessToken
@@ -32,12 +40,6 @@ class MyRecipesViewModel(
             ).flow
         }
         .cachedIn(viewModelScope)
-//    val myRecipesPagingFlow = Pager(
-//        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
-////        pagingSourceFactory = { MyRecipesPagingSource(repository, accessTokenState) }
-//        pagingSourceFactory = { MyRecipesPagingSource(repository) }
-//    ).flow.cachedIn(viewModelScope)
-
 
     fun refresh() {
         refreshTrigger.update { it + 1 }
