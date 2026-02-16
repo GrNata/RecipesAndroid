@@ -139,6 +139,12 @@ open class RecipesViewModel(
     private var _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
+    private var _currentStatus = MutableStateFlow<RecipeStatus?>(null)
+    val currentStatus = _currentStatus.asStateFlow()
+    fun setCurrentStatus(value: RecipeStatus) {
+        _currentStatus.value = value
+    }
+
 //    +++++++++++++++
 
     init {
@@ -277,6 +283,25 @@ open class RecipesViewModel(
                 // В идеале тут можно послать сигнал в UI вернуть цвет обратно в серый,
                 // но для начала можно оставить просто уведомление об ошибке.
 
+            }
+    }
+
+//    User сменить статус рецепта с отклонен (REJECTED) на черновик (DRAFT)
+    suspend fun updateStatusFromRejectedToDraft(recipeId: Long, status: RecipeStatus): Boolean {
+        return try {
+                val response = repository.updateStatusFromRejectToDraft(recipeId)
+            _currentStatus.value = status
+            //                оповещаем пользователя (опционно)
+                refreshRecipe()
+                _messageFlow.emit("Рецепту присвоен статус - черновик")
+
+                Log.d("MODERSTOR", "RecipesViewModel: updateStatus response: $response")
+
+                true
+
+            } catch (e: Exception) {
+                _error.value = e.message
+                false
             }
     }
 

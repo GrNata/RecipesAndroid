@@ -37,12 +37,19 @@ class AuthViewModel(
     val accessToken = tokenRepository.accessToken
 
 //    // email текущего пользователя или null если не залогинен
-    val userId: StateFlow<String?> = accessToken
+    val userEmail: StateFlow<String?> = accessToken
         .map { tokens ->
         // Распарси токен и достань email/userId, или null
         tokens?.let { JwtUtils.getEmailFromToken(it) }
     }
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    // userId текущего пользователя или null если не залогинен
+    val userId: StateFlow<Long?> = accessToken
+        .map { token ->
+            token?.let { JwtUtils.getUserIdFromToken(it) }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
 
     private val _loading = MutableStateFlow(false)

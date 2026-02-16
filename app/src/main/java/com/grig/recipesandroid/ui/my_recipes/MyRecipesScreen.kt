@@ -236,9 +236,10 @@ fun MyRecipesScreen(
                                         query = "",
                                         isFavorite = favorites.contains(recipe.id),         //  по желанию
                                         isOwner = true,
-//                                        isMyRecipes = true,
+                                        isMyRecipes = true,
                                         onFavoriteClick = { recipeViewModel.toggleFavorite(recipe.id) },
-                                        onClick = { navController.navigate("recipe_detail/${recipe.id}") },
+//                                        onClick = { navController.navigate("recipe_detail/${recipe.id}") },
+                                        onClick = { navController.navigate("recipe_detail/${recipe.id}?isMyDetail=true") },
                                         onEditClick = {
                                             navController.navigate("recipe_edit/${recipe.id}")
                                         },

@@ -18,13 +18,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SelectableChipColors
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -67,7 +63,7 @@ fun RecipeListScreen(
 //    фильтрация избранных
     var showOnlyFavorites by remember { mutableStateOf(false) }
 
-    val userId by authViewModel.userId.collectAsState()
+    val userId by authViewModel.userEmail.collectAsState()
 
 //  В Scaffold передаём snackbarHost = { SnackbarHost(hostState = snackbarHostState) }.
 //	•	LaunchedEffect(message) слушает messageFlow из ViewModel и показывает Snackbar.

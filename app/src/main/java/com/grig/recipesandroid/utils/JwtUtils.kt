@@ -25,6 +25,14 @@ object JwtUtils {
         }
     }
 
+    fun getUserIdFromToken(token: String): Long? {
+        val payload = token.split(".")[1]
+        val decodedBytes = Base64.decode(payload, Base64.URL_SAFE)
+        val json = String(decodedBytes)
+        val jsonObject = JSONObject(json)
+        return jsonObject.optString("sub").toLongOrNull()
+    }
+
     // Извлекаем payload токена JWT и парсим роли
     fun getRolesFromToken(token: String): Set<String> {
         try {

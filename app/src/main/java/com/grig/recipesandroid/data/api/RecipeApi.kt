@@ -59,6 +59,10 @@ interface RecipeApi {
         @Body request: SearchByIngredientsRequest
     ): List<RecipeDto>
 
+    //    User update status by recipe from REJECTED to DRAFT
+    @PUT("/api/recipes/status/{id}")
+    suspend fun updateStatusFromRejectToDraft(@Path("id") id: Long) : RecipeDto
+
 //        ++++++++++++++++++++
 //    MODERATOR
 //    Отправить на модерацию

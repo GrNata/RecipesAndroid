@@ -110,9 +110,13 @@ fun AppNavGraph(
                     )
                 }
                 composable(
-                    route = "recipe_detail/{recipeId}",
+                    route = "recipe_detail/{recipeId}?isMyDetail={isMyDetail}",
                     arguments = listOf(
-                        navArgument("recipeId") { type = NavType.LongType }),
+                        navArgument("recipeId") { type = NavType.LongType },
+                        navArgument("isMyDetail") {
+                        type = NavType.BoolType
+                        defaultValue = false
+                    }),
 //            Animated NavHost
                     enterTransition = {
                         fadeOut(animationSpec = tween(1500))
@@ -135,6 +139,7 @@ fun AppNavGraph(
                     }
                 ) { backStackEntry ->
                     val recipeId = backStackEntry.arguments?.getLong("recipeId") ?: 0L
+                    val isMyDetail = backStackEntry.arguments?.getBoolean("isMyDetail") ?: false
 
                     //  Detail ViewModel (отдельный)
                     val detailViewModel: RecipeDetailViewModel = viewModel(
@@ -147,6 +152,7 @@ fun AppNavGraph(
                         recipeViewModel = recipeViewModel,
                         viewModelDetailRecipe = detailViewModel,
                         authViewModel = authViewModel,
+                        isMyDetail = isMyDetail,
 //                        recipeDetailViewModel = recipeDetailViewModel,
                         navController = navController,
                         onBack = { navController.popBackStack() }

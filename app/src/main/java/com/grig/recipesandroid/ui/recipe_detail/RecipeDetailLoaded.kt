@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.recipe_detail
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -26,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -50,8 +52,10 @@ import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import kotlinx.coroutines.delay
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import com.grig.recipesandroid.data.mapper.toIngredientUi
+import com.grig.recipesandroid.data.model.dto.RecipeStatus
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import kotlinx.coroutines.launch
 
@@ -63,6 +67,7 @@ fun RecipeDetailLoaded(
     recipeDetailViewModel: RecipeDetailViewModel,
     authViewModel: AuthViewModel,
     recipe: Recipe,
+    isMyDetail: Boolean,
     onBack: () -> Unit,
     recipeId: Long,
     snackbarHostState: SnackbarHostState,
@@ -81,6 +86,14 @@ fun RecipeDetailLoaded(
 
     val visibleStepsCount = remember { mutableStateOf(0) }
     val imageVisible = remember { mutableStateOf(false) }
+
+    //    Для блокировки кнопки во время запроса - MODERATOR
+    var loading by remember { mutableStateOf(false) }
+
+    // с сервера статус синхронизируется, и при скролле не будет багов с переиспользованием ячеек.
+    var currentStatus by remember(recipe.id, recipe.status) {
+        mutableStateOf(recipe.status)
+    }
 
     LaunchedEffect(recipe.id) {   //  ключ СТАБИЛЬНЫЙ
         visibleStepsCount.value = 0
@@ -159,30 +172,106 @@ fun RecipeDetailLoaded(
                         modifier = Modifier.fillMaxWidth().height(30.dp),
                         horizontalArrangement = Arrangement.End
                     ) {
-                        IconButton(
-                            onClick = {
-                                recipeViewModel.toggleFavorite(recipe.id)
-                                // показываем SnackBar
-                                val message =
-                                    if (isFavorite) "Рецепт удален из избранного" else "Рецепт добавлен в избранное"
-                                scope.launch {
-                                    snackbarHostState.showSnackbar(message)
-                                }
-                            },
-                            modifier = Modifier.scale(scale)
+                        Column(
+                            Modifier.weight(4f),
+                            horizontalAlignment = Alignment.End
                         ) {
-                            Icon(
-                                imageVector = if (isFavorite) {
-                                    Icons.Default.Favorite
-                                } else {
-                                    Icons.Default.FavoriteBorder
+                            IconButton(
+                                onClick = {
+                                    recipeViewModel.toggleFavorite(recipe.id)
+                                    // показываем SnackBar
+                                    val message =
+                                        if (isFavorite) "Рецепт удален из избранного" else "Рецепт добавлен в избранное"
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(message)
+                                    }
                                 },
-                                contentDescription = "Избраное",
-                                tint = Color.Red,
+                                modifier = Modifier.scale(scale)
+                            ) {
+                                Icon(
+                                    imageVector = if (isFavorite) {
+                                        Icons.Default.Favorite
+                                    } else {
+                                        Icons.Default.FavoriteBorder
+                                    },
+                                    contentDescription = "Избраное",
+                                    tint = Color.Red,
 //                        tint = if (isFavorite) Color.Red else Color.Red,
-                                modifier = Modifier.size(40.dp)
-                            )
+                                    modifier = Modifier.size(40.dp)
+                                )
+                            }
                         }
+                        Log.d("MODERATOR", "RecipeDetailLoaded: isMyDetail = $isMyDetail")
+                        if (isMyDetail) {
+                            Column(
+                                Modifier.weight(1f),
+                                horizontalAlignment = Alignment.End
+                                ) {
+                                IconButton(
+                                    onClick = {
+                                        //    Для блокировки кнопки во время запроса - MODERATOR
+                                        // Проверяем текущий ЛОКАЛЬНЫЙ статус
+                                        if (!loading && currentStatus == RecipeStatus.DRAFT) {
+                                            loading = true
+                                            // МГНОВЕННО меняем статус на экране (звездочка тут же станет желтой)
+                                            val oldStatus = currentStatus
+                                            currentStatus = RecipeStatus.PENDING    //  optimistic UI
+
+                                            scope.launch {
+                                                // Отправляем запрос на сервер в фоне
+                                                val success = recipeViewModel.sendToModeration(recipe.id)
+
+                                                if (!success) {
+                                                    currentStatus = oldStatus   //  откат
+                                                }
+                                                loading = false
+                                            }
+                                        }
+////                        отправить на модерацию
+
+//                                        //                            Из заблокированного в черновик - пользователь
+//                                        Log.d("MODERATOR", "RecipeItem: before if recipe.name: ${recipe.name}, RecipeStatus.REJECTED = ${recipe.status}")
+//                                        if (recipe.status == RecipeStatus.REJECTED || recipe.status == RecipeStatus.DRAFT) {
+//                                            Log.d("MODERATOR", "RecipeItem: if recipe.name: ${recipe.name}, RecipeStatus.REJECTED = ${recipe.status}")
+//
+//                                            val oldStatus = currentStatus
+//                                            if (recipe.status == RecipeStatus.REJECTED) {
+//                                                currentStatus =
+//                                                    RecipeStatus.DRAFT    //  optimistic UI
+//                                            } else {
+//                                                recipe.status == RecipeStatus.PENDING
+//                                            }
+//
+//                                            scope.launch {
+//                                                // Отправляем запрос на сервер в фоне
+//                                                val success = recipeViewModel.updateStatusFromRejectedToDraft(recipe.id, currentStatus)
+//
+//                                                if (!success) {
+//                                                    currentStatus = oldStatus   //  откат
+//                                                }
+//                                                loading = false
+//                                            }
+//                                        }
+                                    },
+                                ) {
+                                    Log.d("MODERATOR", "RecipeItem: if recipe.name: ${recipe.name}, currentStatus = ${currentStatus}")
+                                    Icon(
+                                        imageVector = Icons.Default.Star,
+                                        contentDescription = "Избраное",
+                                        tint =
+                                            when (currentStatus) {
+                                                RecipeStatus.DRAFT -> Color(0xFF848484)
+                                                RecipeStatus.PENDING -> Color(0xFFFFD200)
+                                                RecipeStatus.APPROVED -> Color(0xFF3DA028)
+                                                RecipeStatus.REJECTED -> Color(0xFFBF3030)
+                                            },
+
+                                        modifier = Modifier.size(40.dp)
+                                    )
+                                }
+                            }
+                        }
+
 //                ++++++++++++++
                     }
             }   //  else

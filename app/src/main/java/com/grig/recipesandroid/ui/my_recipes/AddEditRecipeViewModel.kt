@@ -66,6 +66,7 @@ class AddEditRecipeViewModel(
     // +++++++++ Категории
     // Состояние выбранных категорий - списка рецептов
     val selectedCategoryValues = mutableStateMapOf<Long, CategoryValueDto>()
+
 //    val selectedCategoryValues = mutableMapOf<Long, CategoryValueDto>()
     // Состояние выбранных категорий - при создании и редактировании рецепта
     val selectedCategoryValuesForAddUpdate = mutableMapOf<Long, CategoryValueDto>()
@@ -343,7 +344,9 @@ class AddEditRecipeViewModel(
             isValid = false
         }
 //        ОБЯЗАТЕЛЬНО - категория (id = 1) - Тип блюда
-        val hasRequiredCategory = selectedCategoryValues.values.any { it.id == 1L }
+//        val hasRequiredCategory = selectedCategoryValues.values.any { it.id == 1L }
+        val hasRequiredCategory = selectedCategoryValues.values.any { it.typeId == 1L }
+        Log.d("ADD RECIPE-onRecipeSave", "AddEditRecipeViewModel: hasRequiredCategory: $hasRequiredCategory")
         if (!hasRequiredCategory) {
             errorMessage = "Обязательная категория - «Тип блюда»"
             return false

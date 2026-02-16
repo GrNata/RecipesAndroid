@@ -28,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,13 +63,15 @@ fun RecipeItem(
     onDeleteClick: (() -> Unit)? = null,
 ) {
     //  Создаем локальное состояние статуса. - MODERATOR - изменения цвета кнопки
-    // remember(recipe.id, recipe.status) гарантирует, что при реальном изменении данных
-    // с сервера статус синхронизируется, и при скролле не будет багов с переиспользованием ячеек.
+//     remember(recipe.id, recipe.status) гарантирует, что при реальном изменении данных
+//     с сервера статус синхронизируется, и при скролле не будет багов с переиспользованием ячеек.
     var currentStatus by remember(recipe.id, recipe.status) {
         mutableStateOf(recipe.status)
     }
 //    Для блокировки кнопки во время запроса - MODERATOR
     var loading by remember { mutableStateOf(false) }
+
+    val currentStatusViewModel by viewModel.currentStatus.collectAsState()
 
     var showDialogDelete by remember { mutableStateOf(false) }
 
@@ -81,6 +84,9 @@ fun RecipeItem(
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(Color(0xFFFFF8F7))
     ) {
+
+        Log.d("MODERATOR", "RecipeItem: recipe.name = ${recipe.name}, currentStatusViewModel = $currentStatusViewModel")
+
         Column(
             modifier = Modifier
                 .padding(8.dp)
@@ -91,9 +97,6 @@ fun RecipeItem(
                     .height(21.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-
-                Log.d("MODERATOR", "RecipeItem: isMyRecipes = $isMyRecipes, isOwner = $isOwner")
-
                 // Только для моих рецептов - кнопки добавить и удалить
                 if (isOwner) {
                         IconButton(
@@ -125,10 +128,6 @@ fun RecipeItem(
                                 tint = MaterialTheme.colorScheme.surface
                             )
                         }
-//                    if (showDialogDelete) {
-//                        ShowDialogDelete()
-//                    }
-
                         // Отступ 8 dp между кнопками
                         Spacer(modifier = Modifier.width(16.dp))
 
@@ -159,9 +158,6 @@ fun RecipeItem(
 //                ++++++++++++++++++++++++++++
 //                MODERATOR
                 if (isMyRecipes == true) {
-
-                    Log.d("MODERATOR", "RecipeItem: IF isMyRecipes = $isMyRecipes")
-
                     Spacer((Modifier.width(16.dp)))
 
                     val scope = rememberCoroutineScope()
@@ -171,16 +167,24 @@ fun RecipeItem(
                             CircularProgressIndicator()
                         }
                     }
+                    Log.d("MODERATOR", "RecipeItem: MODER recipe.name: ${recipe.name},  recipe.status: ${recipe.status}")
                     IconButton(
                         onClick = {
                             //    Для блокировки кнопки во время запроса - MODERATOR
                             // Проверяем текущий ЛОКАЛЬНЫЙ статус
                             if (!loading && currentStatus == RecipeStatus.DRAFT) {
-
                                 loading = true
                                 // МГНОВЕННО меняем статус на экране (звездочка тут же станет желтой)
                                 val oldStatus = currentStatus
-                                currentStatus = RecipeStatus.PENDING    //  optimistic UI
+//                                if (recipe.status == RecipeStatus.REJECTED) {
+//                                    currentStatus =
+//                                        RecipeStatus.DRAFT    //  optimistic UI
+//                                }
+//                                else {
+//                                    recipe.status == RecipeStatus.PENDING
+//                                }
+                                    currentStatus = RecipeStatus.PENDING    //  optimistic UI
+
 
                                 scope.launch {
                                     // Отправляем запрос на сервер в фоне
@@ -191,12 +195,33 @@ fun RecipeItem(
                                     }
                                     loading = false
                                 }
-                            }
 ////                        отправить на модерацию
+                            }
+//                            else if (recipe.status == RecipeStatus.REJECTED) {
+//                                Log.d("MODERATOR", "RecipeItem: USER if recipe.name: ${recipe.name},   RecipeStatus.REJECTED = ${recipe.status}")
+//
+//                                val oldStatus = currentStatus
+//                                currentStatus = RecipeStatus.DRAFT    //  optimistic UI
+//
+//                                scope.launch {
+//                                    // Отправляем запрос на сервер в фоне
+//                                    val success = viewModel.updateStatusFromRejectedToDraft(recipe.id, currentStatus)
+//
+//                                    Log.d("MODERATOR", "RecipeItem: 2 recipe.name: ${recipe.name},   success: ${success}")
+//                                    if (!success) {
+//                                        currentStatus = oldStatus   //  откат
+//                                    }
+//                                    loading = false
+//                                }
+//                            }
                         },
                         modifier = Modifier.size(18.dp)  // Размер кнопки
                     ) {
 
+
+                        Log.d("MODERATOR", "RecipeItem: 2 recipe.name: ${recipe.name},   recipe.status: ${recipe.status}")
+
+                        Log.d("MODERATOR", "RecipeItem: recipe.name: ${recipe.name},   currentStatus: ${currentStatus}")
                         Icon(
                             Icons.Default.Star,
                             contentDescription = "Модерация (черновик, на модерации, опубликован, отклонен)",

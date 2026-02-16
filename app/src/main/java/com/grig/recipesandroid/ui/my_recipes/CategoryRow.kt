@@ -62,6 +62,7 @@ fun CategoryRow(
                     DropdownMenuItem(
                         text = { Text(value.categoryValue) },
                         onClick = {
+                            Log.d("CATEGORY CHECK", "CategoryRow: value: $value")
                             onSelect(value)
                             expanded = false
                         }

@@ -30,6 +30,8 @@ fun RecipeDetailScreen(
     viewModelDetailRecipe: RecipeDetailViewModel,
 //    recipeDetailViewModel: RecipeDetailViewModel,
     authViewModel: AuthViewModel,
+    isMyDetail: Boolean,
+    isOwner: Boolean? = false,
     navController: NavController,
     onBack : () -> Unit,
 //    onCheckModerator: (() -> Unit)? = null
@@ -66,6 +68,8 @@ fun RecipeDetailScreen(
             loading = loading,
             error = error,
             isAuthenticated = isAuthenticated,
+            isMyDetail = isMyDetail,
+            isOwner = isOwner,
             onBack = onBack,
             navController = navController,
             authViewModel = authViewModel,

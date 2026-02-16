@@ -16,6 +16,8 @@ import com.grig.recipesandroid.data.paging.RecipePagingSource
 import com.grig.recipesandroid.domain.model.Recipe
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
+import retrofit2.http.PUT
+import retrofit2.http.Path
 
 class RecipeRepository(
     private val api: RecipeApi
@@ -73,6 +75,9 @@ class RecipeRepository(
         val response = api.searchByIngredients(request)
     return response
 }
+
+    //    User update status by recipe from REJECTED to DRAFT
+    suspend fun updateStatusFromRejectToDraft(id: Long) : RecipeDto = api.updateStatusFromRejectToDraft(id)
 
 //    +++++++++++++++++
 //    MODERATOR

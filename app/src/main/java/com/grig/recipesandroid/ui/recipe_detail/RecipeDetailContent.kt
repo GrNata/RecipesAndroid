@@ -41,6 +41,8 @@ fun RecipeDetailContent(
     loading: Boolean,
     error: String?,
     isAuthenticated: Boolean,
+    isMyDetail: Boolean,
+    isOwner: Boolean? = false,
     onBack: () -> Unit,
     navController: NavController,
     authViewModel: AuthViewModel,
@@ -177,6 +179,8 @@ fun RecipeDetailContent(
                         recipeDetailViewModel,
                         authViewModel,
                         recipe,
+                        isMyDetail,
+//                        isOwner = isOwner,
                         onBack,
                         recipeId,
                         snackbarHostState

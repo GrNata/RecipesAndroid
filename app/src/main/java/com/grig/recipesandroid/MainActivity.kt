@@ -171,7 +171,7 @@ class MainActivity : ComponentActivity() {
                             categoryRepository = categoryRepository,
                             ingredientRepository = ingredientRepository,
                             myRecipesViewModel = myRecipesViewModel,
-                            userIdFlow = authViewModel.userId
+                            userIdFlow = authViewModel.userEmail
                         )
                     )
 
