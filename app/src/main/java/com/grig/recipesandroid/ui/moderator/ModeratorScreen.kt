@@ -24,12 +24,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.grig.recipesandroid.ui.app_top_bar.AppTopBar
 import com.grig.recipesandroid.ui.auth.AuthViewModel
+import com.grig.recipesandroid.ui.recipe_detail.RecipeDetailViewModel
 import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 
 @Composable
 fun ModeratorScreen(
     resipViewModel: RecipesViewModel,
     authViewModel: AuthViewModel,
+//    recipeDetailViewModel: RecipeDetailViewModel,
     navController: NavController
 ) {
 
@@ -41,7 +43,8 @@ fun ModeratorScreen(
     val isAdmin by authViewModel.isAdmin.collectAsState()
     val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
 
-    LaunchedEffect(Unit) {
+//    LaunchedEffect(Unit) {
+    LaunchedEffect(pending) {
         resipViewModel.loadPendingRecipes()
     }
 
@@ -50,8 +53,6 @@ fun ModeratorScreen(
 
         topBar = {
             val authRestored by authViewModel.authStateRestored.collectAsState()
-            Log.d("MODERATOR", "ModeratorScreen: isModerator: $isModerator")
-            Log.d("MODERATOR", "ModeratorScreen: isAdmin: $isAdmin")
 
             AppTopBar(
                 title = "Модератор",
@@ -59,9 +60,13 @@ fun ModeratorScreen(
                 isModerator = isModerator,
                 showMyRecipes = false,
                 onBack = { navController.popBackStack() },
+                onMainScreen = { navController.navigate("recipe_list")},
                 onLoginClick = { navController.navigate("login") },
                 onLogoutClick = {
                     authViewModel.logout()
+                    navController.navigate("recipe_list") {
+                        popUpTo(0) { inclusive = true }
+                    }
                 },
                 onModerator = { navController.navigate("moderator") }
             )

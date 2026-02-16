@@ -1,5 +1,6 @@
 package com.grig.recipesandroid.ui.recipe_list
 
+import android.net.http.HttpException
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +22,7 @@ import com.grig.recipesandroid.data.repository.CategoryRepository
 import com.grig.recipesandroid.data.repository.FavoritesRepository
 import com.grig.recipesandroid.data.repository.IngredientRepository
 import com.grig.recipesandroid.domain.model.Recipe
+import com.grig.recipesandroid.ui.my_recipes.MyRecipesViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,6 +46,7 @@ open class RecipesViewModel(
     private val favoritesRepository: FavoritesRepository,
     private val categoryRepository: CategoryRepository,
     private val ingredientRepository: IngredientRepository,
+    private val myRecipesViewModel: MyRecipesViewModel,
     private val userIdFlow: StateFlow<String?>      // сюда передаем текущий userId / email
 ) : ViewModel() {
 
@@ -130,6 +133,12 @@ open class RecipesViewModel(
     private val _moderationStatus = MutableStateFlow<RecipeStatus>(RecipeStatus.DRAFT)
     val moderationStatus = _moderationStatus.asStateFlow()
 
+    private var _isModeratorDetail = MutableStateFlow<Boolean>(false)
+    var isModeratorDetail = _isModeratorDetail.asStateFlow()
+
+    private var _error = MutableStateFlow<String?>(null)
+    val error = _error.asStateFlow()
+
 //    +++++++++++++++
 
     init {
@@ -209,20 +218,25 @@ open class RecipesViewModel(
         }
     }
 
+
 //    +++++++++++++++++++
 //    Удаление рецепта
     fun deleteRecipe(recipeId: Long) {
-        Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: deleteRecipe, START")
-//        val recipeId = currentRecipeId ?: return
-        Log.d("ADD RECIPE-newEdit", "AddEditRecipeViewModel: deleteRecipe, recipeID=$recipeId")
+        _error.value = null
         viewModelScope.launch {
             try {
-                repository.deleteRecipe(recipeId)
-
-                refreshRecipe()
-
+                val response = repository.deleteRecipe(recipeId)
+                if (response.isSuccessful) {
+                   refreshRecipe()
+                } else {
+                    when (response.code()) {
+                        403 -> _error.value = "Нет прав на это действие"
+                        401 -> _error.value = "Нет авторизации"
+                        404 -> _error.value = "Нет такого рецепта"
+                    }
+                }
             } catch (e: Exception) {
-                errorMessage = e.message
+                _error.value = e.message
             }
         }
     }
@@ -295,6 +309,8 @@ open class RecipesViewModel(
             try {
                 repository.approveRecipe(id)
                 loadPendingRecipes()    //  перезагрузка
+                refreshRecipe()
+                myRecipesViewModel.refresh()
             } catch (e: Exception) {
                 _moderatorError.value = e.message
             }
@@ -307,10 +323,17 @@ open class RecipesViewModel(
             try {
                 repository.rejectRecipe(id)
                 loadPendingRecipes()
+                refreshRecipe()
+                myRecipesViewModel.refresh()
             } catch (e: Exception) {
                 _moderatorError.value = e.message
             }
         }
+    }
+
+    fun checkIsModeratorDetail(value: Boolean) {
+        _isModeratorDetail.value = value
+        _isModeratorDetail.value = value
     }
 
 //    +++++++++++++++++++++++++++++++++++++

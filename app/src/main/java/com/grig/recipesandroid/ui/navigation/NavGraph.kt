@@ -360,6 +360,7 @@ fun AppNavGraph(
                     ModeratorScreen(
                         recipeViewModel,
                         authViewModel,
+//                        recipeViewModel,
                         navController
                     )
                 }

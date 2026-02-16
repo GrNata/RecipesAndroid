@@ -160,18 +160,19 @@ class MainActivity : ComponentActivity() {
                             }
                         })
 
+                val myRecipesViewModel: MyRecipesViewModel = viewModel(
+                    factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
+                )
+
                     val recipesViewModel: RecipesViewModel = viewModel(
                         factory = RecipesViewModelFactory(
                             repository = recipeRepository,
                             favoritesRepository = favoritesRepository,
                             categoryRepository = categoryRepository,
                             ingredientRepository = ingredientRepository,
+                            myRecipesViewModel = myRecipesViewModel,
                             userIdFlow = authViewModel.userId
                         )
-                    )
-
-                    val myRecipesViewModel: MyRecipesViewModel = viewModel(
-                        factory = MyRecipesViewModelFactory(recipeRepository, authViewModel)
                     )
 
                     val searchByIngredientsViewModel: SearchByIngredientsViewModel = viewModel(

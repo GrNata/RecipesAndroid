@@ -106,6 +106,8 @@ fun AppTopBar(
             }
 
 //            Кнопка для MODERATOR
+            Log.d("ADMIN", "AppTopBar: isModerator = $isModerator")
+            Log.d("ADMIN", "AppTopBar: onModerator != null = ${onModerator != null}")
             if (isModerator || isAdmin) {
                 if (onModerator != null) {
                     IconButton(onClick = onModerator) {

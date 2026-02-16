@@ -79,6 +79,8 @@ fun RecipeListScreen(
     val isAdmin by authViewModel.isAdmin.collectAsState()
     val isModerator by authViewModel.isModerator.collectAsState()
 
+    viewModel.checkIsModeratorDetail(false)
+
 
     LaunchedEffect(message) {
         if (message.isNotEmpty()) {
@@ -93,14 +95,15 @@ fun RecipeListScreen(
         }
     }
 
+
     Scaffold(
         containerColor = Color(0xFFF7F3EC),
 
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
 
         topBar = {
-            Log.d("ADMIN", "RecipeListScreen isAuthenticated = $isAuthenticated")
-            Log.d("ADMIN", "RecipeListScreen: isAdmin = $isAdmin")
+//            Log.d("ADMIN", "RecipeListScreen isAuthenticated = $isAuthenticated")
+            Log.d("ADMIN", "RecipeListScreen: isModerator = $isModerator")
 
             val authRestored by authViewModel.authStateRestored.collectAsState()
 
@@ -191,6 +194,7 @@ fun RecipeListScreen(
                 Column(modifier = Modifier.fillMaxWidth().background(Color(0xFFfffcfa))) {
                     RecipeListContent(
                         viewModel = viewModel,
+                        isAuthenticated = isAuthenticated,
                         recipes = recipes,
                         query = query,
                         favorites = favoritesSet,       //  StateFlow из RecipesViewModel

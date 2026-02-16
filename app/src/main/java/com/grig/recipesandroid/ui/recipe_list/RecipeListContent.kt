@@ -65,6 +65,7 @@ import com.grig.recipesandroid.ui.utilRecipe.ShimmerRecipeItem
 @Composable
 fun RecipeListContent(
     viewModel: RecipesViewModel,
+    isAuthenticated: Boolean,
     recipes: LazyPagingItems<Recipe>,
     query: String,
     favorites: Set<Long>,
@@ -153,22 +154,29 @@ fun RecipeListContent(
                                     )
                                 }
                             }
-//                Рецепты в категории - стандартные карточки рецептов
-                            items(recipesInCategory) { recipe ->
-                                val fav = favorites
 
-                                RecipeItem(
-                                    viewModel = viewModel,
-                                    recipe = recipe,
-                                    query = query,
-                                    isFavorite = favorites.contains(recipe.id),
-                                    isOwner = false,
-                                    onFavoriteClick = { viewModel.toggleFavorite(recipe.id) },
-                                    onClick =
+//                Рецепты в категории - стандартные карточки рецептов
+                                items(recipesInCategory) { recipe ->
+                                    val fav = favorites
+
+                                    RecipeItem(
+                                        viewModel = viewModel,
+                                        recipe = recipe,
+                                        query = query,
+                                        isFavorite = favorites.contains(recipe.id),
+                                        isOwner = false,
+                                        onFavoriteClick = { viewModel.toggleFavorite(recipe.id) },
+                                        onClick =
 //                                        { navController.navigate("recipe_detail/${recipe.id}") }
-                                        { onRecipeClick(recipe.id) }
-                                )
-                            }
+                                            {
+//                                                только для залогиненных
+                                                if (isAuthenticated) {
+                                                    onRecipeClick(recipe.id)
+                                                }
+                                            }
+                                    )
+                                }   //  items
+
                         }
 
 //            -------- ???????

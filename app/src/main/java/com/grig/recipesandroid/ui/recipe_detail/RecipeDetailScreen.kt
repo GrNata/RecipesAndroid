@@ -61,11 +61,6 @@ fun RecipeDetailScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
 
-
-        Log.d("MODERATOR:", "RecipeDetailScreen: before RecipeDetailContent isModerator =${isModerator}")
-        Log.d("MODERATOR:", "RecipeDetailScreen: before RecipeDetailContent isAdmin =${isAdmin}")
-        Log.d("MODERATOR:", "RecipeDetailScreen: before RecipeDetailContent isAuthenticated: ${isAuthenticated}")
-
         RecipeDetailContent(
             recipe = recipe,
             loading = loading,

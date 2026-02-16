@@ -50,6 +50,10 @@ fun RecipeDetailContent(
     snackbarHostState: SnackbarHostState
 ) {
 
+//    val isModerator by authViewModel.isModerator.collectAsState()
+//    val isAdmin by authViewModel.isAdmin.collectAsState()
+
+
     val context = LocalContext.current
 
     Scaffold(
@@ -57,9 +61,6 @@ fun RecipeDetailContent(
 
         topBar = {
             val authRestored by authViewModel.authStateRestored.collectAsState()
-
-            Log.d("MODERATOR", "RecipeDetailContent: before AppTopBar recipeId=$recipeId")
-            Log.d("MODERATOR", "RecipeDetailContent: before AppTopBar recipe: $recipe")
 
             AppTopBar(
                 title = recipe?.name ?: "Детали рецепта",
@@ -73,7 +74,12 @@ fun RecipeDetailContent(
                     authViewModel.requireLogin("recipe_detail/${recipeId}")
                     navController.navigate("login")
                                },
-                onLogoutClick = { authViewModel.logout() },
+                onLogoutClick = {
+                    authViewModel.logout()
+                    navController.navigate("recipe_list") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                                },
                 onShareClick = if (recipe != null && isAuthenticated) {
                     {
                         val ingredientsText = recipe.ingredients.joinToString("\n") { ri ->
@@ -153,7 +159,7 @@ fun RecipeDetailContent(
                     }
                 }
                 recipe == null -> {
-                    // ❗ ОБЯЗАТЕЛЬНО
+                    //  ОБЯЗАТЕЛЬНО
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -169,6 +175,7 @@ fun RecipeDetailContent(
                     RecipeDetailLoaded(
                         recipeViewModel,
                         recipeDetailViewModel,
+                        authViewModel,
                         recipe,
                         onBack,
                         recipeId,

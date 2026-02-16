@@ -82,6 +82,8 @@ fun MyRecipesScreen(
         ?.getLiveData<Boolean>("REFRESH_RECIPES")
 //        ?.observeAsState()
 
+    recipeViewModel.checkIsModeratorDetail(false)
+
     LaunchedEffect(refresh?.value) {
         if (refresh?.value == true) {
             myViewModul.refresh()
@@ -226,12 +228,15 @@ fun MyRecipesScreen(
 
                                 items(recipesInCategory) { recipe ->
 
+                                    Log.d("MODERATOR", "MyRecipeScreen: recipe.status: ${recipe.status}, name: ${recipe.name}")
+
                                     RecipeItem(
                                         viewModel = recipeViewModel,
                                         recipe = recipe,
                                         query = "",
                                         isFavorite = favorites.contains(recipe.id),         //  по желанию
                                         isOwner = true,
+//                                        isMyRecipes = true,
                                         onFavoriteClick = { recipeViewModel.toggleFavorite(recipe.id) },
                                         onClick = { navController.navigate("recipe_detail/${recipe.id}") },
                                         onEditClick = {

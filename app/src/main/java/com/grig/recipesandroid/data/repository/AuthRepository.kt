@@ -1,49 +1,27 @@
 package com.grig.recipesandroid.data.repository
 
 import android.util.Log
-import androidx.compose.ui.semantics.Role
 import com.grig.recipesandroid.data.api.AuthApi
 import com.grig.recipesandroid.data.local.TokenRepository
 import com.grig.recipesandroid.data.model.auth.AdminAuditLogDto
 import com.grig.recipesandroid.data.model.auth.AdminStatisticsDto
-import com.grig.recipesandroid.data.model.auth.AuthResponseWithRole
-import com.grig.recipesandroid.data.model.auth.AuthTokens
 import com.grig.recipesandroid.data.model.auth.AuthTokensWithRole
 import com.grig.recipesandroid.data.model.auth.BlockUserRequest
 import com.grig.recipesandroid.data.model.auth.LoginRequest
 import com.grig.recipesandroid.data.model.auth.RefreshTokenRequest
-import com.grig.recipesandroid.data.model.auth.RegisterRequest
 import com.grig.recipesandroid.data.model.auth.RegisterResponse
 import com.grig.recipesandroid.data.model.auth.RegisterUserRequest
-import com.grig.recipesandroid.data.model.auth.RoleUserRequest
-import com.grig.recipesandroid.data.model.auth.UpdateUserRoleRequest
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleResponse
 import com.grig.recipesandroid.data.model.auth.UserRequest
 import kotlinx.coroutines.flow.first
-import java.time.LocalDate
+import retrofit2.Response
 
 class AuthRepository(
     private val api: AuthApi,
     private val tokenRepository: TokenRepository
 ) {
+    suspend fun register(request: RegisterUserRequest) : RegisterResponse = api.register(request)
 
-//    suspend fun register(request: RegisterRequest) : AuthTokens {
-//    suspend fun register(request: RegisterRequest) : AuthTokensWithRole {
-//    suspend fun register(request: RegisterUserRequest) : AuthTokensWithRole {
-    suspend fun register(request: RegisterUserRequest) : RegisterResponse {
-    Log.d("REGISTRATION", "AuthRepository: request: $request")
-        val response = api.register(request)
-    Log.d("REGISTRATION", "AuthViewModel: response: $response")
-////        tokenRepository.saveTokens(response.accessToken, response.refreshToken, response.userInfo)
-//        tokenRepository.saveTokens(response.accessToken, response.refreshToken, response.)
-//    Log.d("REGISTRATION", "AuthViewModel: request: $request")
-//        return AuthTokensWithRole(response.accessToken, response.refreshToken, response.userInfo.roles)
-//        return AuthTokens(response.accessToken, response.refreshToken)
-
-    return response
-    }
-
-//    suspend fun login(request: LoginRequest) : AuthTokens {
     suspend fun login(request: LoginRequest) : AuthTokensWithRole {
         val response = api.login(request)
         tokenRepository.saveTokens(
@@ -52,17 +30,14 @@ class AuthRepository(
             response.userInfo
         )
         return AuthTokensWithRole(response.accessToken, response.refreshToken, response.userInfo.roles)
-//        return AuthTokens(response.accessToken, response.refreshToken)
     }
 
 //    suspend fun refreshToken(): String {
     suspend fun refreshToken(): AuthTokensWithRole {
         val refresh = tokenRepository.refreshToken.first() ?: throw Exception("No refresh token")
         val response = api.refreshToken(RefreshTokenRequest(refresh))
-//        val response = api.refreshToken(refresh)
         tokenRepository.saveTokens(response.accessToken, response.refreshToken, response.userInfo)
         return AuthTokensWithRole(response.accessToken, response.refreshToken, response.userInfo.roles)
-//        return response.accessToken
     }
 
     suspend fun logout() {
@@ -105,6 +80,8 @@ class AuthRepository(
 
     suspend fun getUserByEmail(email: String?) : UserRequest? =
         api.getUserByEmail(email)
+
+    suspend fun deleteUser(id: Long): Response<Unit> = api.deleteUser(id)
 
 //    АУДИТ - ЛОГИ
     suspend fun getAllAuditLogs() : List<AdminAuditLogDto> =

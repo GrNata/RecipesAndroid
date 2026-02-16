@@ -15,6 +15,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -34,6 +36,9 @@ fun RecipesPendingRow(
 //    authViewModel: AuthViewModel,
     navController: NavController
 ) {
+
+    recipesViewModel.checkIsModeratorDetail(true)
+
     Column(
         modifier = Modifier.padding(10.dp)
     ) {
@@ -42,6 +47,7 @@ fun RecipesPendingRow(
             modifier = Modifier
                 .clickable {
 //                    переход в детализацию
+
                     navController.navigate("recipe_detail/${recipe.id}")
                 }
         ) {

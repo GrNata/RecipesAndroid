@@ -55,6 +55,7 @@ fun RecipeItem(
     query: String,
     isFavorite: Boolean,
     isOwner: Boolean,
+    isMyRecipes: Boolean? = false,
     onFavoriteClick: () -> Unit,
     onClick: () -> Unit,
     onEditClick: (() -> Unit)? = null,
@@ -69,6 +70,8 @@ fun RecipeItem(
 //    Для блокировки кнопки во время запроса - MODERATOR
     var loading by remember { mutableStateOf(false) }
 
+    var showDialogDelete by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -77,12 +80,10 @@ fun RecipeItem(
             .clip(RoundedCornerShape(20.dp)),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(Color(0xFFFFF8F7))
-//        colors = CardDefaults.cardColors(Color(0xFFEEE2DC))
     ) {
         Column(
             modifier = Modifier
                 .padding(8.dp)
-//                .background(Color(0xFFF6E5D7))
         ) {
             Row(
                 modifier = Modifier
@@ -91,14 +92,16 @@ fun RecipeItem(
                 horizontalArrangement = Arrangement.End
             ) {
 
-            // Только для моих рецептов - кнопки добавить и удалить
+                Log.d("MODERATOR", "RecipeItem: isMyRecipes = $isMyRecipes, isOwner = $isOwner")
+
+                // Только для моих рецептов - кнопки добавить и удалить
                 if (isOwner) {
                         IconButton(
                             onClick = {
-                            onEditClick?.invoke()
-                        },
+                                onEditClick?.invoke()
+                            },
                             modifier = Modifier.size(18.dp) // Размер кнопки
-                            ) {
+                        ) {
                             Icon(
                                 Icons.Default.Edit,
                                 contentDescription = "Редактировать",
@@ -111,99 +114,106 @@ fun RecipeItem(
 
                         IconButton(
                             onClick = {
-                            onDeleteClick?.invoke()
-                        },
+//                                showDialogDelete = true
+                                onDeleteClick?.invoke()
+                            },
                             modifier = Modifier.size(18.dp)  // Размер кнопки
-                            ) {
+                        ) {
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = "Удалить",
                                 tint = MaterialTheme.colorScheme.surface
-                                )
+                            )
                         }
+//                    if (showDialogDelete) {
+//                        ShowDialogDelete()
+//                    }
 
-                    // Отступ 8 dp между кнопками
-                    Spacer(modifier = Modifier.width(16.dp))
+                        // Отступ 8 dp между кнопками
+                        Spacer(modifier = Modifier.width(16.dp))
 
-                }
-
-//                val scale by animateFloatAsState(targetValue = if (isFavorite) 1.3f else 1f)
-                val scale by animateFloatAsState(targetValue = if (isFavorite) 1f else 0.9f)
-
-                IconButton(
-                    onClick = { viewModel.toggleFavorite(recipe.id) },
-//                    modifier = Modifier.scale(scale)
-                    modifier = Modifier
-                        .size(20.dp)
-                        .scale(scale)  // Размер кнопки
-                ) {
-                    Icon(
-                        imageVector = if (isFavorite) {
-                            Icons.Default.Favorite
-                        } else {
-                            Icons.Default.FavoriteBorder
-                        },
-                        contentDescription = "Избраное",
-                        tint = Color.Red,
-//                        tint = if (isFavorite) Color.Red else Color.Red,
-                        modifier = Modifier.size(40.dp)
-                    )
-                }
-
-//                MODERATOR
-                Spacer((Modifier.width(16.dp)))
-
-                val scope = rememberCoroutineScope()
-
-                if (loading) {
-                    Box() {
-                        CircularProgressIndicator()
                     }
-                }
-                IconButton(
-                    onClick = {
-                        //    Для блокировки кнопки во время запроса - MODERATOR
-                        // Проверяем текущий ЛОКАЛЬНЫЙ статус
-                        if (!loading && currentStatus == RecipeStatus.DRAFT) {
 
-                            loading = true
-                            // МГНОВЕННО меняем статус на экране (звездочка тут же станет желтой)
-                            val oldStatus = currentStatus
-                            currentStatus = RecipeStatus.PENDING    //  optimistic UI
+                    val scale by animateFloatAsState(targetValue = if (isFavorite) 1f else 0.9f)
 
-                            scope.launch {
-                                // Отправляем запрос на сервер в фоне
-                                val success = viewModel.sendToModeration(recipe.id)
+                    IconButton(
+                        onClick = { viewModel.toggleFavorite(recipe.id) },
+                        modifier = Modifier
+                            .size(20.dp)
+                            .scale(scale)  // Размер кнопки
+                    ) {
+                        Icon(
+                            imageVector = if (isFavorite) {
+                                Icons.Default.Favorite
+                            } else {
+                                Icons.Default.FavoriteBorder
+                            },
+                            contentDescription = "Избраное",
+                            tint = Color.Red,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
 
-                                if (!success) {
-                                    currentStatus = oldStatus   //  откат
+            Spacer(Modifier.height(16.dp))
+
+//                ++++++++++++++++++++++++++++
+//                MODERATOR
+                if (isMyRecipes == true) {
+
+                    Log.d("MODERATOR", "RecipeItem: IF isMyRecipes = $isMyRecipes")
+
+                    Spacer((Modifier.width(16.dp)))
+
+                    val scope = rememberCoroutineScope()
+
+                    if (loading) {
+                        Box() {
+                            CircularProgressIndicator()
+                        }
+                    }
+                    IconButton(
+                        onClick = {
+                            //    Для блокировки кнопки во время запроса - MODERATOR
+                            // Проверяем текущий ЛОКАЛЬНЫЙ статус
+                            if (!loading && currentStatus == RecipeStatus.DRAFT) {
+
+                                loading = true
+                                // МГНОВЕННО меняем статус на экране (звездочка тут же станет желтой)
+                                val oldStatus = currentStatus
+                                currentStatus = RecipeStatus.PENDING    //  optimistic UI
+
+                                scope.launch {
+                                    // Отправляем запрос на сервер в фоне
+                                    val success = viewModel.sendToModeration(recipe.id)
+
+                                    if (!success) {
+                                        currentStatus = oldStatus   //  откат
+                                    }
+                                    loading = false
                                 }
-                                loading = false
                             }
-                        }
 ////                        отправить на модерацию
-//                        if (recipe.status == RecipeStatus.DRAFT) {
-//                            viewModel.sendToModeration(recipe.id)
-//                        }
-                    },
-                    modifier = Modifier.size(18.dp)  // Размер кнопки
-                ) {
-                    Icon(
-                        Icons.Default.Star,
-                        contentDescription = "Модерация (черновик, на модерации, опубликован, отклонен)",
-                        //  Отрисовываем цвет в зависимости от ЛОКАЛЬНОГО currentStatus, а не recipe.status
-//                        tint = when (recipe.status) {
-                        tint = when (currentStatus) {
-                            RecipeStatus.DRAFT -> Color(0xFF848484)
-                            RecipeStatus.PENDING -> Color(0xFFFFD200)
-                            RecipeStatus.APPROVED -> Color(0xFF3DA028)
-                            RecipeStatus.REJECTED -> Color(0xFFBF3030)
-                        }
-                    )
-                }
+                        },
+                        modifier = Modifier.size(18.dp)  // Размер кнопки
+                    ) {
 
-//                Log.d("СЕРДЦЕ", "isFavorite = $isFavorite, recipeId = ${recipe.id}")
-            }
+                        Icon(
+                            Icons.Default.Star,
+                            contentDescription = "Модерация (черновик, на модерации, опубликован, отклонен)",
+                            //  Отрисовываем цвет в зависимости от ЛОКАЛЬНОГО currentStatus, а не recipe.status
+//                        tint = when (recipe.status) {
+                            tint = when (currentStatus) {
+                                RecipeStatus.DRAFT -> Color(0xFF848484)
+                                RecipeStatus.PENDING -> Color(0xFFFFD200)
+                                RecipeStatus.APPROVED -> Color(0xFF3DA028)
+                                RecipeStatus.REJECTED -> Color(0xFFBF3030)
+                            }
+                        )
+                    }
+                }   //  if isMyRecipes
+//                +++++++++++++++++++++++++
+
+            }   //  ROW
 
             Row(
                 modifier = Modifier
@@ -218,7 +228,6 @@ fun RecipeItem(
                         model = recipe.image,
                         contentDescription = recipe.name,
                         modifier = Modifier
-//                            .height(80.dp)
                             .size(80.dp)
                             .clip(RoundedCornerShape(12.dp))
                     )
@@ -226,22 +235,18 @@ fun RecipeItem(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 // Колонка с текстом и Spacer между текстом и иконкой
-//                Row(modifier = Modifier.fillMaxWidth()) {
                 Log.d("ADD RECIPE-newEdit", "RecipeItem: name: ${recipe.name}, description=${recipe.description}")
                     Column {
                         HighlightedText(
                             text = recipe.name,
                             query = query,
-//                        style = MaterialTheme.typography.titleMedium,
                             style = MaterialTheme.typography.titleLarge,
-//                        color = Color(0xFFAC3B61)
                             color = Color(0xFF9A3B3B)
                         )
                         recipe.description?.let {
                             Text(
                                 text = it,
                                 style = MaterialTheme.typography.bodyMedium,
-//                            color = Color(0xFFBAB2B5)
                                 color = Color(0xFFB2A193),
                                 textAlign = TextAlign.Center
                             )
@@ -250,20 +255,14 @@ fun RecipeItem(
             }     // Row
 
             Spacer(modifier = Modifier.padding(1.dp))
-//            Column {
             Row {
                 val ingredientsUi = recipe.ingredients.map { it.toUi() }
-//                recipe.ingredients.forEach { ing ->
-//                Log.d("INGREDIENT-UI", "RecipeItem: IngredientUi: ${ingredientsUi}")
-
 
                 ingredientsUi.forEach { ing ->
                     Text(
-//                        text = "${ing.ingredient.name}: ${ing.amount} ${ing.unit ?: ""}".trim(),
                         text = "${ing.ingredient.name}, ".trim().lowercase(),
                         color = Color(0xFF123C69)
                     )
-//                    Text(text = ing.unit?.label ?: "")
                 }
             }
 

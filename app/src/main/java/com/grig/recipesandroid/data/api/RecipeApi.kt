@@ -12,6 +12,7 @@ import com.grig.recipesandroid.data.model.request.RecipeUpdateRequest
 import com.grig.recipesandroid.data.model.dto.UnitDto
 import com.grig.recipesandroid.data.model.request.SearchByIngredientsRequest
 import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -47,14 +48,10 @@ interface RecipeApi {
 
     @PUT("/api/recipes/{id}")
     suspend fun updateRecipe(
-        @Path("id") id: Long,
-        @Body rerequest: RecipeUpdateRequest
-    )
+        @Path("id") id: Long, @Body rerequest: RecipeUpdateRequest)
 
     @DELETE("/api/recipes/{id}")
-    suspend fun deleteRecipe(
-        @Path("id") id: Long
-    )
+    suspend fun deleteRecipe(@Path("id") id: Long): Response<Unit>
 
 //    //  Поиск рецептов по ингредиентам
     @POST("/api/recipes/search/by-ingredients")

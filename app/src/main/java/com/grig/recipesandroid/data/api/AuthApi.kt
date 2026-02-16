@@ -10,7 +10,9 @@ import com.grig.recipesandroid.data.model.auth.RegisterUserRequest
 import com.grig.recipesandroid.data.model.auth.TokenResponse
 import com.grig.recipesandroid.data.model.auth.UpdateUserRoleResponse
 import com.grig.recipesandroid.data.model.auth.UserRequest
+import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -74,6 +76,9 @@ interface AuthApi {
         @Query("lastLoginTo") lastLoginTo: String?
     ): List<UserRequest>
 //    suspend fun getUsersFiltred(@Query("role") role: String?, @Query("blocked") blocked: Boolean?): List<UserRequest>
+
+    @DELETE("/api/admin/users/{id}")
+    suspend fun deleteUser(@Path("id") id: Long): Response<Unit>
 
 //    Аудит - логи
     @GET("/api/admin/audit")

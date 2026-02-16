@@ -1,11 +1,9 @@
 package com.grig.recipesandroid.ui.recipe_detail
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import retrofit2.HttpException
 import com.grig.recipesandroid.data.api.RecipeApi
 import com.grig.recipesandroid.data.mapper.toDomain
 import com.grig.recipesandroid.data.mapper.toIngredientUi
@@ -13,6 +11,7 @@ import com.grig.recipesandroid.data.model.ui.IngredientUi
 import com.grig.recipesandroid.domain.model.Recipe
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class RecipeDetailViewModel(
@@ -29,6 +28,9 @@ class RecipeDetailViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+//    private val _userId = MutableStateFlow<Long?>(null)
+//    val userId = _userId.asStateFlow()
+
 //    +++++++++++++++++++++++++
 //    для пересчета количества ингредиентов в деталях рецепта
     private val _ingredientsUi = MutableStateFlow<List<IngredientUi>>(emptyList())
@@ -40,12 +42,14 @@ class RecipeDetailViewModel(
     private val _currentServings = MutableStateFlow(1)
     val currentServings: StateFlow<Int> = _currentServings
 
+//    ++++++++++++++++++++++++
+    val _isAdminModeratorDetail = MutableStateFlow(false)
+    val isAdminModeratorDetail = _isAdminModeratorDetail.asStateFlow()
+
 //  +++++++++++++++++++++++++++++++++++++
 
     init {
-        Log.d("MODERATOR:", "RecipeDetailViewModel: before loadRecipe recipe: ${_recipe.value}")
         loadRecipe()
-        Log.d("MODERATOR:", "RecipeDetailViewModel: after loadRecipe recipe: ${_recipe.value}")
     }
 
     //    fun loadRecipe(id: Long) {
@@ -54,9 +58,7 @@ class RecipeDetailViewModel(
             _loading.value = true
             _error.value = null
             try {
-                Log.d("MODERATOR:", "RecipeDetailViewModel: recipeId: ${recipeId}")
                 val response = api.getRecipeById(requireNotNull(recipeId))
-                Log.d("MODERATOR:", "RecipeDetailViewModel: response: ${response}")
 
                 val ingredientResponse =
                     response.ingredients?.map { it.toDomain() }?.map { it.toIngredientUi() }
@@ -64,7 +66,6 @@ class RecipeDetailViewModel(
                         ?: emptyList()
 
                 _recipe.value = response.toDomain()
-
                 baseIngredients = ingredientResponse
 
                 if (ingredientResponse != null) _ingredientsUi.value = ingredientResponse
@@ -72,9 +73,14 @@ class RecipeDetailViewModel(
                 if (response.baseServings != null) _currentServings.value = response.baseServings
 
 
+            } catch (e: HttpException) {
+                 when (e.code()) {
+                    403 -> _error.value = "Нет доступа к рецепту"
+                    404 -> _error.value = "Рецепт не найден"
+                    else -> _error.value = "Ошибка сервера: ${e.message}"
+                }
             } catch (e: Exception) {
                 _error.value = e.message ?: "RecipeDetailViewModel: Ошибка загрузки рецепта"
-                Log.d("MODERATOR:", "RecipeDetailViewModel: error: ${e.message}")
             } finally {
                 _loading.value = false
             }

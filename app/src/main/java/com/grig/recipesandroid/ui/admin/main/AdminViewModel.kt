@@ -241,31 +241,25 @@ class AdminViewModel(
         }
     }
 
-//    fun getUserByEmail() {
-//        viewModelScope.launch {
-//            _loading.value = true
-//            _error.value = null
-//
-//            try {
-//                if (!isValidEmail(_emailFilter.value) || _emailFilter.value.isNullOrEmpty())
-//                {
-//                    loadUsers()
-//                    if (!isValidEmail(_emailFilter.value)) {
-//                        setEmailError("Некорректный email")
-//                    }
-//                    return@launch
-//                }
-//                val response = authRepository.getUserByEmail(_emailFilter.value)
-//                _usersAll.value = listOfNotNull(response)
-//
-//            } catch (e: kotlin.Exception) {
-//                _error.value = e.message
-//            } finally {
-//                _loading.value = false
-//            }
-//        }
-//    }
-
+    fun deleteUser(id: Long) {
+        viewModelScope.launch {
+            _error.value = null
+            try {
+                val response = authRepository.deleteUser(id)
+                if (response.isSuccessful) {
+                    loadUsers()
+                }
+            } catch (e: HttpException) {
+                when (e.code()) {
+                    403 -> _error.value = "Нет прав на это действие"
+                    401 -> _error.value = "Нет авторизации"
+                    404 -> _error.value = "Нет такого пользователя"
+                }
+            } catch (e: kotlin.Exception) {
+                _error.value = e.message
+            }
+        }
+    }
 
 //    +++++++++++++++++++
 //    VALID

@@ -32,7 +32,9 @@ class AuthInterceptor(
         val isPublicEndpoint =
             (originalRequest.method == "GET" && (
                             url.endsWith("/api/recipes") ||
-                            url.endsWith("/api/recipes/search")
+                            url.endsWith("/api/recipes/search") ||
+
+                                    url.contains("searchByIngredients")
 //                                    ||
 //                            url.contains("/api/recipes/")
 //                                    && !url.contains("/my/")

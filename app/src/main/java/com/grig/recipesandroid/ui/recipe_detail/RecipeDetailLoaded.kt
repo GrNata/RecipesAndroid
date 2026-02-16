@@ -1,6 +1,5 @@
 package com.grig.recipesandroid.ui.recipe_detail
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -9,8 +8,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +26,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +38,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
@@ -48,7 +50,9 @@ import com.grig.recipesandroid.ui.recipe_list.RecipesViewModel
 import kotlinx.coroutines.delay
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import com.grig.recipesandroid.data.mapper.toIngredientUi
+import com.grig.recipesandroid.ui.auth.AuthViewModel
 import kotlinx.coroutines.launch
 
 
@@ -57,11 +61,19 @@ import kotlinx.coroutines.launch
 fun RecipeDetailLoaded(
     recipeViewModel: RecipesViewModel,
     recipeDetailViewModel: RecipeDetailViewModel,
+    authViewModel: AuthViewModel,
     recipe: Recipe,
     onBack: () -> Unit,
     recipeId: Long,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+//    isModerator: Boolean? = false
 ) {
+    val isModerator by authViewModel.isModerator.collectAsState()
+    val isAdmin by authViewModel.isAdmin.collectAsState()
+    val isAdminModeratorDetail by recipeDetailViewModel.isAdminModeratorDetail.collectAsState()
+    val isModeratorDetail by recipeViewModel.isModeratorDetail.collectAsState()
+
+
     val favoritesSet by recipeViewModel.favorites.collectAsState()
     val isFavorite = recipeId in favoritesSet
 
@@ -87,37 +99,94 @@ fun RecipeDetailLoaded(
             .padding(16.dp)
     ) {
         item {
-            Row(
-                modifier = Modifier.fillMaxWidth().height(30.dp),
-//                modifier = Modifier.fillMaxWidth().height(20.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                val scale by animateFloatAsState(targetValue = if (isFavorite) 1.3f else 1f)
-
-                IconButton(
-                    onClick = {
-                        recipeViewModel.toggleFavorite(recipe.id)
-                        // показываем SnackBar
-                        val message = if (isFavorite) "Рецепт удален из избранного" else "Рецепт добавлен в избранное"
-                        scope.launch {
-                            snackbarHostState.showSnackbar(message)
+                if ((isAdmin || isModerator) && recipe.status.name == "PENDING" && isModeratorDetail == true) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(30.dp),
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Column(
+                            Modifier.weight(1f)
+                        ) {
+                            Button(
+                                onClick = { recipeViewModel.rejectRecipe(recipeId) },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFD38484),
+                                    contentColor = Color(0xFF473972)
+                                ),
+                                elevation = ButtonDefaults.buttonElevation(
+                                    defaultElevation = 4.dp,
+                                    pressedElevation = 8.dp
+                                ),
+                                border = BorderStroke(1.dp, Color(0xFF6C1B1B)),
+                                contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
+                                modifier = Modifier.size(110.dp)
+                            ) {
+                                Text("Отклонить")
+                            }
                         }
-                    },
-                    modifier = Modifier.scale(scale)
-                ) {
-                    Icon(
-                        imageVector = if (isFavorite) {
-                            Icons.Default.Favorite
-                        } else {
-                            Icons.Default.FavoriteBorder
-                        },
-                        contentDescription = "Избраное",
-                        tint = Color.Red,
-//                        tint = if (isFavorite) Color.Red else Color.Red,
-                        modifier = Modifier.size(40.dp)
-                    )
+
+                        Column(
+                            Modifier.weight(1f),
+                            horizontalAlignment = Alignment.End
+                        ) {
+                            Button(
+                                onClick = { recipeViewModel.approveRecipe(recipeId) },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF79C279),
+                                    contentColor = Color(0xFF473972)
+                                ),
+                                elevation = ButtonDefaults.buttonElevation(
+                                    defaultElevation = 4.dp,
+                                    pressedElevation = 8.dp
+                                ),
+                                border = BorderStroke(1.dp, Color(0xFF165616)),
+                                contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
+                                modifier = Modifier.size(110.dp)
+                            ) {
+                                Text("Опубликовать")
+                            }
+                        }
+                    }
+                    Spacer(Modifier.height(20.dp))
+
                 }
-            }
+                else {
+//                ++++++++++
+            val scale by animateFloatAsState(targetValue = if (isFavorite) 1.3f else 1f)
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(30.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        IconButton(
+                            onClick = {
+                                recipeViewModel.toggleFavorite(recipe.id)
+                                // показываем SnackBar
+                                val message =
+                                    if (isFavorite) "Рецепт удален из избранного" else "Рецепт добавлен в избранное"
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(message)
+                                }
+                            },
+                            modifier = Modifier.scale(scale)
+                        ) {
+                            Icon(
+                                imageVector = if (isFavorite) {
+                                    Icons.Default.Favorite
+                                } else {
+                                    Icons.Default.FavoriteBorder
+                                },
+                                contentDescription = "Избраное",
+                                tint = Color.Red,
+//                        tint = if (isFavorite) Color.Red else Color.Red,
+                                modifier = Modifier.size(40.dp)
+                            )
+                        }
+//                ++++++++++++++
+                    }
+            }   //  else
+
         }
         // --- ОПИСАНИЕ ---
         item {
@@ -145,14 +214,9 @@ fun RecipeDetailLoaded(
                             8.dp,
                             120.dp - scrollState.firstVisibleItemScrollOffset.dp
                         )
-//                        targetValue = (120.dp - scrollState.firstVisibleItemScrollOffset.dp)
-//                            .coerceAtLeast(8.dp),
-//                        animationSpec = tween(300)
                     )
-//                                    Fake shared image (scale animation)
                     AnimatedVisibility(
                         visible = imageVisible.value,
-//                                        enter = fadeIn() + slideInVertically { it / 2 },
                         enter = fadeIn(animationSpec = tween(1000)) + scaleIn(
                             initialScale = 0.85f,
                             animationSpec = tween(1000)
@@ -163,8 +227,6 @@ fun RecipeDetailLoaded(
                             model = it,
                             contentDescription = recipe.name,
                             modifier = Modifier
-//                                                .height(120.dp)
-//                                                .fillMaxWidth()
                                 .height(imageHeight)
                                 .clip(RoundedCornerShape(20.dp))
                         )

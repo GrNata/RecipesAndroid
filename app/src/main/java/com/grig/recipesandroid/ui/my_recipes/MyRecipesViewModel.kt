@@ -9,6 +9,7 @@ import com.grig.recipesandroid.data.model.dto.RecipeStatus
 import com.grig.recipesandroid.data.repository.RecipeRepository
 import com.grig.recipesandroid.ui.auth.AuthViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class MyRecipesViewModel(
     private val repository: RecipeRepository,
@@ -17,12 +18,9 @@ class MyRecipesViewModel(
 
     private val refreshTrigger = MutableStateFlow(0)
 
-////    +++++++++++++++
-////    MODERATION
-//    private val _moderationStatus = MutableStateFlow<RecipeStatus>(RecipeStatus.DRAFT)
-//    val moderationStatus = _moderationStatus.asStateFlow()
-//
-////    +++++++++++++++
+    // Триггер обновления при изменении токена (логин/логаут)
+    private val tokenRefreshTrigger = MutableStateFlow(0)
+
 
     // Преобразуем Flow<String?> → StateFlow<String?> прямо здесь
     private val accessTokenState: StateFlow<String?> = authViewModel.accessToken
@@ -32,7 +30,19 @@ class MyRecipesViewModel(
             initialValue = null
         )
 
-    val myRecipesPagingFlow = refreshTrigger
+    init {
+//        Если токен изменился (логин/аккаунт) - обновляем список
+        viewModelScope.launch {
+            accessTokenState.collect {
+                tokenRefreshTrigger.update { it + 1 }
+            }
+        }
+    }
+
+    val myRecipesPagingFlow = combine(refreshTrigger, tokenRefreshTrigger) { r, t ->
+        r to t
+    }
+//        refreshTrigger
         .flatMapLatest {
             Pager(
                 config = PagingConfig(pageSize = 10, enablePlaceholders = false),
