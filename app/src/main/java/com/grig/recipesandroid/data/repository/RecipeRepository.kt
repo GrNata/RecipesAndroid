@@ -15,6 +15,7 @@ import com.grig.recipesandroid.data.model.response.PagedRecipesResponse
 import com.grig.recipesandroid.data.paging.RecipePagingSource
 import com.grig.recipesandroid.domain.model.Recipe
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 
 class RecipeRepository(
     private val api: RecipeApi
@@ -64,9 +65,7 @@ class RecipeRepository(
         api.updateRecipe(recipeId, request)
     }
 
-    suspend fun deleteRecipe(recipeId: Long) {
-        api.deleteRecipe(recipeId)
-    }
+    suspend fun deleteRecipe(recipeId: Long): Response<Unit> = api.deleteRecipe(recipeId)
 
 
 //    Поиск рецептов по ингредиентам
